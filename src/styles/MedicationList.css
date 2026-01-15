@@ -88,33 +88,29 @@
   background-color: #f8f9fa;
 }
 
-.order-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
+.medication-table tr.dragging {
+  opacity: 0.5;
+  background-color: #e3f2fd;
 }
 
-.order-button {
-  background-color: #3498db;
-  color: white;
-  border: none;
-  padding: 4px 8px;
-  font-size: 12px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  min-width: 30px;
+.drag-handle-cell {
+  text-align: center;
+  width: 60px;
 }
 
-.order-button:hover:not(:disabled) {
-  background-color: #2980b9;
+.drag-handle {
+  font-size: 18px;
+  color: #95a5a6;
+  cursor: grab;
+  user-select: none;
+  padding: 4px;
+  display: inline-block;
 }
 
-.order-button:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
+.drag-handle:active {
+  cursor: grabbing;
 }
+
 
 .action-buttons {
   display: flex;
@@ -160,19 +156,93 @@
 
 @media (max-width: 768px) {
   .medication-list {
-    padding: 20px;
+    padding: 15px;
   }
 
   .medication-list h2 {
     font-size: 20px;
   }
 
+  /* 모바일에서 테이블을 카드 형식으로 변경 */
+  .medication-table-container {
+    overflow-x: visible;
+  }
+
   .medication-table {
+    display: block;
     font-size: 14px;
   }
 
-  .medication-table th,
+  .medication-table thead {
+    display: none;
+  }
+
+  .medication-table tbody {
+    display: block;
+  }
+
+  .medication-table tr {
+    display: block;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .medication-table tr:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
   .medication-table td {
-    padding: 8px;
+    display: block;
+    text-align: left;
+    border: none;
+    padding: 8px 0;
+    position: relative;
+  }
+
+  .medication-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #34495e;
+    display: inline-block;
+    min-width: 100px;
+    margin-right: 10px;
+  }
+
+  .drag-handle-cell {
+    width: 100%;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 8px !important;
+    margin-bottom: 8px;
+  }
+
+  .drag-handle-cell::before {
+    content: '';
+  }
+
+  .drag-handle-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .drag-handle {
+    font-size: 20px;
+  }
+
+  .action-buttons {
+    justify-content: flex-start;
+    margin-top: 8px;
+  }
+
+  .edit-button,
+  .delete-button {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 13px;
   }
 }

@@ -14,6 +14,7 @@ function MedicationList({ userId }) {
     notes: ''
   });
   const [errors, setErrors] = useState({});
+  const [draggedIndex, setDraggedIndex] = useState(null);
 
   useEffect(() => {
     loadMedications();
@@ -128,40 +129,44 @@ function MedicationList({ userId }) {
     }
   };
 
-  const handleMoveUp = async (index) => {
-    if (index === 0) return;
+  const handleDragStart = (e, index) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = async (e, dropIndex) => {
+    e.preventDefault();
+
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      return;
+    }
 
     const newMedications = [...medications];
-    [newMedications[index - 1], newMedications[index]] = [newMedications[index], newMedications[index - 1]];
+    const [draggedItem] = newMedications.splice(draggedIndex, 1);
+    newMedications.splice(dropIndex, 0, draggedItem);
 
     // 순서 업데이트
     try {
       await Promise.all(newMedications.map((med, idx) =>
         updateDoc(doc(db, `users/${userId}/medications`, med.id), { order: idx })
       ));
+      setDraggedIndex(null);
       loadMedications();
     } catch (error) {
       console.error('순서 변경 오류:', error);
       alert('순서 변경 중 오류가 발생했습니다.');
+      setDraggedIndex(null);
     }
   };
 
-  const handleMoveDown = async (index) => {
-    if (index === medications.length - 1) return;
-
-    const newMedications = [...medications];
-    [newMedications[index], newMedications[index + 1]] = [newMedications[index + 1], newMedications[index]];
-
-    // 순서 업데이트
-    try {
-      await Promise.all(newMedications.map((med, idx) =>
-        updateDoc(doc(db, `users/${userId}/medications`, med.id), { order: idx })
-      ));
-      loadMedications();
-    } catch (error) {
-      console.error('순서 변경 오류:', error);
-      alert('순서 변경 중 오류가 발생했습니다.');
-    }
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
   };
 
   return (
@@ -267,32 +272,26 @@ function MedicationList({ userId }) {
             </thead>
             <tbody>
               {medications.map((med, index) => (
-                <tr key={med.id}>
-                  <td>
-                    <div className="order-buttons">
-                      <button
-                        className="order-button"
-                        onClick={() => handleMoveUp(index)}
-                        disabled={index === 0}
-                        title="위로"
-                      >
-                        ▲
-                      </button>
-                      <button
-                        className="order-button"
-                        onClick={() => handleMoveDown(index)}
-                        disabled={index === medications.length - 1}
-                        title="아래로"
-                      >
-                        ▼
-                      </button>
+                <tr
+                  key={med.id}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={draggedIndex === index ? 'dragging' : ''}
+                  style={{ cursor: 'move' }}
+                >
+                  <td className="drag-handle-cell">
+                    <div className="drag-handle" title="드래그하여 순서 변경">
+                      ⋮⋮
                     </div>
                   </td>
-                  <td>{med.name}</td>
-                  <td>{med.frequency}</td>
-                  <td>{med.effect}</td>
-                  <td>{med.notes || '-'}</td>
-                  <td>
+                  <td data-label="약물 이름">{med.name}</td>
+                  <td data-label="복용 횟수">{med.frequency}</td>
+                  <td data-label="주요 효능">{med.effect}</td>
+                  <td data-label="기타 내용">{med.notes || '-'}</td>
+                  <td data-label="관리">
                     <div className="action-buttons">
                       <button
                         className="edit-button"
