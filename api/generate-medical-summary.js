@@ -21,8 +21,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: '필수 데이터가 누락되었습니다.' });
     }
 
+    const apiKey = process.env.ANTHROPIC_API_KEY || process.env.REACT_APP_ANTHROPIC_API_KEY;
+
+    if (!apiKey) {
+      console.error('ANTHROPIC_API_KEY not found in environment variables');
+      return res.status(500).json({ error: 'API 키가 설정되지 않았습니다.' });
+    }
+
     const anthropic = new Anthropic({
-      apiKey: process.env.REACT_APP_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
+      apiKey: apiKey,
     });
 
     const prompt = `당신은 의료진에게 환자의 항암치료 경과를 전달하는 의료 보조 AI입니다.
