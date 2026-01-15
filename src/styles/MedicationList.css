@@ -88,6 +88,54 @@
   background-color: #f8f9fa;
 }
 
+.order-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.order-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  min-width: 30px;
+}
+
+.order-button:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.order-button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.edit-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+  background-color: #2980b9;
+}
+
 .delete-button {
   background-color: #e74c3c;
   color: white;

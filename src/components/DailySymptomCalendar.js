@@ -258,19 +258,32 @@ function DailySymptomCalendar({ userId }) {
       const record = symptomRecords[dateStr];
 
       if (record) {
+        // 증상 배열 처리 (최대 6개까지만)
+        const sideEffectsToShow = record.sideEffects && record.sideEffects.length > 0 && record.sideEffects[0] !== '없음'
+          ? record.sideEffects.slice(0, 6)
+          : [];
+
         return (
           <div className="tile-content">
             <div className="red-dot"></div>
-            <div className="badges">
-              {record.chemoCycle && record.chemoSession && (
-                <span className={`badge ${getSessionColorClass(record.chemoCycle, record.chemoSession)}`}>
-                  {record.chemoCycle}-{record.chemoSession}
+            {/* 회차 정보 뱃지 */}
+            {record.chemoCycle && record.chemoSession && record.chemoDay && (
+              <div className="session-badge-container">
+                <span className={`badge session-badge ${getSessionColorClass(record.chemoCycle, record.chemoSession)}`}>
+                  {record.chemoCycle} - {record.chemoSession} - {record.chemoDay}
                 </span>
-              )}
-              {record.sideEffects && record.sideEffects.length > 0 && record.sideEffects[0] !== '없음' && (
-                <span className="badge side-effects">{record.sideEffects[0]}</span>
-              )}
-            </div>
+              </div>
+            )}
+            {/* 증상 뱃지들 */}
+            {sideEffectsToShow.length > 0 && (
+              <div className="side-effects-badges">
+                {sideEffectsToShow.map((effect, index) => (
+                  <span key={index} className="badge symptom-badge">
+                    {effect}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         );
       }

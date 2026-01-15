@@ -119,9 +119,31 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   width: 100%;
   margin-top: 2px;
+}
+
+.session-badge-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.session-badge {
+  font-size: 9px !important;
+  padding: 2px 4px !important;
+  white-space: nowrap;
+  max-width: 90%;
+}
+
+.side-effects-badges {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2px;
+  width: 90%;
+  justify-content: center;
 }
 
 .red-dot {
@@ -241,11 +263,14 @@
   background: #6b7280;
 }
 
-/* 부작용 태그 */
-.badge.side-effects {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-  color: #1f2937;
-  font-weight: 700;
+/* 부작용 태그 - 통일된 색상 */
+.badge.side-effects,
+.badge.symptom-badge {
+  background: #f59e0b;
+  color: white;
+  font-weight: 600;
+  font-size: 8px;
+  padding: 2px 4px;
 }
 
 .selected-date-info {

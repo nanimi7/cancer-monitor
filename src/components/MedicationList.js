@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import '../styles/MedicationList.css';
 
 function MedicationList({ userId }) {
   const [medications, setMedications] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     frequency: '',
@@ -25,6 +26,8 @@ function MedicationList({ userId }) {
         id: doc.id,
         ...doc.data()
       }));
+      // order 필드로 정렬, 없으면 마지막에 배치
+      medicationList.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
       setMedications(medicationList);
     } catch (error) {
       console.error('약물 데이터 로드 오류:', error);
@@ -73,8 +76,19 @@ function MedicationList({ userId }) {
     }
 
     try {
-      await addDoc(collection(db, `users/${userId}/medications`), formData);
-      alert('약물이 등록되었습니다.');
+      if (editingId) {
+        // 수정 모드
+        await updateDoc(doc(db, `users/${userId}/medications`, editingId), formData);
+        alert('약물 정보가 수정되었습니다.');
+      } else {
+        // 등록 모드 - 새로운 약물은 마지막 순서로
+        const dataWithOrder = {
+          ...formData,
+          order: medications.length
+        };
+        await addDoc(collection(db, `users/${userId}/medications`), dataWithOrder);
+        alert('약물이 등록되었습니다.');
+      }
       setFormData({
         name: '',
         frequency: '',
@@ -82,11 +96,23 @@ function MedicationList({ userId }) {
         notes: ''
       });
       setShowForm(false);
+      setEditingId(null);
       loadMedications();
     } catch (error) {
-      console.error('약물 등록 오류:', error);
-      alert('등록 중 오류가 발생했습니다.');
+      console.error('약물 저장 오류:', error);
+      alert('저장 중 오류가 발생했습니다.');
     }
+  };
+
+  const handleEdit = (medication) => {
+    setEditingId(medication.id);
+    setFormData({
+      name: medication.name,
+      frequency: medication.frequency,
+      effect: medication.effect,
+      notes: medication.notes || ''
+    });
+    setShowForm(true);
   };
 
   const handleDelete = async (id, name) => {
@@ -99,6 +125,42 @@ function MedicationList({ userId }) {
         console.error('약물 삭제 오류:', error);
         alert('삭제 중 오류가 발생했습니다.');
       }
+    }
+  };
+
+  const handleMoveUp = async (index) => {
+    if (index === 0) return;
+
+    const newMedications = [...medications];
+    [newMedications[index - 1], newMedications[index]] = [newMedications[index], newMedications[index - 1]];
+
+    // 순서 업데이트
+    try {
+      await Promise.all(newMedications.map((med, idx) =>
+        updateDoc(doc(db, `users/${userId}/medications`, med.id), { order: idx })
+      ));
+      loadMedications();
+    } catch (error) {
+      console.error('순서 변경 오류:', error);
+      alert('순서 변경 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleMoveDown = async (index) => {
+    if (index === medications.length - 1) return;
+
+    const newMedications = [...medications];
+    [newMedications[index], newMedications[index + 1]] = [newMedications[index + 1], newMedications[index]];
+
+    // 순서 업데이트
+    try {
+      await Promise.all(newMedications.map((med, idx) =>
+        updateDoc(doc(db, `users/${userId}/medications`, med.id), { order: idx })
+      ));
+      loadMedications();
+    } catch (error) {
+      console.error('순서 변경 오류:', error);
+      alert('순서 변경 중 오류가 발생했습니다.');
     }
   };
 
@@ -117,7 +179,7 @@ function MedicationList({ userId }) {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="medication-form">
-          <h3>약물 등록</h3>
+          <h3>{editingId ? '약물 수정' : '약물 등록'}</h3>
 
           <div className="form-group">
             <label htmlFor="name">약물 이름 <span className="required">*</span></label>
@@ -171,12 +233,15 @@ function MedicationList({ userId }) {
           </div>
 
           <div className="form-buttons">
-            <button type="submit" className="submit-button">등록하기</button>
+            <button type="submit" className="submit-button">
+              {editingId ? '수정하기' : '등록하기'}
+            </button>
             <button
               type="button"
               className="cancel-button"
               onClick={() => {
                 setShowForm(false);
+                setEditingId(null);
                 setFormData({ name: '', frequency: '', effect: '', notes: '' });
                 setErrors({});
               }}
@@ -192,27 +257,56 @@ function MedicationList({ userId }) {
           <table className="medication-table">
             <thead>
               <tr>
+                <th>순서</th>
                 <th>약물 이름</th>
                 <th>복용 횟수</th>
                 <th>주요 효능</th>
                 <th>기타 내용</th>
-                <th>삭제</th>
+                <th>관리</th>
               </tr>
             </thead>
             <tbody>
-              {medications.map(med => (
+              {medications.map((med, index) => (
                 <tr key={med.id}>
+                  <td>
+                    <div className="order-buttons">
+                      <button
+                        className="order-button"
+                        onClick={() => handleMoveUp(index)}
+                        disabled={index === 0}
+                        title="위로"
+                      >
+                        ▲
+                      </button>
+                      <button
+                        className="order-button"
+                        onClick={() => handleMoveDown(index)}
+                        disabled={index === medications.length - 1}
+                        title="아래로"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                  </td>
                   <td>{med.name}</td>
                   <td>{med.frequency}</td>
                   <td>{med.effect}</td>
                   <td>{med.notes || '-'}</td>
                   <td>
-                    <button
-                      className="delete-button"
-                      onClick={() => handleDelete(med.id, med.name)}
-                    >
-                      삭제
-                    </button>
+                    <div className="action-buttons">
+                      <button
+                        className="edit-button"
+                        onClick={() => handleEdit(med)}
+                      >
+                        수정
+                      </button>
+                      <button
+                        className="delete-button"
+                        onClick={() => handleDelete(med.id, med.name)}
+                      >
+                        삭제
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
