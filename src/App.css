@@ -128,21 +128,61 @@
 }
 
 @media (max-width: 768px) {
+  .app-header {
+    padding: 12px 15px;
+    gap: 10px;
+  }
+
   .app-header h1 {
-    font-size: 22px;
+    font-size: 18px;
+    width: 100%;
+  }
+
+  .user-info {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .user-email {
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  .logout-button {
+    padding: 6px 12px;
+    font-size: 12px;
+    white-space: nowrap;
   }
 
   .app-nav {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
   }
 
   .app-nav button {
-    width: 100%;
-    padding: 12px;
-    text-align: center;
+    padding: 12px 8px;
+    font-size: 13px;
+    border-bottom: 2px solid transparent;
+  }
+
+  .app-nav button.active {
+    border-bottom-color: #3498db;
   }
 
   .app-content {
-    padding: 20px 15px;
+    padding: 15px 10px;
+  }
+
+  .app-footer {
+    padding: 10px;
+  }
+
+  .app-footer p {
+    font-size: 12px;
   }
 }

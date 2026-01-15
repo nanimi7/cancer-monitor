@@ -273,20 +273,259 @@
   border-radius: 8px;
 }
 
+/* AI 요약 박스 */
+.ai-summary-box {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #9b59b6;
+}
+
+.ai-summary-content {
+  background: white;
+  padding: 16px;
+  border-radius: 6px;
+  line-height: 1.8;
+  color: #2c3e50;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid #e8eaed;
+}
+
+.ai-comment-content {
+  background: #fff4e6;
+  padding: 16px;
+  border-radius: 6px;
+  line-height: 1.8;
+  color: #2c3e50;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid #ffe4b3;
+}
+
+/* 토글 버튼 */
+.toggle-button {
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  padding: 12px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  width: 100%;
+  text-align: left;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-button:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.toggle-button:active {
+  background-color: #d1d5db;
+}
+
+/* AI 주의사항 */
+.ai-disclaimer {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-left: 4px solid #ff9800;
+  padding: 16px;
+  border-radius: 6px;
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #856404;
+}
+
+.ai-disclaimer strong {
+  color: #ff6b6b;
+}
+
+/* AI 코멘트 헤더 */
+.ai-comment-header {
+  margin-bottom: 12px;
+  font-weight: 700;
+  color: #374151;
+  font-size: 16px;
+}
+
+/* 추이 카드 래퍼 */
+.trend-card-wrapper {
+  margin-bottom: 20px;
+}
+
+.trend-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+/* 스켈레톤 로딩 */
+.skeleton-card {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 8px;
+  height: 120px;
+  margin-bottom: 12px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 @media (max-width: 768px) {
   .ai-summary {
-    padding: 20px;
+    padding: 15px 10px;
   }
 
   .ai-summary h2 {
-    font-size: 20px;
+    font-size: 18px;
+    margin-bottom: 15px;
   }
 
   .selection-container {
-    padding: 15px;
+    padding: 15px 12px;
+  }
+
+  .selection-container label {
+    font-size: 13px;
+  }
+
+  .selection-container select {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .generate-button {
+    font-size: 14px;
+    padding: 10px 20px;
   }
 
   .summary-content {
+    font-size: 13px;
+  }
+
+  .summary-section {
+    padding: 16px 12px;
+    margin-bottom: 12px;
+  }
+
+  .summary-section-title {
+    font-size: 16px;
+  }
+
+  .summary-section-icon {
+    font-size: 20px;
+  }
+
+  .summary-info-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .summary-info-item {
+    padding: 10px;
+  }
+
+  .summary-info-label {
+    font-size: 12px;
+    min-width: 70px;
+  }
+
+  .summary-info-value {
+    font-size: 13px;
+  }
+
+  .stats-card {
+    padding: 15px 12px;
+    margin-bottom: 10px;
+  }
+
+  .stats-card-header {
     font-size: 14px;
+  }
+
+  .stats-card-content {
+    font-size: 13px;
+    line-height: 2;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  .ai-summary-content {
+    font-size: 13px;
+    line-height: 2;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    padding: 14px;
+  }
+
+  .ai-comment-content {
+    font-size: 13px;
+    line-height: 2;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    padding: 14px;
+  }
+
+  .ai-comment-header {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .ai-disclaimer {
+    font-size: 12px;
+    line-height: 1.8;
+    padding: 12px;
+    margin-top: 16px;
+  }
+
+  .trend-card-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .skeleton-card {
+    height: 100px;
+  }
+
+  .side-effect-label {
+    min-width: 80px;
+    font-size: 13px;
+  }
+
+  .side-effect-bar-fill {
+    font-size: 11px;
+    min-width: 50px;
+  }
+
+  .side-effect-count {
+    font-size: 12px;
+  }
+
+  .symptom-record {
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .symptom-date {
+    font-size: 12px;
+  }
+
+  .symptom-text {
+    font-size: 13px;
   }
 }

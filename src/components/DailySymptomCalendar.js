@@ -266,11 +266,17 @@ function DailySymptomCalendar({ userId }) {
         return (
           <div className="tile-content">
             <div className="red-dot"></div>
-            {/* 회차 정보 뱃지 */}
+            {/* 회차 정보 뱃지 - 3개로 분리 */}
             {record.chemoCycle && record.chemoSession && record.chemoDay && (
               <div className="session-badge-container">
                 <span className={`badge session-badge ${getSessionColorClass(record.chemoCycle, record.chemoSession)}`}>
-                  {record.chemoCycle} - {record.chemoSession} - {record.chemoDay}
+                  {record.chemoCycle}
+                </span>
+                <span className={`badge session-badge ${getSessionColorClass(record.chemoCycle, record.chemoSession)}`}>
+                  {record.chemoSession}
+                </span>
+                <span className={`badge session-badge ${getSessionColorClass(record.chemoCycle, record.chemoSession)}`}>
+                  {record.chemoDay}
                 </span>
               </div>
             )}
@@ -322,20 +328,20 @@ function DailySymptomCalendar({ userId }) {
                 </div>
                 <div className="record-item">
                   <strong>식사량:</strong> {selectedDateRecord.foodIntakeLevel ? `${selectedDateRecord.foodIntakeLevel}%` : selectedDateRecord.foodIntake}
-                  {selectedDateRecord.foodIntakeNote && <div style={{marginTop: '5px', color: '#7f8c8d'}}>{selectedDateRecord.foodIntakeNote}</div>}
+                  {selectedDateRecord.foodIntakeNote && <div className="record-note">{selectedDateRecord.foodIntakeNote}</div>}
                 </div>
                 <div className="record-item">
                   <strong>음수량:</strong> {selectedDateRecord.waterIntakeAmount ? `약 ${selectedDateRecord.waterIntakeAmount}ml` : selectedDateRecord.waterIntake}
-                  {selectedDateRecord.waterIntakeNote && <div style={{marginTop: '5px', color: '#7f8c8d'}}>{selectedDateRecord.waterIntakeNote}</div>}
+                  {selectedDateRecord.waterIntakeNote && <div className="record-note">{selectedDateRecord.waterIntakeNote}</div>}
                 </div>
                 <div className="record-item">
                   <strong>운동량:</strong> {selectedDateRecord.exerciseTime ? `약 ${selectedDateRecord.exerciseTime}보` : selectedDateRecord.exercise}
-                  {selectedDateRecord.exerciseNote && <div style={{marginTop: '5px', color: '#7f8c8d'}}>{selectedDateRecord.exerciseNote}</div>}
+                  {selectedDateRecord.exerciseNote && <div className="record-note">{selectedDateRecord.exerciseNote}</div>}
                 </div>
                 <div className="record-item">
                   <strong>배변:</strong> {selectedDateRecord.bowelMovement === 'yes' ? '있음' : selectedDateRecord.bowelMovement === 'no' ? '없음' : '-'}
                   {selectedDateRecord.bowelMovement === 'yes' && selectedDateRecord.bowelCondition && selectedDateRecord.bowelCondition.length > 0 && (
-                    <div style={{marginTop: '5px', color: '#7f8c8d'}}>상태: {selectedDateRecord.bowelCondition.join(', ')}</div>
+                    <div className="record-note">상태: {selectedDateRecord.bowelCondition.join(', ')}</div>
                   )}
                 </div>
                 <div className="record-item">

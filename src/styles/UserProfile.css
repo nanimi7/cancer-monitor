@@ -187,30 +187,54 @@
 
 @media (max-width: 768px) {
   .user-profile {
-    padding: 20px;
+    padding: 15px;
   }
 
   .user-profile h2 {
-    font-size: 20px;
+    font-size: 18px;
+    margin-bottom: 15px;
   }
 
   .profile-header {
     flex-direction: column;
     text-align: center;
+    gap: 15px;
   }
 
   .character-avatar {
-    font-size: 60px;
-    width: 80px;
-    height: 80px;
+    font-size: 50px;
+    width: 70px;
+    height: 70px;
+    border: 3px solid #fff;
   }
 
   .profile-nickname {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .profile-details {
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .edit-button {
+    width: 100%;
+    padding: 10px 20px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
     font-size: 13px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    font-size: 14px;
+    padding: 10px;
   }
 
   .button-group {

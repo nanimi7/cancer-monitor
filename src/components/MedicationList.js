@@ -15,6 +15,7 @@ function MedicationList({ userId }) {
   });
   const [errors, setErrors] = useState({});
   const [draggedIndex, setDraggedIndex] = useState(null);
+  const [touchStartY, setTouchStartY] = useState(null);
 
   useEffect(() => {
     loadMedications();
@@ -169,6 +170,67 @@ function MedicationList({ userId }) {
     setDraggedIndex(null);
   };
 
+  const handleTouchStart = (e, index) => {
+    setDraggedIndex(index);
+    const touch = e.touches[0];
+    setTouchStartY(touch.clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    if (draggedIndex === null || touchStartY === null) return;
+
+    const touch = e.touches[0];
+    const currentY = touch.clientY;
+    const diff = currentY - touchStartY;
+
+    // 위아래로 일정 거리 이상 움직였을 때만 처리
+    if (Math.abs(diff) < 50) return;
+
+    e.preventDefault();
+  };
+
+  const handleTouchEnd = async (e, dropIndex) => {
+    if (draggedIndex === null || touchStartY === null) {
+      setDraggedIndex(null);
+      setTouchStartY(null);
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const currentY = touch.clientY;
+    const diff = currentY - touchStartY;
+
+    let newIndex = draggedIndex;
+
+    // 위로 스와이프 (위로 이동)
+    if (diff < -50 && draggedIndex > 0) {
+      newIndex = draggedIndex - 1;
+    }
+    // 아래로 스와이프 (아래로 이동)
+    else if (diff > 50 && draggedIndex < medications.length - 1) {
+      newIndex = draggedIndex + 1;
+    }
+
+    if (newIndex !== draggedIndex) {
+      const newMedications = [...medications];
+      const [draggedItem] = newMedications.splice(draggedIndex, 1);
+      newMedications.splice(newIndex, 0, draggedItem);
+
+      try {
+        await Promise.all(newMedications.map((med, idx) =>
+          updateDoc(doc(db, `users/${userId}/medications`, med.id), { order: idx })
+        ));
+        loadMedications();
+      } catch (error) {
+        console.error('순서 변경 오류:', error);
+        alert('순서 변경 중 오류가 발생했습니다.');
+      }
+    }
+
+    setDraggedIndex(null);
+    setTouchStartY(null);
+  };
+
   return (
     <div className="medication-list">
       <h2>처방받은 약 목록 관리</h2>
@@ -279,6 +341,9 @@ function MedicationList({ userId }) {
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, index)}
                   onDragEnd={handleDragEnd}
+                  onTouchStart={(e) => handleTouchStart(e, index)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={(e) => handleTouchEnd(e, index)}
                   className={draggedIndex === index ? 'dragging' : ''}
                   style={{ cursor: 'move' }}
                 >
