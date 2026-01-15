@@ -104,7 +104,7 @@ function AISummary({ userId }) {
         const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
 
         // 목업 데이터 사용 (테스트용)
-        const useMockData = false; // API 크레딧이 있으면 false로 변경
+        const useMockData = true; // API 크레딧이 있으면 false로 변경
 
         if (useMockData || !apiKey || apiKey === 'YOUR_ANTHROPIC_API_KEY_HERE') {
           // 목업 응답 생성
@@ -298,7 +298,7 @@ ${symptomTexts}
       setTrendLoading(true);
       const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
 
-      const useMockData = false;
+      const useMockData = true;
 
       // 식사량 라벨 맵핑
       const foodLabelMap = {
