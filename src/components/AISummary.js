@@ -3,7 +3,7 @@ import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import '../styles/AISummary.css';
 
-function AISummary() {
+function AISummary({ userId }) {
   const [symptomRecords, setSymptomRecords] = useState([]);
   const [cycles, setCycles] = useState([]);
   const [selectedCycle, setSelectedCycle] = useState('');
@@ -30,7 +30,7 @@ function AISummary() {
 
   const loadSymptomRecords = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'symptomRecords'));
+      const querySnapshot = await getDocs(collection(db, `users/${userId}/symptomRecords`));
       const records = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()

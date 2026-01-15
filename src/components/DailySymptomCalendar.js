@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/DailySymptomCalendar.css';
 
-function DailySymptomCalendar() {
+function DailySymptomCalendar({ userId }) {
   const [date, setDate] = useState(new Date());
   const [symptomRecords, setSymptomRecords] = useState({});
   const [selectedDateRecord, setSelectedDateRecord] = useState(null);
@@ -44,7 +44,7 @@ function DailySymptomCalendar() {
 
   const loadSymptomRecords = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'symptomRecords'));
+      const querySnapshot = await getDocs(collection(db, `users/${userId}/symptomRecords`));
       const records = {};
       querySnapshot.docs.forEach(doc => {
         const data = doc.data();
@@ -218,11 +218,12 @@ function DailySymptomCalendar() {
     }
 
     try {
+      const symptomRecordsPath = `users/${userId}/symptomRecords`;
       if (selectedDateRecord && selectedDateRecord.id) {
-        await updateDoc(doc(db, 'symptomRecords', selectedDateRecord.id), formData);
+        await updateDoc(doc(db, symptomRecordsPath, selectedDateRecord.id), formData);
         alert('기록이 수정되었습니다.');
       } else {
-        await addDoc(collection(db, 'symptomRecords'), formData);
+        await addDoc(collection(db, symptomRecordsPath), formData);
         alert('기록이 등록되었습니다.');
       }
       setShowForm(false);

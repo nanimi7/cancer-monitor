@@ -3,7 +3,7 @@ import { db } from '../firebase';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import '../styles/MedicationList.css';
 
-function MedicationList() {
+function MedicationList({ userId }) {
   const [medications, setMedications] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -20,7 +20,7 @@ function MedicationList() {
 
   const loadMedications = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'medications'));
+      const querySnapshot = await getDocs(collection(db, `users/${userId}/medications`));
       const medicationList = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -73,7 +73,7 @@ function MedicationList() {
     }
 
     try {
-      await addDoc(collection(db, 'medications'), formData);
+      await addDoc(collection(db, `users/${userId}/medications`), formData);
       alert('약물이 등록되었습니다.');
       setFormData({
         name: '',
@@ -92,7 +92,7 @@ function MedicationList() {
   const handleDelete = async (id, name) => {
     if (window.confirm(`"${name}" 약물을 삭제하시겠습니까?`)) {
       try {
-        await deleteDoc(doc(db, 'medications', id));
+        await deleteDoc(doc(db, `users/${userId}/medications`, id));
         alert('약물이 삭제되었습니다.');
         loadMedications();
       } catch (error) {

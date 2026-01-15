@@ -3,7 +3,7 @@ import { db } from '../firebase';
 import { collection, addDoc, getDocs, updateDoc, doc } from 'firebase/firestore';
 import '../styles/UserProfile.css';
 
-function UserProfile() {
+function UserProfile({ userId }) {
   const [formData, setFormData] = useState({
     nickname: '',
     birthdate: '',
@@ -23,7 +23,7 @@ function UserProfile() {
 
   const loadUserData = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'users'));
+      const querySnapshot = await getDocs(collection(db, `users/${userId}/profile`));
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs[0].data();
         setUserId(querySnapshot.docs[0].id);
@@ -102,12 +102,13 @@ function UserProfile() {
     }
 
     try {
+      const userProfilePath = `users/${userId}/profile`;
       if (isEditing && userId) {
-        await updateDoc(doc(db, 'users', userId), formData);
+        await updateDoc(doc(db, userProfilePath, userId), formData);
         alert('사용자 정보가 수정되었습니다.');
         setShowEditForm(false);
       } else {
-        const docRef = await addDoc(collection(db, 'users'), formData);
+        const docRef = await addDoc(collection(db, userProfilePath), formData);
         setUserId(docRef.id);
         setIsEditing(true);
         alert('사용자 정보가 등록되었습니다.');

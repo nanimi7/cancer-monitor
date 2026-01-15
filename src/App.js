@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { auth } from './firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import Auth from './components/Auth';
 import UserProfile from './components/UserProfile';
 import MedicationList from './components/MedicationList';
 import DailySymptomCalendar from './components/DailySymptomCalendar';
@@ -6,20 +9,54 @@ import AISummary from './components/AISummary';
 import './App.css';
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState('profile');
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setActiveMenu('profile');
+    } catch (error) {
+      console.error('로그아웃 오류:', error);
+      alert('로그아웃에 실패했습니다.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>로딩 중...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Auth />;
+  }
 
   const renderContent = () => {
     switch (activeMenu) {
       case 'profile':
-        return <UserProfile />;
+        return <UserProfile userId={user.uid} />;
       case 'medication':
-        return <MedicationList />;
+        return <MedicationList userId={user.uid} />;
       case 'calendar':
-        return <DailySymptomCalendar />;
+        return <DailySymptomCalendar userId={user.uid} />;
       case 'ai-summary':
-        return <AISummary />;
+        return <AISummary userId={user.uid} />;
       default:
-        return <UserProfile />;
+        return <UserProfile userId={user.uid} />;
     }
   };
 
@@ -27,6 +64,12 @@ function App() {
     <div className="App">
       <header className="app-header">
         <h1>항암치료 기록 서비스</h1>
+        <div className="user-info">
+          <span className="user-email">{user.email}</span>
+          <button className="logout-button" onClick={handleLogout}>
+            로그아웃
+          </button>
+        </div>
       </header>
 
       <nav className="app-nav">
