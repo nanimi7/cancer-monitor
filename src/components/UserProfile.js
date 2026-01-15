@@ -9,11 +9,12 @@ function UserProfile({ userId }) {
     birthdate: '',
     gender: '',
     disease: '',
+    diagnosisDate: '',
     underlyingConditions: '',
     otherInfo: ''
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [userId, setUserId] = useState(null);
+  const [profileDocId, setProfileDocId] = useState(null);
   const [errors, setErrors] = useState({});
   const [showEditForm, setShowEditForm] = useState(false);
 
@@ -26,13 +27,14 @@ function UserProfile({ userId }) {
       const querySnapshot = await getDocs(collection(db, `users/${userId}/profile`));
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs[0].data();
-        setUserId(querySnapshot.docs[0].id);
+        setProfileDocId(querySnapshot.docs[0].id);
         // 기존 데이터에 otherInfo가 없을 수 있으므로 기본값 설정
         setFormData({
           nickname: userData.nickname || '',
           birthdate: userData.birthdate || '',
           gender: userData.gender || '',
           disease: userData.disease || '',
+          diagnosisDate: userData.diagnosisDate || '',
           underlyingConditions: userData.underlyingConditions || '',
           otherInfo: userData.otherInfo || ''
         });
@@ -103,13 +105,13 @@ function UserProfile({ userId }) {
 
     try {
       const userProfilePath = `users/${userId}/profile`;
-      if (isEditing && userId) {
-        await updateDoc(doc(db, userProfilePath, userId), formData);
+      if (isEditing && profileDocId) {
+        await updateDoc(doc(db, userProfilePath, profileDocId), formData);
         alert('사용자 정보가 수정되었습니다.');
         setShowEditForm(false);
       } else {
         const docRef = await addDoc(collection(db, userProfilePath), formData);
-        setUserId(docRef.id);
+        setProfileDocId(docRef.id);
         setIsEditing(true);
         alert('사용자 정보가 등록되었습니다.');
       }
@@ -159,7 +161,11 @@ function UserProfile({ userId }) {
             <div className="profile-info">
               <h3 className="profile-nickname">{formData.nickname}</h3>
               <p className="profile-details">
-                {formData.birthdate} | {formData.gender} | {formData.disease}
+                생년월일: {formData.birthdate} | {formData.gender}
+              </p>
+              <p className="profile-details">
+                병명: {formData.disease}
+                {formData.diagnosisDate && ` | 진단일: ${formData.diagnosisDate}`}
               </p>
             </div>
           </div>
@@ -235,6 +241,19 @@ function UserProfile({ userId }) {
               className={errors.disease ? 'error' : ''}
             />
             {errors.disease && <span className="error-message">{errors.disease}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="diagnosisDate">최초 진단일</label>
+            <input
+              type="date"
+              id="diagnosisDate"
+              name="diagnosisDate"
+              value={formData.diagnosisDate}
+              onChange={handleChange}
+              className={errors.diagnosisDate ? 'error' : ''}
+            />
+            {errors.diagnosisDate && <span className="error-message">{errors.diagnosisDate}</span>}
           </div>
 
           <div className="form-group">

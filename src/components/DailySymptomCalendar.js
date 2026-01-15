@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import { db } from '../firebase';
-import { collection, addDoc, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { format } from 'date-fns';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/DailySymptomCalendar.css';
@@ -234,6 +234,24 @@ function DailySymptomCalendar({ userId }) {
     }
   };
 
+  const handleDelete = async () => {
+    if (!selectedDateRecord || !selectedDateRecord.id) return;
+
+    if (window.confirm('이 날짜의 기록을 삭제하시겠습니까?')) {
+      try {
+        const symptomRecordsPath = `users/${userId}/symptomRecords`;
+        await deleteDoc(doc(db, symptomRecordsPath, selectedDateRecord.id));
+        alert('기록이 삭제되었습니다.');
+        setSelectedDateRecord(null);
+        setShowForm(false);
+        loadSymptomRecords();
+      } catch (error) {
+        console.error('기록 삭제 오류:', error);
+        alert('삭제 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
   const tileContent = ({ date, view }) => {
     if (view === 'month') {
       const dateStr = format(date, 'yyyy-MM-dd');
@@ -314,9 +332,14 @@ function DailySymptomCalendar({ userId }) {
                   <strong>주요 증상:</strong>
                   <div className="symptoms-text">{selectedDateRecord.symptoms}</div>
                 </div>
-                <button className="edit-button" onClick={handleCreateOrEdit}>
-                  수정하기
-                </button>
+                <div className="button-group">
+                  <button className="edit-button" onClick={handleCreateOrEdit}>
+                    수정하기
+                  </button>
+                  <button className="delete-button" onClick={handleDelete}>
+                    삭제하기
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="no-record">
