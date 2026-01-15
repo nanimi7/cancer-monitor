@@ -1,0 +1,386 @@
+.daily-symptom-calendar {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.daily-symptom-calendar h2 {
+  color: #2c3e50;
+  margin-bottom: 25px;
+  font-size: 24px;
+}
+
+.calendar-container {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.react-calendar {
+  width: 100%;
+  max-width: 900px;
+  border: none;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.react-calendar__navigation {
+  display: flex;
+  height: 44px;
+  margin-bottom: 20px;
+}
+
+.react-calendar__navigation button {
+  min-width: 44px;
+  background: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: #f0f0f0;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  padding-bottom: 10px;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding: 8px;
+}
+
+.react-calendar__month-view__weekdays abbr {
+  text-decoration: none;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #e74c3c;
+}
+
+.react-calendar__tile--now {
+  background: #fff3cd !important;
+  border-color: #ffc107 !important;
+}
+
+.react-calendar__tile--now abbr {
+  color: #856404;
+  font-weight: 700;
+}
+
+.react-calendar__tile {
+  position: relative;
+  min-height: 100px;
+  padding: 8px 4px;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: white;
+  border: 1px solid #e9ecef !important;
+  transition: all 0.2s ease;
+}
+
+.react-calendar__tile:hover {
+  background-color: #f8f9fa !important;
+  transform: scale(1.02);
+}
+
+.react-calendar__tile--active {
+  background-color: #e3f2fd !important;
+  border-color: #2196f3 !important;
+}
+
+.react-calendar__tile abbr {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  display: block;
+  margin-bottom: 4px;
+  z-index: 10;
+  position: relative;
+}
+
+.tile-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.red-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #e74c3c;
+  border-radius: 50%;
+  margin-bottom: 3px;
+  box-shadow: 0 1px 3px rgba(231, 76, 60, 0.3);
+}
+
+.badges {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 3px;
+  width: 90%;
+  justify-content: center;
+}
+
+.badge {
+  color: white;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 8px;
+  white-space: nowrap;
+  line-height: 1.2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 회차별 색상 - 직관적인 차별화 */
+/* 1차 - 블루 계열 */
+.badge.session-1차-1회차 { background: #1e40af; }
+.badge.session-1차-2회차 { background: #3b82f6; }
+.badge.session-1차-3회차 { background: #60a5fa; }
+.badge.session-1차-4회차 { background: #93c5fd; }
+.badge.session-1차-5회차 { background: #bfdbfe; color: #1e3a8a; }
+.badge.session-1차-6회차 { background: #dbeafe; color: #1e3a8a; }
+
+/* 2차 - 그린 계열 */
+.badge.session-2차-1회차 { background: #15803d; }
+.badge.session-2차-2회차 { background: #22c55e; }
+.badge.session-2차-3회차 { background: #4ade80; }
+.badge.session-2차-4회차 { background: #86efac; }
+.badge.session-2차-5회차 { background: #bbf7d0; color: #14532d; }
+.badge.session-2차-6회차 { background: #dcfce7; color: #14532d; }
+
+/* 3차 - 레드 계열 */
+.badge.session-3차-1회차 { background: #b91c1c; }
+.badge.session-3차-2회차 { background: #ef4444; }
+.badge.session-3차-3회차 { background: #f87171; }
+.badge.session-3차-4회차 { background: #fca5a5; }
+.badge.session-3차-5회차 { background: #fecaca; color: #7f1d1d; }
+.badge.session-3차-6회차 { background: #fee2e2; color: #7f1d1d; }
+
+/* 4차 - 퍼플 계열 */
+.badge.session-4차-1회차 { background: #7e22ce; }
+.badge.session-4차-2회차 { background: #a855f7; }
+.badge.session-4차-3회차 { background: #c084fc; }
+.badge.session-4차-4회차 { background: #d8b4fe; }
+.badge.session-4차-5회차 { background: #e9d5ff; color: #581c87; }
+.badge.session-4차-6회차 { background: #f3e8ff; color: #581c87; }
+
+/* 5차 - 오렌지 계열 */
+.badge.session-5차-1회차 { background: #c2410c; }
+.badge.session-5차-2회차 { background: #f97316; }
+.badge.session-5차-3회차 { background: #fb923c; }
+.badge.session-5차-4회차 { background: #fdba74; }
+.badge.session-5차-5회차 { background: #fed7aa; color: #7c2d12; }
+.badge.session-5차-6회차 { background: #ffedd5; color: #7c2d12; }
+
+/* 6차 - 시안 계열 */
+.badge.session-6차-1회차 { background: #0e7490; }
+.badge.session-6차-2회차 { background: #06b6d4; }
+.badge.session-6차-3회차 { background: #22d3ee; }
+.badge.session-6차-4회차 { background: #67e8f9; }
+.badge.session-6차-5회차 { background: #a5f3fc; color: #164e63; }
+.badge.session-6차-6회차 { background: #cffafe; color: #164e63; }
+
+/* 7차 - 핑크 계열 */
+.badge.session-7차-1회차 { background: #be185d; }
+.badge.session-7차-2회차 { background: #ec4899; }
+.badge.session-7차-3회차 { background: #f472b6; }
+.badge.session-7차-4회차 { background: #f9a8d4; }
+.badge.session-7차-5회차 { background: #fbcfe8; color: #831843; }
+.badge.session-7차-6회차 { background: #fce7f3; color: #831843; }
+
+/* 8차 - 옐로우 계열 */
+.badge.session-8차-1회차 { background: #a16207; }
+.badge.session-8차-2회차 { background: #eab308; }
+.badge.session-8차-3회차 { background: #facc15; }
+.badge.session-8차-4회차 { background: #fde047; color: #713f12; }
+.badge.session-8차-5회차 { background: #fef08a; color: #713f12; }
+.badge.session-8차-6회차 { background: #fef9c3; color: #713f12; }
+
+/* 9차 - 인디고 계열 */
+.badge.session-9차-1회차 { background: #4338ca; }
+.badge.session-9차-2회차 { background: #6366f1; }
+.badge.session-9차-3회차 { background: #818cf8; }
+.badge.session-9차-4회차 { background: #a5b4fc; }
+.badge.session-9차-5회차 { background: #c7d2fe; color: #312e81; }
+.badge.session-9차-6회차 { background: #e0e7ff; color: #312e81; }
+
+/* 10차 - 틸 계열 */
+.badge.session-10차-1회차 { background: #0f766e; }
+.badge.session-10차-2회차 { background: #14b8a6; }
+.badge.session-10차-3회차 { background: #2dd4bf; }
+.badge.session-10차-4회차 { background: #5eead4; }
+.badge.session-10차-5회차 { background: #99f6e4; color: #134e4a; }
+.badge.session-10차-6회차 { background: #ccfbf1; color: #134e4a; }
+
+/* 기본값 */
+.badge.session-default {
+  background: #6b7280;
+}
+
+/* 부작용 태그 */
+.badge.side-effects {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.selected-date-info {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.selected-date-info h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.record-view {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.record-item {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-item strong {
+  color: #2c3e50;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.symptoms-text {
+  margin-top: 5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.edit-button,
+.create-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 15px;
+}
+
+.edit-button:hover,
+.create-button:hover {
+  background-color: #2980b9;
+}
+
+.no-record {
+  text-align: center;
+  padding: 40px;
+}
+
+.no-record p {
+  color: #7f8c8d;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.symptom-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.checkbox-label input[type="checkbox"] {
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .daily-symptom-calendar {
+    padding: 15px;
+  }
+
+  .daily-symptom-calendar h2 {
+    font-size: 20px;
+  }
+
+  .react-calendar {
+    padding: 15px;
+    max-width: 100%;
+  }
+
+  .react-calendar__navigation button {
+    font-size: 14px;
+  }
+
+  .react-calendar__tile {
+    min-height: 85px;
+    padding: 6px 2px;
+  }
+
+  .react-calendar__tile abbr {
+    font-size: 14px;
+  }
+
+  .badge {
+    font-size: 9px;
+    padding: 2px 4px;
+    border-radius: 8px;
+  }
+
+  .red-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .react-calendar__month-view__weekdays {
+    font-size: 12px;
+  }
+}
