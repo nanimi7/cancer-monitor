@@ -103,10 +103,10 @@ function AISummary({ userId }) {
       try {
         const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
 
-        // 목업 데이터 사용 (테스트용)
-        const useMockData = true; // API 크레딧이 있으면 false로 변경
+        // 프로덕션에서는 항상 실제 API 사용 (Serverless Function 통해)
+        const useServerlessAPI = true;
 
-        if (useMockData || !apiKey || apiKey === 'YOUR_ANTHROPIC_API_KEY_HERE') {
+        if (!apiKey || apiKey === 'YOUR_ANTHROPIC_API_KEY_HERE') {
           // 목업 응답 생성
           await new Promise(resolve => setTimeout(resolve, 2000)); // 2초 대기 (실제 API 호출 시뮬레이션)
 
@@ -163,15 +163,7 @@ function AISummary({ userId }) {
           return;
         }
 
-        // 실제 Claude API 호출
-        const Anthropic = (await import('@anthropic-ai/sdk')).default;
-
-        const anthropic = new Anthropic({
-          apiKey: apiKey,
-          dangerouslyAllowBrowser: true // 개발 환경에서만 사용
-        });
-
-        // 증상 기록을 텍스트로 정리
+        // Serverless Function을 통한 Claude API 호출
         const symptomTexts = filteredRecords
           .map((record) => {
             return `[${record.date}]
@@ -185,7 +177,6 @@ function AISummary({ userId }) {
           })
           .join('\n\n');
 
-        // 나이 계산
         const calculateAge = (birthdate) => {
           if (!birthdate) return null;
           const birth = new Date(birthdate);
@@ -200,76 +191,33 @@ function AISummary({ userId }) {
 
         const age = userProfile?.birthdate ? calculateAge(userProfile.birthdate) : null;
 
-        // 디버깅: 프로필 데이터 확인
-        console.log('User Profile:', userProfile);
-        console.log('Birthdate:', userProfile?.birthdate);
-        console.log('Calculated Age:', age);
-        console.log('Gender:', userProfile?.gender);
-        console.log('Disease:', userProfile?.disease);
-
-        const prompt = `당신은 의료진에게 환자의 항암치료 경과를 전달하는 의료 보조 AI입니다.
-
-**환자 정보:**
-- 나이: ${age ? `${age}세` : '정보 없음'}
-- 성별: ${userProfile?.gender === 'male' ? '남성' : userProfile?.gender === 'female' ? '여성' : '정보 없음'}
-- 진단명: ${userProfile?.disease || '정보 없음'}
-- 최초 진단일: ${userProfile?.diagnosisDate || '정보 없음'}
-
-**증상 기록 (최근 ${filteredRecords.length}건):**
-${symptomTexts}
-
-다음 두 가지를 생성해주세요:
-
-1. **의료진 전달 주요 증상 요약 (10줄 이내)**
-   - 반드시 "- " (하이픈 + 공백)으로 시작하는 불릿 포인트 사용
-   - 각 항목은 독립된 줄로 작성 (줄바꿈 적극 활용)
-   - 핵심 증상과 변화 추이만 간결하게 정리
-   - 주의 필요 증상, 악화/개선 추세를 명확히 표현
-   - 식사량, 음수량, 배변, 부작용 패턴 포함
-
-   예시 형식:
-   - 식사량: 전반적으로 평소의 50% 수준 유지
-   - 음수량: 1500ml 전후로 안정적
-   - 주요 부작용: 오심, 피로감 반복 발생
-   - 특이사항: 3일차 이후 증상 완화 추세
-
-2. **AI 코멘트 (참고용)**
-   - 환자의 나이, 진단명, 증상을 고려한 간결한 참고 의견
-   - 항암치료 과정에서 일반적인 반응인지 짧게 안내
-   - 의료진 상의가 필요한 부분만 언급 ("의료진과 상의", "확인 필요" 등 중립적 표현 사용)
-   - 불필요한 중복 문장 제거, 핵심만 남길 것
-   - **반드시 마지막에는 빈 줄(\n\n)을 넣고, 따뜻한 이모지(💪, 🌟, 💙 등)와 함께 "잘하고 계십니다. 힘내서 회복에 집중하세요!" 같은 짧고 따뜻한 응원 메시지를 포함할 것**
-
-**응답 형식 (반드시 이 형식을 따라주세요):**
-===주요증상요약===
-[10줄 이내의 요약 내용]
-
-===AI코멘트===
-[AI 코멘트 내용]`;
-
-        const message = await anthropic.messages.create({
-          model: 'claude-3-haiku-20240307',
-          max_tokens: 2000,
-          messages: [
-            {
-              role: 'user',
-              content: prompt,
+        // Serverless Function 호출
+        const response = await fetch('/api/generate-medical-summary', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userProfile: {
+              age,
+              gender: userProfile?.gender,
+              disease: userProfile?.disease,
+              diagnosisDate: userProfile?.diagnosisDate
             },
-          ],
+            symptomTexts,
+            recordCount: filteredRecords.length
+          }),
         });
 
-        const responseText = message.content[0].text;
+        if (!response.ok) {
+          throw new Error(`API 호출 실패: ${response.status}`);
+        }
 
-        // 응답을 파싱
-        const summaryMatch = responseText.match(/===주요증상요약===\s*([\s\S]*?)\s*===AI코멘트===/);
-        const commentMatch = responseText.match(/===AI코멘트===\s*([\s\S]*)/);
-
-        const summary = summaryMatch ? summaryMatch[1].trim() : '요약을 생성할 수 없습니다.';
-        const comment = commentMatch ? commentMatch[1].trim() : '코멘트를 생성할 수 없습니다.';
+        const data = await response.json();
 
         setAiSummary({
-          summary,
-          comment,
+          summary: data.summary,
+          comment: data.comment,
         });
       } catch (aiError) {
         console.error('Claude API 호출 오류:', aiError);
@@ -298,7 +246,7 @@ ${symptomTexts}
       setTrendLoading(true);
       const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
 
-      const useMockData = true;
+      const useMockData = false;
 
       // 식사량 라벨 맵핑
       const foodLabelMap = {
@@ -404,94 +352,31 @@ ${symptomTexts}
         return;
       }
 
-      // 실제 Claude API 호출
-      const Anthropic = (await import('@anthropic-ai/sdk')).default;
-      const anthropic = new Anthropic({
-        apiKey: apiKey,
-        dangerouslyAllowBrowser: true
+      // Serverless Function 호출
+      const response = await fetch('/api/generate-trend-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          records,
+          foodLabelMap,
+          waterLabelMap,
+          exerciseLabelMap
+        }),
       });
 
-      // 데이터 요약 (라벨 포함)
-      const dataText = records.map((r, idx) => {
-        const foodLabel = foodLabelMap[r.foodIntakeLevel] || '미기록';
-        const waterLabel = waterLabelMap[r.waterIntakeAmount] || '미기록';
-        const exerciseLabel = exerciseLabelMap[r.exerciseTime] || '미기록';
-        return `${idx + 1}일차: 식사[${foodLabel}], 음수[${waterLabel}], 운동[${exerciseLabel}], 부작용[${r.sideEffects?.join(', ')}]`;
-      }).join('\n');
+      if (!response.ok) {
+        throw new Error(`API 호출 실패: ${response.status}`);
+      }
 
-      const prompt = `다음은 항암치료 환자의 일별 기록입니다:
-
-${dataText}
-
-**요청사항:**
-위 데이터를 분석하여 각 항목별로 빈도 기반 추이를 분석해주세요.
-
-다음 형식으로 정확히 응답해주세요:
-===식사량===
-📊 식사량 분석 (총 ${records.length}일)
-
-• [라벨]: [빈도]일
-• [라벨]: [빈도]일
-(빈도 순으로 정렬)
-
-➡️ [전체 추세 평가]
-[의료진 상담 필요 여부]
-
-===음수량===
-💧 음수량 분석 (총 ${records.length}일)
-
-• [라벨]: [빈도]일
-• [라벨]: [빈도]일
-(빈도 순으로 정렬)
-
-➡️ [전체 추세 평가]
-[의료진 상담 필요 여부]
-
-===운동량===
-🚶 운동량 분석 (총 ${records.length}일)
-
-• [라벨]: [빈도]일
-• [라벨]: [빈도]일
-(빈도 순으로 정렬)
-
-➡️ [전체 추세 평가]
-[의료진 상담 필요 여부]
-
-===부작용===
-⚠️ 부작용 분석 (총 ${records.length}일)
-
-• [부작용명]: [빈도]회
-• [부작용명]: [빈도]회
-(상위 5개만, 빈도 순으로 정렬)
-
-➡️ [전체 추세 평가]
-[의료진 상담 필요 여부]
-
-**주의사항:**
-- 빈도가 높은 순서대로 나열
-- 각 평가는 한 줄로 간결하게
-- 이모지와 불릿 포인트(•) 사용
-- 이스케이프 문자 사용 금지`;
-
-      const message = await anthropic.messages.create({
-        model: 'claude-3-haiku-20240307',
-        max_tokens: 800,
-        messages: [{ role: 'user', content: prompt }]
-      });
-
-      const responseText = message.content[0].text;
-
-      // 응답 파싱
-      const foodMatch = responseText.match(/===식사량===\s*([\s\S]*?)\s*(?:===|$)/);
-      const waterMatch = responseText.match(/===음수량===\s*([\s\S]*?)\s*(?:===|$)/);
-      const exerciseMatch = responseText.match(/===운동량===\s*([\s\S]*?)\s*(?:===|$)/);
-      const sideEffectMatch = responseText.match(/===부작용===\s*([\s\S]*?)$/);
+      const data = await response.json();
 
       setTrendAnalysis({
-        food: foodMatch ? foodMatch[1].trim() : '식사량 추이를 분석할 수 없습니다.',
-        water: waterMatch ? waterMatch[1].trim() : '음수량 추이를 분석할 수 없습니다.',
-        exercise: exerciseMatch ? exerciseMatch[1].trim() : '운동량 추이를 분석할 수 없습니다.',
-        sideEffect: sideEffectMatch ? sideEffectMatch[1].trim() : '부작용 추이를 분석할 수 없습니다.'
+        food: data.food,
+        water: data.water,
+        exercise: data.exercise,
+        sideEffect: data.sideEffect
       });
       setTrendLoading(false);
 
