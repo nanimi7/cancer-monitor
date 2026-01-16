@@ -89,7 +89,7 @@ function App() {
           className={activeMenu === 'calendar' ? 'active' : ''}
           onClick={() => setActiveMenu('calendar')}
         >
-          증상 캘린더
+          항암증상캘린더
         </button>
         <button
           className={activeMenu === 'ai-summary' ? 'active' : ''}

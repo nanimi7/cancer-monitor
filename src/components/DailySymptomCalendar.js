@@ -5,6 +5,7 @@ import { collection, addDoc, getDocs, query, where, updateDoc, doc, deleteDoc } 
 import { format } from 'date-fns';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/DailySymptomCalendar.css';
+import BottomSheet from './BottomSheet';
 
 function DailySymptomCalendar({ userId }) {
   const [date, setDate] = useState(new Date());
@@ -28,9 +29,58 @@ function DailySymptomCalendar({ userId }) {
     symptoms: ''
   });
   const [errors, setErrors] = useState({});
+  const [activeBottomSheet, setActiveBottomSheet] = useState(null);
 
   const sideEffectOptions = ['없음', '구토', '오심', '발열', '손발저림', '두통', '설사', '변비', '탈모', '발진', '가려움', '근육통'];
   const bowelConditionOptions = ['정상', '설사', '변비', '묽은변', '딱딱한변', '혈변'];
+
+  // Bottom sheet options
+  const chemoCycleOptions = [
+    { value: '1차', label: '1차' },
+    { value: '2차', label: '2차' },
+    { value: '3차', label: '3차' },
+    { value: '4차', label: '4차' },
+    { value: '5차', label: '5차' }
+  ];
+
+  const chemoSessionOptions = [
+    { value: '1회차', label: '1회차' },
+    { value: '2회차', label: '2회차' },
+    { value: '3회차', label: '3회차' },
+    { value: '4회차', label: '4회차' },
+    { value: '5회차', label: '5회차' },
+    { value: '6회차', label: '6회차' }
+  ];
+
+  const chemoDayOptions = Array.from({ length: 21 }, (_, i) => ({
+    value: `${i + 1}일차`,
+    label: `${i + 1}일차`
+  }));
+
+  const foodIntakeLevelOptions = [
+    { value: '전혀못먹음', label: '전혀못먹음' },
+    { value: '평소의1/4정도', label: '평소의1/4정도' },
+    { value: '평소의절반정도', label: '평소의절반정도' },
+    { value: '평소의3/4정도', label: '평소의3/4정도' },
+    { value: '평소와같음', label: '평소와같음' }
+  ];
+
+  const waterIntakeAmountOptions = [
+    { value: '500', label: '500ml 이하' },
+    { value: '1000', label: '500ml ~ 1L' },
+    { value: '1500', label: '1L ~ 1.5L' },
+    { value: '2000', label: '1.5L ~ 2L' },
+    { value: '2500', label: '2L 이상' }
+  ];
+
+  const exerciseTimeOptions = [
+    { value: '0', label: '0보' },
+    { value: '500', label: '1천보 미만' },
+    { value: '1500', label: '1천 ~ 2천보' },
+    { value: '2500', label: '2천 ~ 3천보' },
+    { value: '3500', label: '3천 ~ 4천보' },
+    { value: '5000', label: '4천보 이상' }
+  ];
 
   // 회차별 색상 클래스 생성 (차수와 회차 조합)
   const getSessionColorClass = (cycle, session) => {
@@ -117,11 +167,21 @@ function DailySymptomCalendar({ userId }) {
     const { name, value, checked } = e.target;
 
     if (name === 'sideEffects') {
+      let newSideEffects;
+
+      if (value === '없음') {
+        // If checking "없음", clear all other options
+        newSideEffects = checked ? ['없음'] : [];
+      } else {
+        // If checking any other option, remove "없음" if it exists
+        newSideEffects = checked
+          ? [...formData.sideEffects.filter(item => item !== '없음'), value]
+          : formData.sideEffects.filter(item => item !== value);
+      }
+
       setFormData(prev => ({
         ...prev,
-        sideEffects: checked
-          ? [...prev.sideEffects, value]
-          : prev.sideEffects.filter(item => item !== value)
+        sideEffects: newSideEffects
       }));
 
       if (errors.sideEffects) {
@@ -154,16 +214,16 @@ function DailySymptomCalendar({ userId }) {
       newErrors.date = '날짜를 선택해주세요.';
     }
 
-    if (!formData.chemoCycle.trim() || formData.chemoCycle.length > 10) {
-      newErrors.chemoCycle = '항암 진행 횟수를 10자 이내로 입력해주세요.';
+    if (!formData.chemoCycle) {
+      newErrors.chemoCycle = '항암 진행 횟수를 선택해주세요.';
     }
 
-    if (!formData.chemoSession.trim() || formData.chemoSession.length > 10) {
-      newErrors.chemoSession = '항암 회차를 10자 이내로 입력해주세요.';
+    if (!formData.chemoSession) {
+      newErrors.chemoSession = '항암 회차를 선택해주세요.';
     }
 
-    if (!formData.chemoDay.trim() || formData.chemoDay.length > 10) {
-      newErrors.chemoDay = '항암 진행 일차를 10자 이내로 입력해주세요.';
+    if (!formData.chemoDay) {
+      newErrors.chemoDay = '항암 진행 일차를 선택해주세요.';
     }
 
     if (!formData.foodIntakeLevel) {
@@ -299,7 +359,7 @@ function DailySymptomCalendar({ userId }) {
 
   return (
     <div className="daily-symptom-calendar">
-      <h2>일일 증상 기록 캘린더</h2>
+      <h2>일일 항암 증상 기록 캘린더</h2>
 
       <div className="calendar-container">
         <Calendar
@@ -327,7 +387,18 @@ function DailySymptomCalendar({ userId }) {
                   <strong>항암 진행 일차:</strong> {selectedDateRecord.chemoDay}
                 </div>
                 <div className="record-item">
-                  <strong>식사량:</strong> {selectedDateRecord.foodIntakeLevel ? `${selectedDateRecord.foodIntakeLevel}%` : selectedDateRecord.foodIntake}
+                  <strong>식사량:</strong> {(() => {
+                    const level = selectedDateRecord.foodIntakeLevel || selectedDateRecord.foodIntake;
+                    // 숫자 값을 텍스트로 변환
+                    const foodIntakeMap = {
+                      '0': '전혀못먹음',
+                      '25': '평소의1/4정도',
+                      '50': '평소의절반정도',
+                      '75': '평소의3/4정도',
+                      '100': '평소와같음'
+                    };
+                    return foodIntakeMap[level] || level;
+                  })()}
                   {selectedDateRecord.foodIntakeNote && <div className="record-note">{selectedDateRecord.foodIntakeNote}</div>}
                 </div>
                 <div className="record-item">
@@ -388,65 +459,65 @@ function DailySymptomCalendar({ userId }) {
 
             <div className="form-group">
               <label htmlFor="chemoCycle">항암 진행 횟수 <span className="required">*</span></label>
-              <input
-                type="text"
-                id="chemoCycle"
-                name="chemoCycle"
-                value={formData.chemoCycle}
-                onChange={handleChange}
-                placeholder="몇 번째 항암인지 써주세요 ex.1차/2차.."
-                maxLength="10"
-                className={errors.chemoCycle ? 'error' : ''}
-              />
+              <button
+                type="button"
+                className={`bottom-sheet-trigger ${errors.chemoCycle ? 'error' : ''}`}
+                onClick={() => setActiveBottomSheet('chemoCycle')}
+                style={{ padding: '4px 8px', lineHeight: '1.2', minHeight: 'auto', height: 'auto' }}
+              >
+                <span className={formData.chemoCycle ? 'selected' : 'placeholder'}>
+                  {formData.chemoCycle || '선택해주세요'}
+                </span>
+                <span className="arrow">▼</span>
+              </button>
               {errors.chemoCycle && <span className="error-message">{errors.chemoCycle}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="chemoSession">항암 회차 <span className="required">*</span></label>
-              <input
-                type="text"
-                id="chemoSession"
-                name="chemoSession"
-                value={formData.chemoSession}
-                onChange={handleChange}
-                placeholder="동일 차수 내에서 몇 번째인지 써주세요 ex.1회차/2회차.."
-                maxLength="10"
-                className={errors.chemoSession ? 'error' : ''}
-              />
+              <button
+                type="button"
+                className={`bottom-sheet-trigger ${errors.chemoSession ? 'error' : ''}`}
+                onClick={() => setActiveBottomSheet('chemoSession')}
+                style={{ padding: '4px 8px', lineHeight: '1.2', minHeight: 'auto', height: 'auto' }}
+              >
+                <span className={formData.chemoSession ? 'selected' : 'placeholder'}>
+                  {formData.chemoSession || '선택해주세요'}
+                </span>
+                <span className="arrow">▼</span>
+              </button>
               {errors.chemoSession && <span className="error-message">{errors.chemoSession}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="chemoDay">항암 진행 일차 <span className="required">*</span></label>
-              <input
-                type="text"
-                id="chemoDay"
-                name="chemoDay"
-                value={formData.chemoDay}
-                onChange={handleChange}
-                placeholder="동일 회차 내에서 며칠 차인지 써주세요 ex.3일차"
-                maxLength="10"
-                className={errors.chemoDay ? 'error' : ''}
-              />
+              <button
+                type="button"
+                className={`bottom-sheet-trigger ${errors.chemoDay ? 'error' : ''}`}
+                onClick={() => setActiveBottomSheet('chemoDay')}
+                style={{ padding: '4px 8px', lineHeight: '1.2', minHeight: 'auto', height: 'auto' }}
+              >
+                <span className={formData.chemoDay ? 'selected' : 'placeholder'}>
+                  {formData.chemoDay || '선택해주세요'}
+                </span>
+                <span className="arrow">▼</span>
+              </button>
               {errors.chemoDay && <span className="error-message">{errors.chemoDay}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="foodIntakeLevel">식사량 <span className="required">*</span></label>
-              <select
-                id="foodIntakeLevel"
-                name="foodIntakeLevel"
-                value={formData.foodIntakeLevel}
-                onChange={handleChange}
-                className={errors.foodIntakeLevel ? 'error' : ''}
+              <button
+                type="button"
+                className={`bottom-sheet-trigger ${errors.foodIntakeLevel ? 'error' : ''}`}
+                onClick={() => setActiveBottomSheet('foodIntakeLevel')}
+                style={{ padding: '4px 8px', lineHeight: '1.2', minHeight: 'auto', height: 'auto' }}
               >
-                <option value="">선택해주세요</option>
-                <option value="0">0% (전혀 못 먹음)</option>
-                <option value="25">25% (평소의 1/4 정도)</option>
-                <option value="50">50% (평소의 절반 정도)</option>
-                <option value="75">75% (평소의 3/4 정도)</option>
-                <option value="100">100% (평소와 같음)</option>
-              </select>
+                <span className={formData.foodIntakeLevel ? 'selected' : 'placeholder'}>
+                  {formData.foodIntakeLevel || '선택해주세요'}
+                </span>
+                <span className="arrow">▼</span>
+              </button>
               {errors.foodIntakeLevel && <span className="error-message">{errors.foodIntakeLevel}</span>}
 
               <label htmlFor="foodIntakeNote" style={{marginTop: '10px', display: 'block'}}>식사량 메모 (선택)</label>
@@ -466,20 +537,17 @@ function DailySymptomCalendar({ userId }) {
 
             <div className="form-group">
               <label htmlFor="waterIntakeAmount">음수량 <span className="required">*</span></label>
-              <select
-                id="waterIntakeAmount"
-                name="waterIntakeAmount"
-                value={formData.waterIntakeAmount}
-                onChange={handleChange}
-                className={errors.waterIntakeAmount ? 'error' : ''}
+              <button
+                type="button"
+                className={`bottom-sheet-trigger ${errors.waterIntakeAmount ? 'error' : ''}`}
+                onClick={() => setActiveBottomSheet('waterIntakeAmount')}
+                style={{ padding: '4px 8px', lineHeight: '1.2', minHeight: 'auto', height: 'auto' }}
               >
-                <option value="">선택해주세요</option>
-                <option value="500">500ml 이하</option>
-                <option value="1000">500ml ~ 1L</option>
-                <option value="1500">1L ~ 1.5L</option>
-                <option value="2000">1.5L ~ 2L</option>
-                <option value="2500">2L 이상</option>
-              </select>
+                <span className={formData.waterIntakeAmount ? 'selected' : 'placeholder'}>
+                  {formData.waterIntakeAmount ? waterIntakeAmountOptions.find(opt => opt.value === formData.waterIntakeAmount)?.label : '선택해주세요'}
+                </span>
+                <span className="arrow">▼</span>
+              </button>
               {errors.waterIntakeAmount && <span className="error-message">{errors.waterIntakeAmount}</span>}
 
               <label htmlFor="waterIntakeNote" style={{marginTop: '10px', display: 'block'}}>음수량 메모 (선택)</label>
@@ -499,21 +567,17 @@ function DailySymptomCalendar({ userId }) {
 
             <div className="form-group">
               <label htmlFor="exerciseTime">운동량 (걸음수) <span className="required">*</span></label>
-              <select
-                id="exerciseTime"
-                name="exerciseTime"
-                value={formData.exerciseTime}
-                onChange={handleChange}
-                className={errors.exerciseTime ? 'error' : ''}
+              <button
+                type="button"
+                className={`bottom-sheet-trigger ${errors.exerciseTime ? 'error' : ''}`}
+                onClick={() => setActiveBottomSheet('exerciseTime')}
+                style={{ padding: '4px 8px', lineHeight: '1.2', minHeight: 'auto', height: 'auto' }}
               >
-                <option value="">선택해주세요</option>
-                <option value="0">0보</option>
-                <option value="500">1천보 미만</option>
-                <option value="1500">1천 ~ 2천보</option>
-                <option value="2500">2천 ~ 3천보</option>
-                <option value="3500">3천 ~ 4천보</option>
-                <option value="5000">4천보 이상</option>
-              </select>
+                <span className={formData.exerciseTime ? 'selected' : 'placeholder'}>
+                  {formData.exerciseTime ? exerciseTimeOptions.find(opt => opt.value === formData.exerciseTime)?.label : '선택해주세요'}
+                </span>
+                <span className="arrow">▼</span>
+              </button>
               {errors.exerciseTime && <span className="error-message">{errors.exerciseTime}</span>}
 
               <label htmlFor="exerciseNote" style={{marginTop: '10px', display: 'block'}}>운동량 메모 (선택)</label>
@@ -590,6 +654,7 @@ function DailySymptomCalendar({ userId }) {
                       value={option}
                       checked={formData.sideEffects.includes(option)}
                       onChange={handleCheckboxChange}
+                      disabled={option !== '없음' && formData.sideEffects.includes('없음')}
                     />
                     {option}
                   </label>
@@ -629,6 +694,91 @@ function DailySymptomCalendar({ userId }) {
           </form>
         )}
       </div>
+
+      {/* Bottom Sheets */}
+      <BottomSheet
+        isOpen={activeBottomSheet === 'chemoCycle'}
+        onClose={() => setActiveBottomSheet(null)}
+        title="항암 진행 횟수"
+        options={chemoCycleOptions}
+        value={formData.chemoCycle}
+        onSelect={(value) => {
+          setFormData(prev => ({ ...prev, chemoCycle: value }));
+          if (errors.chemoCycle) {
+            setErrors(prev => ({ ...prev, chemoCycle: '' }));
+          }
+        }}
+      />
+
+      <BottomSheet
+        isOpen={activeBottomSheet === 'chemoSession'}
+        onClose={() => setActiveBottomSheet(null)}
+        title="항암 회차"
+        options={chemoSessionOptions}
+        value={formData.chemoSession}
+        onSelect={(value) => {
+          setFormData(prev => ({ ...prev, chemoSession: value }));
+          if (errors.chemoSession) {
+            setErrors(prev => ({ ...prev, chemoSession: '' }));
+          }
+        }}
+      />
+
+      <BottomSheet
+        isOpen={activeBottomSheet === 'chemoDay'}
+        onClose={() => setActiveBottomSheet(null)}
+        title="항암 진행 일차"
+        options={chemoDayOptions}
+        value={formData.chemoDay}
+        onSelect={(value) => {
+          setFormData(prev => ({ ...prev, chemoDay: value }));
+          if (errors.chemoDay) {
+            setErrors(prev => ({ ...prev, chemoDay: '' }));
+          }
+        }}
+      />
+
+      <BottomSheet
+        isOpen={activeBottomSheet === 'foodIntakeLevel'}
+        onClose={() => setActiveBottomSheet(null)}
+        title="식사량"
+        options={foodIntakeLevelOptions}
+        value={formData.foodIntakeLevel}
+        onSelect={(value) => {
+          setFormData(prev => ({ ...prev, foodIntakeLevel: value }));
+          if (errors.foodIntakeLevel) {
+            setErrors(prev => ({ ...prev, foodIntakeLevel: '' }));
+          }
+        }}
+      />
+
+      <BottomSheet
+        isOpen={activeBottomSheet === 'waterIntakeAmount'}
+        onClose={() => setActiveBottomSheet(null)}
+        title="음수량"
+        options={waterIntakeAmountOptions}
+        value={formData.waterIntakeAmount}
+        onSelect={(value) => {
+          setFormData(prev => ({ ...prev, waterIntakeAmount: value }));
+          if (errors.waterIntakeAmount) {
+            setErrors(prev => ({ ...prev, waterIntakeAmount: '' }));
+          }
+        }}
+      />
+
+      <BottomSheet
+        isOpen={activeBottomSheet === 'exerciseTime'}
+        onClose={() => setActiveBottomSheet(null)}
+        title="운동량 (걸음수)"
+        options={exerciseTimeOptions}
+        value={formData.exerciseTime}
+        onSelect={(value) => {
+          setFormData(prev => ({ ...prev, exerciseTime: value }));
+          if (errors.exerciseTime) {
+            setErrors(prev => ({ ...prev, exerciseTime: '' }));
+          }
+        }}
+      />
     </div>
   );
 }
