@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import { db } from '../firebase';
-import { collection, addDoc, getDocs, query, where, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { format } from 'date-fns';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/DailySymptomCalendar.css';
@@ -90,6 +90,7 @@ function DailySymptomCalendar({ userId }) {
 
   useEffect(() => {
     loadSymptomRecords();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadSymptomRecords = async () => {

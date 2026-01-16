@@ -21,18 +21,21 @@ function AISummary({ userId }) {
   useEffect(() => {
     loadSymptomRecords();
     loadUserProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (symptomRecords.length > 0) {
       extractCycles();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symptomRecords]);
 
   useEffect(() => {
     if (selectedCycle) {
       extractSessions();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCycle]);
 
   const loadSymptomRecords = async () => {
@@ -102,9 +105,6 @@ function AISummary({ userId }) {
       // Claude API 호출하여 의료진 전달사항 생성
       try {
         const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
-
-        // 프로덕션에서는 항상 실제 API 사용 (Serverless Function 통해)
-        const useServerlessAPI = true;
 
         if (!apiKey || apiKey === 'YOUR_ANTHROPIC_API_KEY_HERE') {
           // 목업 응답 생성
