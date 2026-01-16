@@ -420,7 +420,7 @@ function DailySymptomCalendar({ userId }) {
                   <strong>주요 부작용:</strong> {selectedDateRecord.sideEffects.join(', ')}
                 </div>
                 <div className="record-item">
-                  <strong>주요 증상:</strong>
+                  <div><strong>주요 증상:</strong></div>
                   <div className="symptoms-text">{selectedDateRecord.symptoms}</div>
                 </div>
                 <div className="button-group">

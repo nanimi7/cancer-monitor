@@ -307,8 +307,8 @@
 
 .record-item strong {
   color: #2c3e50;
-  display: block;
-  margin-bottom: 5px;
+  display: inline;
+  margin-right: 4px;
 }
 
 .symptoms-text {
