@@ -15,8 +15,6 @@ function AISummary({ userId }) {
   const [aiSummary, setAiSummary] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [showDailyRecords, setShowDailyRecords] = useState(false);
-  const [trendAnalysis, setTrendAnalysis] = useState(null);
-  const [trendLoading, setTrendLoading] = useState(false);
 
   useEffect(() => {
     loadSymptomRecords();
@@ -110,19 +108,17 @@ function AISummary({ userId }) {
           // 목업 응답 생성
           await new Promise(resolve => setTimeout(resolve, 2000)); // 2초 대기 (실제 API 호출 시뮬레이션)
 
-          const mockSummary = `1. 전반적인 식사량이 ${filteredRecords.length}일 동안 평균 ${Math.round(filteredRecords.reduce((sum, r) => sum + parseInt(r.foodIntakeLevel || 0), 0) / filteredRecords.length)}% 수준으로 유지되고 있습니다.
+          const avgFood = Math.round(filteredRecords.reduce((sum, r) => sum + parseInt(r.foodIntakeLevel || 0), 0) / filteredRecords.length);
 
-2. 주요 부작용으로 ${filteredRecords[0]?.sideEffects?.slice(0, 3).join(', ') || '오심, 구토'} 등이 반복적으로 나타나고 있으며, 특히 치료 초기에 증상이 집중되어 있습니다.
+          const mockFood = `전반적인 식사량이 ${filteredRecords.length}일 동안 평균 ${avgFood}% 수준으로 유지되고 있습니다. 기록된 메뉴를 보면 죽, 미역국 등 소화가 쉬운 음식 위주로 섭취하고 있어 치료 중 적절한 선택입니다.`;
 
-3. 음수량은 대체로 권장 수준(1.5L 이상)을 유지하고 있으나, 일부 날짜에는 부족한 경향을 보입니다.
+          const mockWater = `음수량은 대체로 권장 수준(1.5L 이상)을 유지하고 있으나, 일부 날짜에는 부족한 경향을 보입니다. 하루 2L 이상을 목표로 조금씩 자주 마시는 것을 권장합니다.`;
 
-4. 운동량은 ${filteredRecords.filter(r => parseInt(r.exerciseTime) > 1000).length}일 동안 1천보 이상을 기록하여 양호한 편입니다.
+          const mockExercise = `운동량은 ${filteredRecords.filter(r => parseInt(r.exerciseTime) > 1000).length}일 동안 1천보 이상을 기록하여 양호한 편입니다. 산책 위주의 가벼운 활동으로 무리하지 않게 관리하고 계십니다.`;
 
-5. 배변 패턴은 ${Math.round((filteredRecords.filter(r => r.bowelMovement === 'yes').length / filteredRecords.length) * 100)}% 정도로, 변비 경향이 일부 관찰됩니다.
+          const mockBowel = `배변 패턴은 ${Math.round((filteredRecords.filter(r => r.bowelMovement === 'yes').length / filteredRecords.length) * 100)}% 정도로, 변비 경향이 일부 관찰됩니다. 충분한 수분 섭취와 섬유질 섭취를 권장합니다.`;
 
-6. 증상의 전반적인 추세는 치료 초기 대비 후반부로 갈수록 완화되는 양상을 보이고 있습니다.
-
-7. 특이사항으로 ${filteredRecords[filteredRecords.length - 1]?.date || '최근'} 기록에서 ${filteredRecords[filteredRecords.length - 1]?.symptoms?.substring(0, 50) || '전반적인 컨디션 호전'}이 언급되었습니다.`;
+          const mockSpecial = `주요 부작용으로 ${filteredRecords[0]?.sideEffects?.slice(0, 3).join(', ') || '오심, 구토'} 등이 반복적으로 나타나고 있으며, 특히 치료 초기에 증상이 집중되어 있습니다. 증상의 전반적인 추세는 치료 초기 대비 후반부로 갈수록 완화되는 양상을 보이고 있습니다.`;
 
           // 나이 계산 (목업용)
           const calculateAge = (birthdate) => {
@@ -141,22 +137,18 @@ function AISummary({ userId }) {
 
           const mockComment = `환자분의 연령(${age ? `${age}세` : '정보 없음'})과 진단명(${userProfile?.disease || '정보 없음'})을 고려할 때, 현재 나타나는 증상들은 항암치료 과정에서 일반적으로 예상되는 반응 범위 내에 있습니다.
 
-**긍정적인 부분:**
-- 식사량이 평균 50% 이상 유지되고 있어 영양 섭취가 비교적 양호합니다.
-- 운동량을 꾸준히 유지하려는 노력이 보이며, 이는 회복에 매우 도움이 됩니다.
-- 시간이 지남에 따라 증상이 완화되는 추세를 보이고 있습니다.
-
-**주의가 필요한 부분:**
-- 음수량이 부족한 날이 있으니, 하루 2L 이상을 목표로 조금씩 자주 마시는 것을 권장합니다.
-- 변비 경향이 있다면 충분한 수분 섭취와 함께 섬유질이 풍부한 음식을 섭취하시고, 필요시 의료진과 상담하세요.
-
+전반적으로 식사량과 운동량을 꾸준히 유지하려는 노력이 보이며, 이는 회복에 매우 도움이 됩니다. 시간이 지남에 따라 증상이 완화되는 추세를 보이고 있는 점도 긍정적입니다.
 
 💪 잘하고 계십니다. 꾸준히 기록하는 것만으로도 치료에 큰 도움이 됩니다. 힘내서 회복에 집중하세요!
 
 *본 코멘트는 목업 데이터로 생성되었습니다. 실제 AI 분석을 위해서는 Claude API 크레딧이 필요합니다.`;
 
           setAiSummary({
-            summary: mockSummary,
+            food: mockFood,
+            water: mockWater,
+            exercise: mockExercise,
+            bowel: mockBowel,
+            special: mockSpecial,
             comment: mockComment,
           });
           setAiLoading(false);
@@ -216,179 +208,32 @@ function AISummary({ userId }) {
         const data = await response.json();
 
         setAiSummary({
-          summary: data.summary,
+          food: data.food,
+          water: data.water,
+          exercise: data.exercise,
+          bowel: data.bowel,
+          special: data.special,
           comment: data.comment,
         });
       } catch (aiError) {
         console.error('Claude API 호출 오류:', aiError);
         setAiSummary({
-          summary: 'AI 요약 생성 중 오류가 발생했습니다.',
+          food: 'AI 분석 생성 중 오류가 발생했습니다.',
+          water: 'AI 분석 생성 중 오류가 발생했습니다.',
+          exercise: 'AI 분석 생성 중 오류가 발생했습니다.',
+          bowel: 'AI 분석 생성 중 오류가 발생했습니다.',
+          special: 'AI 분석 생성 중 오류가 발생했습니다.',
           comment: `오류 메시지: ${aiError.message}\n\nAPI 키를 확인하거나 나중에 다시 시도해주세요.`
         });
       } finally {
         setAiLoading(false);
       }
 
-      // 추이 분석 생성 (AI 활용)
-      await generateTrendAnalysis(filteredRecords);
-
     } catch (error) {
       console.error('요약 생성 오류:', error);
       alert('요약 생성 중 오류가 발생했습니다.');
       setLoading(false);
       setAiLoading(false);
-      setTrendLoading(false);
-    }
-  };
-
-  const generateTrendAnalysis = async (records) => {
-    try {
-      setTrendLoading(true);
-      const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
-
-      const useMockData = false;
-
-      // 식사량 라벨 맵핑
-      const foodLabelMap = {
-        '0': '전혀 못먹음',
-        '25': '평소의 1/4 정도',
-        '50': '평소의 50%',
-        '75': '평소의 75%',
-        '100': '평소만큼'
-      };
-
-      // 음수량 라벨 맵핑
-      const waterLabelMap = {
-        '500': '500ml 이하',
-        '1000': '500~1000ml',
-        '1500': '1000~1500ml',
-        '2000': '1500~2000ml',
-        '2500': '2000ml 이상'
-      };
-
-      // 운동량 라벨 맵핑
-      const exerciseLabelMap = {
-        '0': '0보',
-        '500': '1천보 미만',
-        '1500': '1천~2천보',
-        '3000': '2천~5천보',
-        '7500': '5천~1만보',
-        '10000': '1만보 이상'
-      };
-
-      if (useMockData || !apiKey || apiKey === 'YOUR_ANTHROPIC_API_KEY_HERE') {
-        // Mock 추이 분석 (빈도 기반)
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // 식사량 빈도 계산
-        const foodCounts = {};
-        records.forEach(r => {
-          const label = foodLabelMap[r.foodIntakeLevel] || '미기록';
-          foodCounts[label] = (foodCounts[label] || 0) + 1;
-        });
-
-        let foodAnalysis = `📊 식사량 분석 (총 ${records.length}일)\n\n`;
-        Object.entries(foodCounts).sort((a, b) => b[1] - a[1]).forEach(([label, count]) => {
-          foodAnalysis += `• ${label}: ${count}일\n`;
-        });
-        foodAnalysis += `\n➡️ 전체적으로 ${foodCounts['평소만큼'] >= records.length / 2 ? '양호한' : '관리 필요한'} 추세\n`;
-        foodAnalysis += foodCounts['전혀 못먹음'] > 2 ? '의료진 상담 권장' : '현 상태 유지';
-
-        // 음수량 빈도 계산
-        const waterCounts = {};
-        records.forEach(r => {
-          const label = waterLabelMap[r.waterIntakeAmount] || '미기록';
-          waterCounts[label] = (waterCounts[label] || 0) + 1;
-        });
-
-        let waterAnalysis = `💧 음수량 분석 (총 ${records.length}일)\n\n`;
-        Object.entries(waterCounts).sort((a, b) => b[1] - a[1]).forEach(([label, count]) => {
-          waterAnalysis += `• ${label}: ${count}일\n`;
-        });
-        waterAnalysis += `\n➡️ 수분 섭취 ${waterCounts['2000ml 이상'] >= records.length / 3 ? '양호' : '개선 필요'}\n`;
-        waterAnalysis += '꾸준한 수분 섭취 유지';
-
-        // 운동량 빈도 계산
-        const exerciseCounts = {};
-        records.forEach(r => {
-          const label = exerciseLabelMap[r.exerciseTime] || '미기록';
-          exerciseCounts[label] = (exerciseCounts[label] || 0) + 1;
-        });
-
-        let exerciseAnalysis = `🚶 운동량 분석 (총 ${records.length}일)\n\n`;
-        Object.entries(exerciseCounts).sort((a, b) => b[1] - a[1]).forEach(([label, count]) => {
-          exerciseAnalysis += `• ${label}: ${count}일\n`;
-        });
-        exerciseAnalysis += `\n➡️ 치료 중 적절한 활동량\n`;
-        exerciseAnalysis += '무리하지 않는 범위 유지';
-
-        // 부작용 빈도 계산
-        const sideEffectCounts = {};
-        records.forEach(r => {
-          if (r.sideEffects && Array.isArray(r.sideEffects)) {
-            r.sideEffects.forEach(effect => {
-              sideEffectCounts[effect] = (sideEffectCounts[effect] || 0) + 1;
-            });
-          }
-        });
-
-        let sideEffectAnalysis = `⚠️ 부작용 분석 (총 ${records.length}일)\n\n`;
-        const topEffects = Object.entries(sideEffectCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
-        topEffects.forEach(([effect, count]) => {
-          sideEffectAnalysis += `• ${effect}: ${count}회\n`;
-        });
-        sideEffectAnalysis += `\n➡️ 일반적인 치료 반응 범위\n`;
-        sideEffectAnalysis += '증상 심화 시 즉시 상담';
-
-        const mockTrendObj = {
-          food: foodAnalysis,
-          water: waterAnalysis,
-          exercise: exerciseAnalysis,
-          sideEffect: sideEffectAnalysis
-        };
-
-        setTrendAnalysis(mockTrendObj);
-        setTrendLoading(false);
-        return;
-      }
-
-      // Serverless Function 호출
-      const response = await fetch('/api/generate-trend-analysis', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          records,
-          foodLabelMap,
-          waterLabelMap,
-          exerciseLabelMap
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API 호출 실패: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      setTrendAnalysis({
-        food: data.food,
-        water: data.water,
-        exercise: data.exercise,
-        sideEffect: data.sideEffect
-      });
-      setTrendLoading(false);
-
-    } catch (error) {
-      console.error('추이 분석 생성 오류:', error);
-      setTrendAnalysis({
-        food: '분석 오류',
-        water: '분석 오류',
-        exercise: '분석 오류',
-        sideEffect: '분석 오류'
-      });
-      setTrendLoading(false);
     }
   };
 
@@ -632,74 +477,6 @@ function AISummary({ userId }) {
               </div>
             </div>
 
-            {/* AI 추이 분석 */}
-            <div className="summary-section">
-              <div className="summary-section-header">
-                <span className="summary-section-icon">📊</span>
-                <h4 className="summary-section-title">AI 추이 분석</h4>
-              </div>
-
-              {trendLoading ? (
-                <>
-                  {/* 스켈레톤 로딩 */}
-                  <div className="trend-card-wrapper">
-                    <h5 className="trend-card-title">🍽️ 식사량 추이</h5>
-                    <div className="skeleton-card"></div>
-                  </div>
-                  <div className="trend-card-wrapper">
-                    <h5 className="trend-card-title">💧 음수량 추이</h5>
-                    <div className="skeleton-card"></div>
-                  </div>
-                  <div className="trend-card-wrapper">
-                    <h5 className="trend-card-title">🚶 운동량 추이</h5>
-                    <div className="skeleton-card"></div>
-                  </div>
-                  <div className="trend-card-wrapper">
-                    <h5 className="trend-card-title">⚠️ 부작용 추이</h5>
-                    <div className="skeleton-card"></div>
-                  </div>
-                </>
-              ) : trendAnalysis ? (
-                <>
-                  <div className="trend-card-wrapper">
-                    <h5 className="trend-card-title">🍽️ 식사량 추이</h5>
-                    <div className="stats-card" style={{background: 'linear-gradient(135deg, #8895d4 0%, #7885c2 100%)'}}>
-                      <div className="stats-card-content" style={{whiteSpace: 'pre-wrap'}}>
-                        {trendAnalysis.food}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="trend-card-wrapper">
-                    <h5 className="trend-card-title">💧 음수량 추이</h5>
-                    <div className="stats-card" style={{background: 'linear-gradient(135deg, #d888b2 0%, #c678a1 100%)'}}>
-                      <div className="stats-card-content" style={{whiteSpace: 'pre-wrap'}}>
-                        {trendAnalysis.water}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="trend-card-wrapper">
-                    <h5 className="trend-card-title">🚶 운동량 추이</h5>
-                    <div className="stats-card" style={{background: 'linear-gradient(135deg, #78a8cc 0%, #6898bc 100%)'}}>
-                      <div className="stats-card-content" style={{whiteSpace: 'pre-wrap'}}>
-                        {trendAnalysis.exercise}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="trend-card-wrapper">
-                    <h5 className="trend-card-title">⚠️ 부작용 추이</h5>
-                    <div className="stats-card" style={{background: 'linear-gradient(135deg, #88c6b7 0%, #78b6a7 100%)'}}>
-                      <div className="stats-card-content" style={{whiteSpace: 'pre-wrap'}}>
-                        {trendAnalysis.sideEffect}
-                      </div>
-                    </div>
-                  </div>
-                </>
-              ) : null}
-            </div>
-
             {/* 의료진 전달 사항 - Claude AI */}
             <div className="summary-section">
               <div className="summary-section-header">
@@ -715,16 +492,63 @@ function AISummary({ userId }) {
               ) : aiSummary ? (
                 <>
                   <div className="ai-summary-box">
+                    {/* 식사량 분석 */}
                     <div style={{marginBottom: '20px'}}>
-                      <div style={{marginBottom: '12px', fontWeight: 700, color: '#374151', fontSize: '16px'}}>
-                        📋 주요 증상 요약 (의료진 전달용)
+                      <div style={{marginBottom: '8px', fontWeight: 700, color: '#374151', fontSize: '15px', display: 'flex', alignItems: 'center'}}>
+                        <span style={{marginRight: '6px'}}>🍽️</span>
+                        <span>식사량</span>
                       </div>
-                      <div className="ai-summary-content">
-                        {aiSummary.summary}
+                      <div className="ai-summary-content" style={{background: 'linear-gradient(135deg, #8895d4 0%, #7885c2 100%)', color: 'white', padding: '16px', borderRadius: '8px'}}>
+                        {aiSummary.food}
                       </div>
                     </div>
 
-                    <div>
+                    {/* 음수량 분석 */}
+                    <div style={{marginBottom: '20px'}}>
+                      <div style={{marginBottom: '8px', fontWeight: 700, color: '#374151', fontSize: '15px', display: 'flex', alignItems: 'center'}}>
+                        <span style={{marginRight: '6px'}}>💧</span>
+                        <span>음수량</span>
+                      </div>
+                      <div className="ai-summary-content" style={{background: 'linear-gradient(135deg, #d888b2 0%, #c678a1 100%)', color: 'white', padding: '16px', borderRadius: '8px'}}>
+                        {aiSummary.water}
+                      </div>
+                    </div>
+
+                    {/* 운동량 분석 */}
+                    <div style={{marginBottom: '20px'}}>
+                      <div style={{marginBottom: '8px', fontWeight: 700, color: '#374151', fontSize: '15px', display: 'flex', alignItems: 'center'}}>
+                        <span style={{marginRight: '6px'}}>🚶</span>
+                        <span>운동량</span>
+                      </div>
+                      <div className="ai-summary-content" style={{background: 'linear-gradient(135deg, #78a8cc 0%, #6898bc 100%)', color: 'white', padding: '16px', borderRadius: '8px'}}>
+                        {aiSummary.exercise}
+                      </div>
+                    </div>
+
+                    {/* 배변 분석 */}
+                    <div style={{marginBottom: '20px'}}>
+                      <div style={{marginBottom: '8px', fontWeight: 700, color: '#374151', fontSize: '15px', display: 'flex', alignItems: 'center'}}>
+                        <span style={{marginRight: '6px'}}>🚽</span>
+                        <span>배변</span>
+                      </div>
+                      <div className="ai-summary-content" style={{background: 'linear-gradient(135deg, #88c6b7 0%, #78b6a7 100%)', color: 'white', padding: '16px', borderRadius: '8px'}}>
+                        {aiSummary.bowel}
+                      </div>
+                    </div>
+
+                    {/* 특이사항 및 부작용 */}
+                    <div style={{marginBottom: '20px'}}>
+                      <div style={{marginBottom: '8px', fontWeight: 700, color: '#374151', fontSize: '15px', display: 'flex', alignItems: 'center'}}>
+                        <span style={{marginRight: '6px'}}>⚠️</span>
+                        <span>특이사항 및 부작용</span>
+                      </div>
+                      <div className="ai-summary-content" style={{background: 'linear-gradient(135deg, #f4a5ae 0%, #e4959e 100%)', color: 'white', padding: '16px', borderRadius: '8px'}}>
+                        {aiSummary.special}
+                      </div>
+                    </div>
+
+                    {/* AI 코멘트 */}
+                    <div style={{marginBottom: '20px'}}>
                       <div className="ai-comment-header">
                         💬 AI 코멘트 (참고용)
                       </div>
