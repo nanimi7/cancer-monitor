@@ -102,54 +102,47 @@ function AISummary({ userId }) {
 
       // Claude API 호출하여 의료진 전달사항 생성
       try {
+        // 사용자가 입력한 텍스트 데이터가 있는지 확인
+        const hasUserInputText = filteredRecords.some(record =>
+          (record.foodIntakeNote && record.foodIntakeNote.trim() !== '') ||
+          (record.waterIntakeNote && record.waterIntakeNote.trim() !== '') ||
+          (record.exerciseNote && record.exerciseNote.trim() !== '') ||
+          (record.symptoms && record.symptoms.trim() !== '')
+        );
+
+        if (!hasUserInputText) {
+          // 사용자가 입력한 텍스트가 없을 경우 안내 메시지만 표시
+          await new Promise(resolve => setTimeout(resolve, 1000));
+
+          const noDataMessage = '분석을 위해서는 기록이 더 쌓여야 합니다. 증상 기록을 계속 입력해주세요.';
+
+          setAiSummary({
+            food: noDataMessage,
+            water: noDataMessage,
+            exercise: noDataMessage,
+            bowel: noDataMessage,
+            special: noDataMessage,
+            comment: '상세한 AI 분석을 위해 식사 메뉴, 음수 내용, 운동 방식, 주요 증상 등을 텍스트로 입력해주세요. 기록이 쌓일수록 더 정확한 분석이 가능합니다.',
+          });
+          setAiLoading(false);
+          return;
+        }
+
         const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
 
         if (!apiKey || apiKey === 'YOUR_ANTHROPIC_API_KEY_HERE') {
-          // 목업 응답 생성
-          await new Promise(resolve => setTimeout(resolve, 2000)); // 2초 대기 (실제 API 호출 시뮬레이션)
+          // API 키가 없을 경우 안내 메시지만 표시
+          await new Promise(resolve => setTimeout(resolve, 1000));
 
-          const avgFood = Math.round(filteredRecords.reduce((sum, r) => sum + parseInt(r.foodIntakeLevel || 0), 0) / filteredRecords.length);
-
-          const mockFood = `전반적인 식사량이 ${filteredRecords.length}일 동안 평균 ${avgFood}% 수준으로 유지되고 있습니다. 기록된 메뉴를 보면 죽, 미역국 등 소화가 쉬운 음식 위주로 섭취하고 있어 치료 중 적절한 선택입니다.`;
-
-          const mockWater = `음수량은 대체로 권장 수준(1.5L 이상)을 유지하고 있으나, 일부 날짜에는 부족한 경향을 보입니다. 하루 2L 이상을 목표로 조금씩 자주 마시는 것을 권장합니다.`;
-
-          const mockExercise = `운동량은 ${filteredRecords.filter(r => parseInt(r.exerciseTime) > 1000).length}일 동안 1천보 이상을 기록하여 양호한 편입니다. 산책 위주의 가벼운 활동으로 무리하지 않게 관리하고 계십니다.`;
-
-          const mockBowel = `배변 패턴은 ${Math.round((filteredRecords.filter(r => r.bowelMovement === 'yes').length / filteredRecords.length) * 100)}% 정도로, 변비 경향이 일부 관찰됩니다. 충분한 수분 섭취와 섬유질 섭취를 권장합니다.`;
-
-          const mockSpecial = `주요 부작용으로 ${filteredRecords[0]?.sideEffects?.slice(0, 3).join(', ') || '오심, 구토'} 등이 반복적으로 나타나고 있으며, 특히 치료 초기에 증상이 집중되어 있습니다. 증상의 전반적인 추세는 치료 초기 대비 후반부로 갈수록 완화되는 양상을 보이고 있습니다.`;
-
-          // 나이 계산 (목업용)
-          const calculateAge = (birthdate) => {
-            if (!birthdate) return null;
-            const birth = new Date(birthdate);
-            const today = new Date();
-            let age = today.getFullYear() - birth.getFullYear();
-            const monthDiff = today.getMonth() - birth.getMonth();
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-              age--;
-            }
-            return age;
-          };
-
-          const age = userProfile?.birthdate ? calculateAge(userProfile.birthdate) : null;
-
-          const mockComment = `환자분의 연령(${age ? `${age}세` : '정보 없음'})과 진단명(${userProfile?.disease || '정보 없음'})을 고려할 때, 현재 나타나는 증상들은 항암치료 과정에서 일반적으로 예상되는 반응 범위 내에 있습니다.
-
-전반적으로 식사량과 운동량을 꾸준히 유지하려는 노력이 보이며, 이는 회복에 매우 도움이 됩니다. 시간이 지남에 따라 증상이 완화되는 추세를 보이고 있는 점도 긍정적입니다.
-
-💪 잘하고 계십니다. 꾸준히 기록하는 것만으로도 치료에 큰 도움이 됩니다. 힘내서 회복에 집중하세요!
-
-*본 코멘트는 목업 데이터로 생성되었습니다. 실제 AI 분석을 위해서는 Claude API 크레딧이 필요합니다.`;
+          const noDataMessage = '분석을 위해서는 기록이 더 쌓여야 합니다. 증상 기록을 계속 입력해주세요.';
 
           setAiSummary({
-            food: mockFood,
-            water: mockWater,
-            exercise: mockExercise,
-            bowel: mockBowel,
-            special: mockSpecial,
-            comment: mockComment,
+            food: noDataMessage,
+            water: noDataMessage,
+            exercise: noDataMessage,
+            bowel: noDataMessage,
+            special: noDataMessage,
+            comment: 'AI 분석을 위해서는 Claude API 키가 필요합니다. 환경 변수에 REACT_APP_ANTHROPIC_API_KEY를 설정해주세요.',
           });
           setAiLoading(false);
           return;
