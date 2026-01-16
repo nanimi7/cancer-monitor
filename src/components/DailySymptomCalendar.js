@@ -31,7 +31,7 @@ function DailySymptomCalendar({ userId }) {
   const [errors, setErrors] = useState({});
   const [activeBottomSheet, setActiveBottomSheet] = useState(null);
 
-  const sideEffectOptions = ['없음', '구토', '오심', '발열', '손발저림', '두통', '설사', '변비', '탈모', '발진', '가려움', '근육통'];
+  const sideEffectOptions = ['없음', '구토', '오심', '발열', '손발저림', '두통', '어지러움', '설사', '변비', '탈모', '발진', '가려움', '근육통'];
   const bowelConditionOptions = ['정상', '설사', '변비', '묽은변', '딱딱한변', '혈변'];
 
   // Bottom sheet options
@@ -673,6 +673,7 @@ function DailySymptomCalendar({ userId }) {
                 onChange={handleChange}
                 rows="5"
                 maxLength="5000"
+                placeholder="작성된 내용을 참고하여 AI분석을 진행합니다. 기록하고싶은 내용을 자세히 작성해주세요"
                 className={errors.symptoms ? 'error' : ''}
               />
               <span className="char-count">{formData.symptoms.length}/5000</span>
