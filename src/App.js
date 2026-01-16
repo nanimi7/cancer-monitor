@@ -104,7 +104,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>항암치료 기록 서비스 &copy; 2024</p>
+        <p>항암치료 기록 서비스 &copy; 2026</p>
       </footer>
     </div>
   );

@@ -32,20 +32,31 @@ export default async function handler(req, res) {
       apiKey: apiKey,
     });
 
-    // 데이터 요약 (라벨 포함)
+    // 데이터 요약 (라벨 및 사용자 입력 텍스트 포함)
     const dataText = records.map((r, idx) => {
       const foodLabel = foodLabelMap[r.foodIntakeLevel] || '미기록';
       const waterLabel = waterLabelMap[r.waterIntakeAmount] || '미기록';
       const exerciseLabel = exerciseLabelMap[r.exerciseTime] || '미기록';
-      return `${idx + 1}일차: 식사[${foodLabel}], 음수[${waterLabel}], 운동[${exerciseLabel}], 부작용[${r.sideEffects?.join(', ')}]`;
+
+      const foodNote = r.foodIntakeNote ? ` (${r.foodIntakeNote})` : '';
+      const waterNote = r.waterIntakeNote ? ` (${r.waterIntakeNote})` : '';
+      const exerciseNote = r.exerciseNote ? ` (${r.exerciseNote})` : '';
+
+      return `${idx + 1}일차: 식사[${foodLabel}${foodNote}], 음수[${waterLabel}${waterNote}], 운동[${exerciseLabel}${exerciseNote}], 부작용[${r.sideEffects?.join(', ')}]`;
     }).join('\n');
 
     const prompt = `다음은 항암치료 환자의 일별 기록입니다:
 
 ${dataText}
 
+**중요: 분석 시 주의사항**
+- 각 기록의 괄호 안에 있는 사용자의 텍스트 입력(식사 메뉴, 음료 종류, 운동 내용 등)을 반드시 분석에 참고하세요
+- 예: 식사량 선택값뿐 아니라 괄호 안의 구체적 메뉴(죽, 미역국, 토스트 등)를 보고 영양소 균형을 평가하세요
+- 음수량 괄호 내용(물, 이온음료, 보리차 등)을 확인하여 수분 섭취의 질을 평가하세요
+- 운동량 괄호 내용(산책, 스트레칭 등)을 확인하여 운동 패턴의 적절성을 평가하세요
+
 **요청사항:**
-위 데이터를 분석하여 각 항목별로 빈도 기반 추이를 분석해주세요.
+위 데이터를 분석하여 각 항목별로 빈도 기반 추이와 더불어 사용자가 입력한 구체적 내용의 질적 분석을 함께 제공해주세요.
 
 다음 형식으로 정확히 응답해주세요:
 ===식사량===
