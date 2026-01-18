@@ -1,28 +1,28 @@
 .daily-symptom-calendar {
   background-color: white;
-  padding: 30px;
+  padding: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .daily-symptom-calendar h2 {
   color: #2c3e50;
-  margin-bottom: 25px;
-  font-size: 24px;
+  margin-bottom: 15px;
+  font-size: 20px;
 }
 
 .calendar-container {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   display: flex;
   justify-content: center;
 }
 
 .react-calendar {
   width: 100%;
-  max-width: 900px;
+  max-width: 100%;
   border: none;
   border-radius: 12px;
-  padding: 20px;
+  padding: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   background: white;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
@@ -30,14 +30,14 @@
 
 .react-calendar__navigation {
   display: flex;
-  height: 44px;
-  margin-bottom: 20px;
+  height: 40px;
+  margin-bottom: 12px;
 }
 
 .react-calendar__navigation button {
-  min-width: 44px;
+  min-width: 40px;
   background: none;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #2c3e50;
   border: none;
@@ -53,14 +53,14 @@
 .react-calendar__month-view__weekdays {
   text-align: center;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
   color: #7f8c8d;
   text-transform: uppercase;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
 }
 
 .react-calendar__month-view__weekdays__weekday {
-  padding: 8px;
+  padding: 6px;
 }
 
 .react-calendar__month-view__weekdays abbr {
@@ -83,8 +83,8 @@
 
 .react-calendar__tile {
   position: relative;
-  min-height: 100px;
-  padding: 8px 4px;
+  min-height: 90px;
+  padding: 6px 3px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -106,11 +106,11 @@
 }
 
 .react-calendar__tile abbr {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #2c3e50;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   z-index: 10;
   position: relative;
 }
@@ -133,8 +133,8 @@
 }
 
 .session-badge {
-  font-size: 9px !important;
-  padding: 2px 4px !important;
+  font-size: 10px !important;
+  padding: 3px 5px !important;
   white-space: nowrap;
 }
 
@@ -148,11 +148,11 @@
 }
 
 .red-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background-color: #e74c3c;
   border-radius: 50%;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
   box-shadow: 0 1px 3px rgba(231, 76, 60, 0.3);
 }
 
@@ -167,9 +167,9 @@
 
 .badge {
   color: white;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
-  padding: 2px 4px;
+  padding: 3px 5px;
   border-radius: 6px;
   white-space: nowrap;
   line-height: 1.2;
@@ -273,25 +273,25 @@
   background: #f59e0b;
   color: white;
   font-weight: 600;
-  font-size: 8px;
+  font-size: 9px;
   padding: 2px 4px;
 }
 
 .selected-date-info {
   background-color: #f8f9fa;
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
 }
 
 .selected-date-info h3 {
   color: #2c3e50;
-  margin-bottom: 20px;
-  font-size: 20px;
+  margin-bottom: 15px;
+  font-size: 18px;
 }
 
 .record-view {
   background-color: white;
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
 }
 

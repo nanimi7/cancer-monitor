@@ -109,10 +109,10 @@
 
 .app-content {
   flex: 1;
-  max-width: 1200px;
+  max-width: 480px;
   width: 100%;
   margin: 0 auto;
-  padding: 30px 20px;
+  padding: 20px 15px;
 }
 
 .app-footer {

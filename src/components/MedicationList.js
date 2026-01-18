@@ -20,7 +20,7 @@ function MedicationList({ userId }) {
   useEffect(() => {
     loadMedications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userId]);
 
   const loadMedications = async () => {
     try {

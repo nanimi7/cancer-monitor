@@ -324,20 +324,20 @@ function DailySymptomCalendar({ userId }) {
           ? record.sideEffects.slice(0, 6)
           : [];
 
+        // 차-회-일 형식으로 변환 (예: "1차", "1회차", "1일차" -> "1-1-1")
+        const cycleNum = record.chemoCycle ? record.chemoCycle.replace('차', '') : '';
+        const sessionNum = record.chemoSession ? record.chemoSession.replace('회차', '') : '';
+        const dayNum = record.chemoDay ? record.chemoDay.replace('일차', '') : '';
+        const badgeText = `${cycleNum}-${sessionNum}-${dayNum}`;
+
         return (
           <div className="tile-content">
             <div className="red-dot"></div>
-            {/* 회차 정보 뱃지 - 3개로 분리 */}
+            {/* 회차 정보 뱃지 - 단일 뱃지로 표시 */}
             {record.chemoCycle && record.chemoSession && record.chemoDay && (
               <div className="session-badge-container">
                 <span className={`badge session-badge ${getSessionColorClass(record.chemoCycle, record.chemoSession)}`}>
-                  {record.chemoCycle}
-                </span>
-                <span className={`badge session-badge ${getSessionColorClass(record.chemoCycle, record.chemoSession)}`}>
-                  {record.chemoSession}
-                </span>
-                <span className={`badge session-badge ${getSessionColorClass(record.chemoCycle, record.chemoSession)}`}>
-                  {record.chemoDay}
+                  {badgeText}
                 </span>
               </div>
             )}
