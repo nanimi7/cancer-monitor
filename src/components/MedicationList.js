@@ -132,25 +132,43 @@ function MedicationList({ userId }) {
   };
 
   const handleDragStart = (e, index) => {
+    e.stopPropagation();
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = 'move';
-    e.currentTarget.style.opacity = '0.5';
+    e.dataTransfer.setData('text/html', e.currentTarget);
+
+    // 드래그 중인 카드의 부모 요소 찾기
+    const card = e.currentTarget.closest('.medication-card');
+    if (card) {
+      setTimeout(() => {
+        card.classList.add('dragging');
+      }, 0);
+    }
   };
 
   const handleDragEnter = (e, index) => {
     e.preventDefault();
-    if (draggedIndex !== index) {
+    e.stopPropagation();
+    if (draggedIndex !== null && draggedIndex !== index) {
       setDragOverIndex(index);
     }
   };
 
   const handleDragOver = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverIndex(null);
   };
 
   const handleDrop = async (e, dropIndex) => {
     e.preventDefault();
+    e.stopPropagation();
 
     if (draggedIndex === null || draggedIndex === dropIndex) {
       setDraggedIndex(null);
@@ -179,7 +197,11 @@ function MedicationList({ userId }) {
   };
 
   const handleDragEnd = (e) => {
-    e.currentTarget.style.opacity = '1';
+    e.stopPropagation();
+    const card = e.currentTarget.closest('.medication-card');
+    if (card) {
+      card.classList.remove('dragging');
+    }
     setDraggedIndex(null);
     setDragOverIndex(null);
   };
@@ -277,15 +299,19 @@ function MedicationList({ userId }) {
           medications.map((med, index) => (
             <div
               key={med.id}
-              draggable
-              onDragStart={(e) => handleDragStart(e, index)}
               onDragEnter={(e) => handleDragEnter(e, index)}
               onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, index)}
-              onDragEnd={handleDragEnd}
               className={`medication-card ${draggedIndex === index ? 'dragging' : ''} ${dragOverIndex === index ? 'drag-over' : ''}`}
             >
-              <div className="drag-handle" title="드래그하여 순서 변경">
+              <div
+                className="drag-handle"
+                title="드래그하여 순서 변경"
+                draggable="true"
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragEnd={handleDragEnd}
+              >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <circle cx="9" cy="7" r="1.5" fill="currentColor"/>
                   <circle cx="15" cy="7" r="1.5" fill="currentColor"/>
