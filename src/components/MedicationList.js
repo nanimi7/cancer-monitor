@@ -16,6 +16,7 @@ function MedicationList({ userId }) {
   const [errors, setErrors] = useState({});
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [draggedElement, setDraggedElement] = useState(null);
 
   useEffect(() => {
     loadMedications();
@@ -206,6 +207,67 @@ function MedicationList({ userId }) {
     setDragOverIndex(null);
   };
 
+  // 터치 이벤트 핸들러 (모바일용)
+  const handleTouchStart = (e, index) => {
+    e.stopPropagation();
+    setDraggedIndex(index);
+
+    const card = e.currentTarget.closest('.medication-card');
+    if (card) {
+      setDraggedElement(card);
+      card.classList.add('dragging');
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (draggedIndex === null || !draggedElement) return;
+
+    e.preventDefault();
+    const touch = e.touches[0];
+    const currentY = touch.clientY;
+
+    // 터치 위치에 있는 카드 찾기
+    const cards = document.querySelectorAll('.medication-card');
+    let overIndex = null;
+
+    cards.forEach((card, idx) => {
+      const rect = card.getBoundingClientRect();
+      if (currentY >= rect.top && currentY <= rect.bottom && idx !== draggedIndex) {
+        overIndex = idx;
+      }
+    });
+
+    setDragOverIndex(overIndex);
+  };
+
+  const handleTouchEnd = async (e) => {
+    e.stopPropagation();
+
+    if (draggedElement) {
+      draggedElement.classList.remove('dragging');
+    }
+
+    if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
+      const newMedications = [...medications];
+      const [draggedItem] = newMedications.splice(draggedIndex, 1);
+      newMedications.splice(dragOverIndex, 0, draggedItem);
+
+      try {
+        await Promise.all(newMedications.map((med, idx) =>
+          updateDoc(doc(db, `users/${userId}/medications`, med.id), { order: idx })
+        ));
+        await loadMedications();
+      } catch (error) {
+        console.error('순서 변경 오류:', error);
+        alert('순서 변경 중 오류가 발생했습니다.');
+      }
+    }
+
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+    setDraggedElement(null);
+  };
+
   return (
     <div className="medication-list">
       <h2>처방받은 약 목록 관리</h2>
@@ -311,6 +373,9 @@ function MedicationList({ userId }) {
                 draggable="true"
                 onDragStart={(e) => handleDragStart(e, index)}
                 onDragEnd={handleDragEnd}
+                onTouchStart={(e) => handleTouchStart(e, index)}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <circle cx="9" cy="7" r="1.5" fill="currentColor"/>
