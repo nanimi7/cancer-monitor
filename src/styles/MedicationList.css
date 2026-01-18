@@ -1,248 +1,327 @@
 .medication-list {
   background-color: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .medication-list h2 {
-  color: #2c3e50;
-  margin-bottom: 25px;
-  font-size: 24px;
+  color: #1a202c;
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .add-button {
-  background-color: #27ae60;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 4px;
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  margin-bottom: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  width: 100%;
 }
 
 .add-button:hover {
-  background-color: #229954;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.add-button:active {
+  transform: translateY(0);
 }
 
 .medication-form {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
+  background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .medication-form h3 {
-  color: #2c3e50;
+  color: #1a202c;
   margin-bottom: 20px;
-  font-size: 20px;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .form-buttons {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
-.cancel-button {
-  background-color: #95a5a6;
+.submit-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex: 1;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+}
+
+.submit-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+}
+
+.cancel-button {
+  background-color: #e2e8f0;
+  color: #4a5568;
+  border: none;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex: 1;
 }
 
 .cancel-button:hover {
-  background-color: #7f8c8d;
+  background-color: #cbd5e0;
+  transform: translateY(-1px);
 }
 
-.medication-table-container {
-  overflow-x: auto;
+/* 카드 컨테이너 */
+.medication-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.medication-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.medication-table th,
-.medication-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.medication-table th {
-  background-color: #34495e;
-  color: white;
-  font-weight: 600;
-}
-
-.medication-table tr:hover {
-  background-color: #f8f9fa;
-}
-
-.medication-table tr.dragging {
-  opacity: 0.5;
-  background-color: #e3f2fd;
-}
-
-.drag-handle-cell {
-  text-align: center;
-  width: 60px;
-}
-
-.drag-handle {
-  font-size: 18px;
-  color: #95a5a6;
+/* 약물 카드 */
+.medication-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid #f0f4f8;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
   cursor: grab;
-  user-select: none;
-  padding: 4px;
-  display: inline-block;
 }
 
-.drag-handle:active {
+.medication-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: #cbd5e0;
+  transform: translateY(-2px);
+}
+
+.medication-card:active {
   cursor: grabbing;
 }
 
+.medication-card.dragging {
+  opacity: 0.6;
+  transform: scale(0.98);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
 
-.action-buttons {
+.medication-card.drag-over {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+  border-style: dashed;
+}
+
+/* 드래그 핸들 */
+.drag-handle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: #cbd5e0;
+  cursor: grab;
+  transition: all 0.2s ease;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.drag-handle:hover {
+  color: #667eea;
+  background: #f0f4f8;
+}
+
+.medication-card:active .drag-handle {
+  cursor: grabbing;
+}
+
+/* 카드 컨텐츠 */
+.card-content {
   display: flex;
-  gap: 6px;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding-right: 40px;
 }
 
-.edit-button {
-  background-color: #3498db;
-  color: white;
+.card-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-row label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-row span {
+  font-size: 15px;
+  color: #2d3748;
+  line-height: 1.5;
+}
+
+.medication-name {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #1a202c !important;
+}
+
+/* 카드 액션 버튼 */
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 10px 20px;
   border: none;
-  padding: 6px 16px;
+  border-radius: 10px;
   font-size: 14px;
-  border-radius: 4px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.edit-button:hover {
-  background-color: #2980b9;
-}
-
-.delete-button {
-  background-color: #e74c3c;
+.edit-btn {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
   color: white;
-  border: none;
-  padding: 6px 16px;
-  font-size: 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
 }
 
-.delete-button:hover {
-  background-color: #c0392b;
+.edit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
 }
 
-.empty-message {
+.delete-btn {
+  background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(245, 101, 101, 0.3);
+}
+
+.delete-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 101, 101, 0.4);
+}
+
+.action-btn:active {
+  transform: translateY(0);
+}
+
+/* 빈 상태 */
+.empty-state {
   text-align: center;
-  color: #7f8c8d;
-  padding: 40px;
-  font-size: 16px;
+  padding: 60px 20px;
+  color: #718096;
 }
 
-@media (max-width: 768px) {
-  .medication-list {
-    padding: 15px;
-  }
+.empty-state svg {
+  color: #cbd5e0;
+  margin-bottom: 16px;
+}
 
-  .medication-list h2 {
-    font-size: 20px;
-  }
+.empty-state p {
+  font-size: 16px;
+  margin: 8px 0;
+  color: #4a5568;
+  font-weight: 500;
+}
 
-  /* 모바일에서 테이블을 카드 형식으로 변경 */
-  .medication-table-container {
-    overflow-x: visible;
-  }
+.empty-subtitle {
+  font-size: 14px !important;
+  color: #a0aec0 !important;
+  font-weight: 400 !important;
+}
 
-  .medication-table {
-    display: block;
-    font-size: 14px;
-  }
+/* 폼 그룹 */
+.form-group {
+  margin-bottom: 20px;
+}
 
-  .medication-table thead {
-    display: none;
-  }
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 14px;
+}
 
-  .medication-table tbody {
-    display: block;
-  }
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  background: white;
+}
 
-  .medication-table tr {
-    display: block;
-    margin-bottom: 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 12px;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
 
-  .medication-table tr:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
+.form-group input.error,
+.form-group textarea.error {
+  border-color: #fc8181;
+}
 
-  .medication-table td {
-    display: block;
-    text-align: left;
-    border: none;
-    padding: 8px 0;
-    position: relative;
-  }
+.error-message {
+  color: #f56565;
+  font-size: 13px;
+  margin-top: 6px;
+  display: block;
+  font-weight: 500;
+}
 
-  .medication-table td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: #34495e;
-    display: inline-block;
-    min-width: 100px;
-    margin-right: 10px;
-  }
+.required {
+  color: #f56565;
+}
 
-  .drag-handle-cell {
-    width: 100%;
-    text-align: left;
-    border-bottom: 1px solid #ecf0f1;
-    padding-bottom: 8px !important;
-    margin-bottom: 8px;
+/* 애니메이션 */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-  .drag-handle-cell::before {
-    content: '';
-  }
-
-  .drag-handle-cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .drag-handle {
-    font-size: 20px;
-  }
-
-  .action-buttons {
-    justify-content: flex-start;
-    margin-top: 8px;
-  }
-
-  .edit-button,
-  .delete-button {
-    flex: 1;
-    padding: 8px 12px;
-    font-size: 13px;
-  }
+.medication-card {
+  animation: slideIn 0.3s ease-out;
 }

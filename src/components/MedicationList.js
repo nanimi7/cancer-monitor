@@ -15,7 +15,7 @@ function MedicationList({ userId }) {
   });
   const [errors, setErrors] = useState({});
   const [draggedIndex, setDraggedIndex] = useState(null);
-  const [touchStartY, setTouchStartY] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   useEffect(() => {
     loadMedications();
@@ -134,6 +134,14 @@ function MedicationList({ userId }) {
   const handleDragStart = (e, index) => {
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = 'move';
+    e.currentTarget.style.opacity = '0.5';
+  };
+
+  const handleDragEnter = (e, index) => {
+    e.preventDefault();
+    if (draggedIndex !== index) {
+      setDragOverIndex(index);
+    }
   };
 
   const handleDragOver = (e) => {
@@ -146,6 +154,7 @@ function MedicationList({ userId }) {
 
     if (draggedIndex === null || draggedIndex === dropIndex) {
       setDraggedIndex(null);
+      setDragOverIndex(null);
       return;
     }
 
@@ -159,77 +168,20 @@ function MedicationList({ userId }) {
         updateDoc(doc(db, `users/${userId}/medications`, med.id), { order: idx })
       ));
       setDraggedIndex(null);
-      loadMedications();
+      setDragOverIndex(null);
+      await loadMedications();
     } catch (error) {
       console.error('순서 변경 오류:', error);
       alert('순서 변경 중 오류가 발생했습니다.');
       setDraggedIndex(null);
+      setDragOverIndex(null);
     }
   };
 
-  const handleDragEnd = () => {
+  const handleDragEnd = (e) => {
+    e.currentTarget.style.opacity = '1';
     setDraggedIndex(null);
-  };
-
-  const handleTouchStart = (e, index) => {
-    setDraggedIndex(index);
-    const touch = e.touches[0];
-    setTouchStartY(touch.clientY);
-  };
-
-  const handleTouchMove = (e) => {
-    if (draggedIndex === null || touchStartY === null) return;
-
-    const touch = e.touches[0];
-    const currentY = touch.clientY;
-    const diff = currentY - touchStartY;
-
-    // 위아래로 일정 거리 이상 움직였을 때만 처리
-    if (Math.abs(diff) < 50) return;
-
-    e.preventDefault();
-  };
-
-  const handleTouchEnd = async (e, dropIndex) => {
-    if (draggedIndex === null || touchStartY === null) {
-      setDraggedIndex(null);
-      setTouchStartY(null);
-      return;
-    }
-
-    const touch = e.changedTouches[0];
-    const currentY = touch.clientY;
-    const diff = currentY - touchStartY;
-
-    let newIndex = draggedIndex;
-
-    // 위로 스와이프 (위로 이동)
-    if (diff < -50 && draggedIndex > 0) {
-      newIndex = draggedIndex - 1;
-    }
-    // 아래로 스와이프 (아래로 이동)
-    else if (diff > 50 && draggedIndex < medications.length - 1) {
-      newIndex = draggedIndex + 1;
-    }
-
-    if (newIndex !== draggedIndex) {
-      const newMedications = [...medications];
-      const [draggedItem] = newMedications.splice(draggedIndex, 1);
-      newMedications.splice(newIndex, 0, draggedItem);
-
-      try {
-        await Promise.all(newMedications.map((med, idx) =>
-          updateDoc(doc(db, `users/${userId}/medications`, med.id), { order: idx })
-        ));
-        loadMedications();
-      } catch (error) {
-        console.error('순서 변경 오류:', error);
-        alert('순서 변경 중 오류가 발생했습니다.');
-      }
-    }
-
-    setDraggedIndex(null);
-    setTouchStartY(null);
+    setDragOverIndex(null);
   };
 
   return (
@@ -320,65 +272,75 @@ function MedicationList({ userId }) {
         </form>
       )}
 
-      <div className="medication-table-container">
+      <div className="medication-cards-container">
         {medications.length > 0 ? (
-          <table className="medication-table">
-            <thead>
-              <tr>
-                <th>순서</th>
-                <th>약물 이름</th>
-                <th>복용 횟수</th>
-                <th>주요 효능</th>
-                <th>기타 내용</th>
-                <th>관리</th>
-              </tr>
-            </thead>
-            <tbody>
-              {medications.map((med, index) => (
-                <tr
-                  key={med.id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, index)}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, index)}
-                  onDragEnd={handleDragEnd}
-                  onTouchStart={(e) => handleTouchStart(e, index)}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={(e) => handleTouchEnd(e, index)}
-                  className={draggedIndex === index ? 'dragging' : ''}
-                  style={{ cursor: 'move' }}
+          medications.map((med, index) => (
+            <div
+              key={med.id}
+              draggable
+              onDragStart={(e) => handleDragStart(e, index)}
+              onDragEnter={(e) => handleDragEnter(e, index)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, index)}
+              onDragEnd={handleDragEnd}
+              className={`medication-card ${draggedIndex === index ? 'dragging' : ''} ${dragOverIndex === index ? 'drag-over' : ''}`}
+            >
+              <div className="drag-handle" title="드래그하여 순서 변경">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="9" cy="7" r="1.5" fill="currentColor"/>
+                  <circle cx="15" cy="7" r="1.5" fill="currentColor"/>
+                  <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+                  <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+                  <circle cx="9" cy="17" r="1.5" fill="currentColor"/>
+                  <circle cx="15" cy="17" r="1.5" fill="currentColor"/>
+                </svg>
+              </div>
+
+              <div className="card-content">
+                <div className="card-row">
+                  <label>약물 이름</label>
+                  <span className="medication-name">{med.name}</span>
+                </div>
+                <div className="card-row">
+                  <label>복용 횟수</label>
+                  <span>{med.frequency}</span>
+                </div>
+                <div className="card-row">
+                  <label>주요 효능</label>
+                  <span>{med.effect}</span>
+                </div>
+                {med.notes && (
+                  <div className="card-row">
+                    <label>기타 내용</label>
+                    <span>{med.notes}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="card-actions">
+                <button
+                  className="action-btn edit-btn"
+                  onClick={() => handleEdit(med)}
                 >
-                  <td className="drag-handle-cell">
-                    <div className="drag-handle" title="드래그하여 순서 변경">
-                      ⋮⋮
-                    </div>
-                  </td>
-                  <td data-label="약물 이름">{med.name}</td>
-                  <td data-label="복용 횟수">{med.frequency}</td>
-                  <td data-label="주요 효능">{med.effect}</td>
-                  <td data-label="기타 내용">{med.notes || '-'}</td>
-                  <td data-label="관리">
-                    <div className="action-buttons">
-                      <button
-                        className="edit-button"
-                        onClick={() => handleEdit(med)}
-                      >
-                        수정
-                      </button>
-                      <button
-                        className="delete-button"
-                        onClick={() => handleDelete(med.id, med.name)}
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  수정
+                </button>
+                <button
+                  className="action-btn delete-btn"
+                  onClick={() => handleDelete(med.id, med.name)}
+                >
+                  삭제
+                </button>
+              </div>
+            </div>
+          ))
         ) : (
-          <p className="empty-message">등록된 약물이 없습니다.</p>
+          <div className="empty-state">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <p>등록된 약물이 없습니다.</p>
+            <p className="empty-subtitle">+ 약물 등록하기 버튼을 눌러 추가해보세요</p>
+          </div>
         )}
       </div>
     </div>
