@@ -286,7 +286,17 @@ function DailySymptomCalendar({ userId }) {
         alert('기록이 등록되었습니다.');
       }
       setShowForm(false);
-      loadSymptomRecords();
+      await loadSymptomRecords();
+      // 수정/등록 후 해당 날짜의 최신 데이터로 자동 업데이트
+      const dateStr = formData.date;
+      const querySnapshot = await getDocs(collection(db, `users/${userId}/symptomRecords`));
+      const updatedRecord = querySnapshot.docs.find(doc => doc.data().date === dateStr);
+      if (updatedRecord) {
+        setSelectedDateRecord({
+          id: updatedRecord.id,
+          ...updatedRecord.data()
+        });
+      }
     } catch (error) {
       console.error('기록 저장 오류:', error);
       alert('저장 중 오류가 발생했습니다.');

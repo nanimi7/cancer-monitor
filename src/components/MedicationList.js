@@ -100,7 +100,7 @@ function MedicationList({ userId }) {
       });
       setShowForm(false);
       setEditingId(null);
-      loadMedications();
+      await loadMedications(); // 변경사항 즉시 반영
     } catch (error) {
       console.error('약물 저장 오류:', error);
       alert('저장 중 오류가 발생했습니다.');
@@ -123,7 +123,7 @@ function MedicationList({ userId }) {
       try {
         await deleteDoc(doc(db, `users/${userId}/medications`, id));
         alert('약물이 삭제되었습니다.');
-        loadMedications();
+        await loadMedications(); // 변경사항 즉시 반영
       } catch (error) {
         console.error('약물 삭제 오류:', error);
         alert('삭제 중 오류가 발생했습니다.');

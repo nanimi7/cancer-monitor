@@ -110,11 +110,13 @@ function UserProfile({ userId }) {
         await updateDoc(doc(db, userProfilePath, profileDocId), formData);
         alert('사용자 정보가 수정되었습니다.');
         setShowEditForm(false);
+        await loadUserData(); // 변경사항 즉시 반영
       } else {
         const docRef = await addDoc(collection(db, userProfilePath), formData);
         setProfileDocId(docRef.id);
         setIsEditing(true);
         alert('사용자 정보가 등록되었습니다.');
+        await loadUserData(); // 변경사항 즉시 반영
       }
     } catch (error) {
       console.error('데이터 저장 오류:', error);

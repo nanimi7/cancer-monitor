@@ -181,47 +181,47 @@
   max-width: 100%;
 }
 
-/* 회차별 색상 - 회차 기준으로 명확히 구분 */
-/* 1회차 - 진한 블루 */
+/* 회차별 색상 - 파스텔톤으로 회차 기준 구분 */
+/* 1회차 - 파스텔 블루 */
 .badge.session-1회차 {
-  background: #1e40af;
-  color: white;
+  background: #93c5fd;
+  color: #1e3a8a;
 }
 
-/* 2회차 - 진한 그린 */
+/* 2회차 - 파스텔 그린 */
 .badge.session-2회차 {
-  background: #15803d;
-  color: white;
+  background: #86efac;
+  color: #14532d;
 }
 
-/* 3회차 - 진한 레드 */
+/* 3회차 - 파스텔 레드 */
 .badge.session-3회차 {
-  background: #dc2626;
-  color: white;
+  background: #fca5a5;
+  color: #7f1d1d;
 }
 
-/* 4회차 - 진한 퍼플 */
+/* 4회차 - 파스텔 퍼플 */
 .badge.session-4회차 {
-  background: #7e22ce;
-  color: white;
+  background: #d8b4fe;
+  color: #581c87;
 }
 
-/* 5회차 - 진한 오렌지 */
+/* 5회차 - 파스텔 오렌지 */
 .badge.session-5회차 {
-  background: #ea580c;
-  color: white;
+  background: #fdba74;
+  color: #7c2d12;
 }
 
-/* 6회차 - 진한 시안 */
+/* 6회차 - 파스텔 시안 */
 .badge.session-6회차 {
-  background: #0891b2;
-  color: white;
+  background: #67e8f9;
+  color: #164e63;
 }
 
 /* 기본값 */
 .badge.session-default {
-  background: #6b7280;
-  color: white;
+  background: #d1d5db;
+  color: #374151;
 }
 
 /* 부작용 태그 - 통일된 색상 */
