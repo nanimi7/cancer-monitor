@@ -314,6 +314,8 @@ function DailySymptomCalendar({ userId }) {
   const tileContent = ({ date, view }) => {
     if (view === 'month') {
       const dateStr = format(date, 'yyyy-MM-dd');
+      const todayStr = format(new Date(), 'yyyy-MM-dd');
+      const isToday = dateStr === todayStr;
       const record = symptomRecords[dateStr];
 
       if (record) {
@@ -330,7 +332,8 @@ function DailySymptomCalendar({ userId }) {
 
         return (
           <div className="tile-content">
-            <div className="red-dot"></div>
+            {/* 오늘 날짜에만 레드닷 표시 */}
+            {isToday && <div className="red-dot"></div>}
             {/* 회차 정보 뱃지 - 단일 뱃지로 표시 */}
             {record.chemoCycle && record.chemoSession && record.chemoDay && (
               <div className="session-badge-container">
@@ -349,6 +352,13 @@ function DailySymptomCalendar({ userId }) {
                 ))}
               </div>
             )}
+          </div>
+        );
+      } else if (isToday) {
+        // 기록이 없어도 오늘 날짜에는 레드닷 표시
+        return (
+          <div className="tile-content">
+            <div className="red-dot"></div>
           </div>
         );
       }
