@@ -38,9 +38,7 @@ function DailySymptomCalendar({ userId }) {
   const chemoCycleOptions = [
     { value: '1차', label: '1차' },
     { value: '2차', label: '2차' },
-    { value: '3차', label: '3차' },
-    { value: '4차', label: '4차' },
-    { value: '5차', label: '5차' }
+    { value: '3차', label: '3차' }
   ];
 
   const chemoSessionOptions = [
