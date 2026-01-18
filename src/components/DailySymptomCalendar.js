@@ -80,10 +80,10 @@ function DailySymptomCalendar({ userId }) {
     { value: '5000', label: '4천보 이상' }
   ];
 
-  // 회차별 색상 클래스 생성 (차수와 회차 조합)
+  // 회차별 색상 클래스 생성 (회차 기준)
   const getSessionColorClass = (cycle, session) => {
-    // "1차", "1회차" 형식으로 조합
-    return `session-${cycle}-${session}`;
+    // "1회차" 형식으로 회차만 사용
+    return `session-${session}`;
   };
 
   useEffect(() => {
