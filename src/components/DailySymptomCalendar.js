@@ -235,20 +235,20 @@ function DailySymptomCalendar({ userId }) {
       newErrors.foodIntakeLevel = '식사량을 선택해주세요.';
     }
 
-    if (formData.foodIntakeBreakfast && formData.foodIntakeBreakfast.length > 500) {
-      newErrors.foodIntakeBreakfast = '아침 식사 내용은 500자 이내로 입력해주세요.';
+    if (formData.foodIntakeBreakfast && formData.foodIntakeBreakfast.length > 100) {
+      newErrors.foodIntakeBreakfast = '아침 식사 내용은 100자 이내로 입력해주세요.';
     }
 
-    if (formData.foodIntakeLunch && formData.foodIntakeLunch.length > 500) {
-      newErrors.foodIntakeLunch = '점심 식사 내용은 500자 이내로 입력해주세요.';
+    if (formData.foodIntakeLunch && formData.foodIntakeLunch.length > 100) {
+      newErrors.foodIntakeLunch = '점심 식사 내용은 100자 이내로 입력해주세요.';
     }
 
-    if (formData.foodIntakeDinner && formData.foodIntakeDinner.length > 500) {
-      newErrors.foodIntakeDinner = '저녁 식사 내용은 500자 이내로 입력해주세요.';
+    if (formData.foodIntakeDinner && formData.foodIntakeDinner.length > 100) {
+      newErrors.foodIntakeDinner = '저녁 식사 내용은 100자 이내로 입력해주세요.';
     }
 
-    if (formData.foodIntakeOther && formData.foodIntakeOther.length > 500) {
-      newErrors.foodIntakeOther = '기타 식사 내용은 500자 이내로 입력해주세요.';
+    if (formData.foodIntakeOther && formData.foodIntakeOther.length > 100) {
+      newErrors.foodIntakeOther = '기타 식사 내용은 100자 이내로 입력해주세요.';
     }
 
     if (!formData.waterIntakeAmount) {
@@ -436,9 +436,7 @@ function DailySymptomCalendar({ userId }) {
                     };
                     return foodIntakeMap[level] || level;
                   })()}
-                  {/* 기존 필드 호환성 */}
-                  {selectedDateRecord.foodIntakeNote && <div className="record-note">{selectedDateRecord.foodIntakeNote}</div>}
-                  {/* 새로운 필드 */}
+                  {/* 새로운 필드만 표시 */}
                   {selectedDateRecord.foodIntakeBreakfast && (
                     <div className="record-note"><strong>아침:</strong> {selectedDateRecord.foodIntakeBreakfast}</div>
                   )}
@@ -578,11 +576,11 @@ function DailySymptomCalendar({ userId }) {
                 value={formData.foodIntakeBreakfast || ''}
                 onChange={handleChange}
                 rows="2"
-                maxLength="500"
+                maxLength="100"
                 placeholder="아침 식사 내용을 기록하세요."
                 className={errors.foodIntakeBreakfast ? 'error' : ''}
               />
-              <span className="char-count">{(formData.foodIntakeBreakfast || '').length}/500</span>
+              <span className="char-count">{(formData.foodIntakeBreakfast || '').length}/100</span>
               {errors.foodIntakeBreakfast && <span className="error-message">{errors.foodIntakeBreakfast}</span>}
 
               <label htmlFor="foodIntakeLunch" style={{marginTop: '10px', display: 'block'}}>점심 식사 내용 (선택)</label>
@@ -592,11 +590,11 @@ function DailySymptomCalendar({ userId }) {
                 value={formData.foodIntakeLunch || ''}
                 onChange={handleChange}
                 rows="2"
-                maxLength="500"
+                maxLength="100"
                 placeholder="점심 식사 내용을 기록하세요."
                 className={errors.foodIntakeLunch ? 'error' : ''}
               />
-              <span className="char-count">{(formData.foodIntakeLunch || '').length}/500</span>
+              <span className="char-count">{(formData.foodIntakeLunch || '').length}/100</span>
               {errors.foodIntakeLunch && <span className="error-message">{errors.foodIntakeLunch}</span>}
 
               <label htmlFor="foodIntakeDinner" style={{marginTop: '10px', display: 'block'}}>저녁 식사 내용 (선택)</label>
@@ -606,11 +604,11 @@ function DailySymptomCalendar({ userId }) {
                 value={formData.foodIntakeDinner || ''}
                 onChange={handleChange}
                 rows="2"
-                maxLength="500"
+                maxLength="100"
                 placeholder="저녁 식사 내용을 기록하세요."
                 className={errors.foodIntakeDinner ? 'error' : ''}
               />
-              <span className="char-count">{(formData.foodIntakeDinner || '').length}/500</span>
+              <span className="char-count">{(formData.foodIntakeDinner || '').length}/100</span>
               {errors.foodIntakeDinner && <span className="error-message">{errors.foodIntakeDinner}</span>}
 
               <label htmlFor="foodIntakeOther" style={{marginTop: '10px', display: 'block'}}>기타 식사 내용 (선택)</label>
@@ -620,11 +618,11 @@ function DailySymptomCalendar({ userId }) {
                 value={formData.foodIntakeOther || ''}
                 onChange={handleChange}
                 rows="2"
-                maxLength="500"
+                maxLength="100"
                 placeholder="아침, 점심, 저녁 외의 섭취한 식사를 기록하세요."
                 className={errors.foodIntakeOther ? 'error' : ''}
               />
-              <span className="char-count">{(formData.foodIntakeOther || '').length}/500</span>
+              <span className="char-count">{(formData.foodIntakeOther || '').length}/100</span>
               {errors.foodIntakeOther && <span className="error-message">{errors.foodIntakeOther}</span>}
             </div>
 
