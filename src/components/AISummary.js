@@ -39,11 +39,22 @@ function AISummary({ userId }) {
   const loadSymptomRecords = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, `users/${userId}/symptomRecords`));
-      const records = querySnapshot.docs.map(doc => ({
+      const allRecords = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      setSymptomRecords(records);
+
+      // 날짜별로 최신 레코드만 필터링 (중복 제거)
+      const recordsByDate = {};
+      allRecords.forEach(record => {
+        if (!recordsByDate[record.date] || recordsByDate[record.date].id < record.id) {
+          recordsByDate[record.date] = record;
+        }
+      });
+
+      // 객체를 배열로 변환
+      const uniqueRecords = Object.values(recordsByDate);
+      setSymptomRecords(uniqueRecords);
     } catch (error) {
       console.error('증상 기록 로드 오류:', error);
     }
@@ -250,7 +261,9 @@ function AISummary({ userId }) {
     // 기간 정보
     const startDate = sortedRecords[0].date;
     const endDate = sortedRecords[sortedRecords.length - 1].date;
-    const totalDays = sortedRecords.length;
+    // 고유한 날짜 개수로 계산 (중복 제거)
+    const uniqueDates = [...new Set(sortedRecords.map(r => r.date))];
+    const totalDays = uniqueDates.length;
 
     // 배변 횟수 계산
     const bowelMovementCount = sortedRecords.filter(record =>
