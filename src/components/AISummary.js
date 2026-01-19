@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import '../styles/AISummary.css';
 
 function AISummary({ userId }) {
@@ -54,9 +54,40 @@ function AISummary({ userId }) {
 
       // 객체를 배열로 변환
       const uniqueRecords = Object.values(recordsByDate);
+
+      // 마이그레이션: foodIntakeNote가 있고 foodIntakeBreakfast가 없는 경우 자동 마이그레이션
+      await migrateOldFoodIntakeData(querySnapshot.docs);
+
       setSymptomRecords(uniqueRecords);
     } catch (error) {
       console.error('증상 기록 로드 오류:', error);
+    }
+  };
+
+  const migrateOldFoodIntakeData = async (docs) => {
+    try {
+      for (const docSnapshot of docs) {
+        const data = docSnapshot.data();
+
+        // foodIntakeNote가 있고, foodIntakeBreakfast가 없는 경우만 마이그레이션
+        if (data.foodIntakeNote &&
+            data.foodIntakeNote.trim() !== '' &&
+            !data.foodIntakeBreakfast) {
+
+          const updateData = {
+            foodIntakeBreakfast: data.foodIntakeNote
+            // foodIntakeNote는 유지 (기존 데이터 호환성)
+          };
+
+          const recordRef = doc(db, `users/${userId}/symptomRecords`, docSnapshot.id);
+          await updateDoc(recordRef, updateData);
+
+          console.log(`✅ 마이그레이션 완료: ${data.date}`);
+        }
+      }
+    } catch (error) {
+      console.error('마이그레이션 오류:', error);
+      // 마이그레이션 실패해도 앱은 계속 동작
     }
   };
 
