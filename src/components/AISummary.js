@@ -162,9 +162,22 @@ function AISummary({ userId }) {
         // Serverless Function을 통한 Claude API 호출
         const symptomTexts = filteredRecords
           .map((record) => {
+            // 식사량 상세 정보 구성 (새 필드와 기존 필드 호환)
+            let foodDetails = '';
+            if (record.foodIntakeBreakfast || record.foodIntakeLunch || record.foodIntakeDinner || record.foodIntakeOther) {
+              const meals = [];
+              if (record.foodIntakeBreakfast) meals.push(`아침: ${record.foodIntakeBreakfast}`);
+              if (record.foodIntakeLunch) meals.push(`점심: ${record.foodIntakeLunch}`);
+              if (record.foodIntakeDinner) meals.push(`저녁: ${record.foodIntakeDinner}`);
+              if (record.foodIntakeOther) meals.push(`기타: ${record.foodIntakeOther}`);
+              foodDetails = ` (${meals.join(', ')})`;
+            } else if (record.foodIntakeNote) {
+              foodDetails = ` (${record.foodIntakeNote})`;
+            }
+
             return `[${record.date}]
 - 항암 진행: ${record.chemoCycle} ${record.chemoSession} ${record.chemoDay}
-- 식사량: ${record.foodIntakeLevel}%${record.foodIntakeNote ? ` (${record.foodIntakeNote})` : ''}
+- 식사량: ${record.foodIntakeLevel}%${foodDetails}
 - 음수량: 약 ${record.waterIntakeAmount}ml${record.waterIntakeNote ? ` (${record.waterIntakeNote})` : ''}
 - 운동량: 약 ${record.exerciseTime}보${record.exerciseNote ? ` (${record.exerciseNote})` : ''}
 - 배변: ${record.bowelMovement === 'yes' ? '있음' : '없음'}${record.bowelCondition && record.bowelCondition.length > 0 ? ` (${record.bowelCondition.join(', ')})` : ''}
