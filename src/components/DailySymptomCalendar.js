@@ -90,13 +90,14 @@ function DailySymptomCalendar({ userId }) {
   };
 
   useEffect(() => {
-    loadSymptomRecords();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const initializeData = async () => {
+      // 먼저 마이그레이션 실행
+      await migrateOldSideEffects();
+      // 마이그레이션 완료 후 데이터 로드
+      await loadSymptomRecords();
+    };
 
-  useEffect(() => {
-    // 컴포넌트 마운트 시 자동 마이그레이션 실행
-    migrateOldSideEffects();
+    initializeData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
