@@ -63,40 +63,44 @@ function App() {
   return (
     <div className="App">
       <header className="app-header">
-        <h1>항암치료 기록 서비스</h1>
-        <div className="user-info">
-          <span className="user-email">{user.email}</span>
-          <button className="logout-button" onClick={handleLogout}>
-            로그아웃
-          </button>
+        <div className="app-header-content">
+          <h1>항암치료 기록 서비스</h1>
+          <div className="user-info">
+            <span className="user-email">{user.email}</span>
+            <button className="logout-button" onClick={handleLogout}>
+              로그아웃
+            </button>
+          </div>
         </div>
       </header>
 
       <nav className="app-nav">
-        <button
-          className={activeMenu === 'profile' ? 'active' : ''}
-          onClick={() => setActiveMenu('profile')}
-        >
-          사용자 정보
-        </button>
-        <button
-          className={activeMenu === 'medication' ? 'active' : ''}
-          onClick={() => setActiveMenu('medication')}
-        >
-          약물 관리
-        </button>
-        <button
-          className={activeMenu === 'calendar' ? 'active' : ''}
-          onClick={() => setActiveMenu('calendar')}
-        >
-          항암증상캘린더
-        </button>
-        <button
-          className={activeMenu === 'ai-summary' ? 'active' : ''}
-          onClick={() => setActiveMenu('ai-summary')}
-        >
-          AI 요약
-        </button>
+        <div className="app-nav-content">
+          <button
+            className={activeMenu === 'profile' ? 'active' : ''}
+            onClick={() => setActiveMenu('profile')}
+          >
+            사용자 정보
+          </button>
+          <button
+            className={activeMenu === 'medication' ? 'active' : ''}
+            onClick={() => setActiveMenu('medication')}
+          >
+            약물 관리
+          </button>
+          <button
+            className={activeMenu === 'calendar' ? 'active' : ''}
+            onClick={() => setActiveMenu('calendar')}
+          >
+            항암증상캘린더
+          </button>
+          <button
+            className={activeMenu === 'ai-summary' ? 'active' : ''}
+            onClick={() => setActiveMenu('ai-summary')}
+          >
+            AI 요약
+          </button>
+        </div>
       </nav>
 
       <main className="app-content">
@@ -104,7 +108,9 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>항암치료 기록 서비스 &copy; 2026</p>
+        <div className="app-footer-content">
+          <p>항암치료 기록 서비스 &copy; 2026</p>
+        </div>
       </footer>
     </div>
   );
