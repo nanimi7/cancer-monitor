@@ -68,20 +68,33 @@ function AISummary({ userId }) {
     try {
       for (const docSnapshot of docs) {
         const data = docSnapshot.data();
+        let needsUpdate = false;
+        const updateData = {};
 
-        // foodIntakeNote가 있고, foodIntakeBreakfast가 없는 경우만 마이그레이션
+        // 1. foodIntakeNote가 있고, foodIntakeBreakfast가 없는 경우 마이그레이션
         if (data.foodIntakeNote &&
             data.foodIntakeNote.trim() !== '' &&
             !data.foodIntakeBreakfast) {
+          updateData.foodIntakeBreakfast = data.foodIntakeNote;
+          needsUpdate = true;
+        }
 
-          const updateData = {
-            foodIntakeBreakfast: data.foodIntakeNote
-            // foodIntakeNote는 유지 (기존 데이터 호환성)
-          };
+        // 2. sideEffects에서 "심한졸림", "심한피로" 제거
+        if (data.sideEffects && Array.isArray(data.sideEffects)) {
+          const filteredSideEffects = data.sideEffects.filter(
+            effect => effect !== '심한졸림' && effect !== '심한피로'
+          );
 
+          if (filteredSideEffects.length !== data.sideEffects.length) {
+            updateData.sideEffects = filteredSideEffects;
+            needsUpdate = true;
+          }
+        }
+
+        // 업데이트가 필요한 경우에만 실행
+        if (needsUpdate) {
           const recordRef = doc(db, `users/${userId}/symptomRecords`, docSnapshot.id);
           await updateDoc(recordRef, updateData);
-
           console.log(`✅ 마이그레이션 완료: ${data.date}`);
         }
       }
