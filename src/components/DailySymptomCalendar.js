@@ -94,6 +94,39 @@ function DailySymptomCalendar({ userId }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    // 컴포넌트 마운트 시 자동 마이그레이션 실행
+    migrateOldSideEffects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const migrateOldSideEffects = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, `users/${userId}/symptomRecords`));
+
+      for (const docSnapshot of querySnapshot.docs) {
+        const data = docSnapshot.data();
+
+        // sideEffects에서 "심한졸림", "심한피로" 제거
+        if (data.sideEffects && Array.isArray(data.sideEffects)) {
+          const filteredSideEffects = data.sideEffects.filter(
+            effect => effect !== '심한졸림' && effect !== '심한피로'
+          );
+
+          // 변경사항이 있는 경우에만 업데이트
+          if (filteredSideEffects.length !== data.sideEffects.length) {
+            const recordRef = doc(db, `users/${userId}/symptomRecords`, docSnapshot.id);
+            await updateDoc(recordRef, { sideEffects: filteredSideEffects });
+            console.log(`✅ 부작용 마이그레이션 완료: ${data.date}`);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('부작용 마이그레이션 오류:', error);
+      // 마이그레이션 실패해도 앱은 계속 동작
+    }
+  };
+
   const loadSymptomRecords = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, `users/${userId}/symptomRecords`));
