@@ -183,26 +183,6 @@ function AISummary({ userId }) {
           return;
         }
 
-        const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
-
-        if (!apiKey || apiKey === 'YOUR_ANTHROPIC_API_KEY_HERE') {
-          // API 키가 없을 경우 안내 메시지만 표시
-          await new Promise(resolve => setTimeout(resolve, 1000));
-
-          const noDataMessage = '분석을 위해서는 기록이 더 쌓여야 합니다. 증상 기록을 계속 입력해주세요.';
-
-          setAiSummary({
-            food: noDataMessage,
-            water: noDataMessage,
-            exercise: noDataMessage,
-            bowel: noDataMessage,
-            special: noDataMessage,
-            comment: 'AI 분석을 위해서는 Claude API 키가 필요합니다. 환경 변수에 REACT_APP_ANTHROPIC_API_KEY를 설정해주세요.',
-          });
-          setAiLoading(false);
-          return;
-        }
-
         // Serverless Function을 통한 Claude API 호출
         const symptomTexts = filteredRecords
           .map((record) => {
