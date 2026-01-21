@@ -7,17 +7,28 @@ import MedicationList from './components/MedicationList';
 import DailySymptomCalendar from './components/DailySymptomCalendar';
 import AISummary from './components/AISummary';
 import WeightManagement from './components/WeightManagement';
+import PushNotification from './components/PushNotification';
 import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState('calendar');
+  const pushNotification = PushNotification();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
+
+      // 로그인 시 푸시 알림 권한 요청
+      if (currentUser && Notification.permission === 'default') {
+        setTimeout(() => {
+          if (window.confirm('알림을 받으시겠습니까? 약 복용 시간이나 중요한 기록 알림을 받을 수 있습니다.')) {
+            pushNotification.requestPermission();
+          }
+        }, 2000);
+      }
     });
 
     return () => unsubscribe();
