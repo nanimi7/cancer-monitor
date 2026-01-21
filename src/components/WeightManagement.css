@@ -63,12 +63,14 @@
 }
 
 .calendar-section .react-calendar__tile {
-  padding: 20px 8px;
+  padding: 8px 4px;
   position: relative;
   border-radius: 12px;
   transition: all 0.2s ease;
   background: transparent;
   border: 2px solid transparent;
+  min-height: 65px;
+  height: 65px;
 }
 
 .calendar-section .react-calendar__tile:hover {
@@ -93,8 +95,8 @@
 .calendar-section .react-calendar__tile--now::before {
   content: '';
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 4px;
+  right: 4px;
   width: 6px;
   height: 6px;
   background-color: #ff4757;
@@ -471,7 +473,9 @@
   }
 
   .calendar-section .react-calendar__tile {
-    padding: 16px 5px;
+    padding: 6px 3px;
+    min-height: 65px;
+    height: 65px;
   }
 
   .weight-dot {
@@ -515,8 +519,8 @@
   }
 
   .calendar-section .react-calendar__tile--now::before {
-    top: 6px;
-    right: 6px;
+    top: 3px;
+    right: 3px;
     width: 5px;
     height: 5px;
   }
