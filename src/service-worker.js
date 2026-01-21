@@ -8,7 +8,7 @@
 // service worker, and the Workbox build step will be skipped.
 
 import { clientsClaim } from 'workbox-core';
-import { ExpiringCache } from 'workbox-expiration';
+import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkFirst, CacheFirst } from 'workbox-strategies';
@@ -47,7 +47,7 @@ registerRoute(
   new CacheFirst({
     cacheName: 'images',
     plugins: [
-      new ExpiringCache({
+      new ExpirationPlugin({
         maxEntries: 60,
         maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
       }),
@@ -71,7 +71,7 @@ registerRoute(
   new NetworkFirst({
     cacheName: 'api-cache',
     plugins: [
-      new ExpiringCache({
+      new ExpirationPlugin({
         maxEntries: 50,
         maxAgeSeconds: 5 * 60, // 5 minutes
       }),
@@ -109,7 +109,7 @@ self.addEventListener('notificationclick', (event) => {
 
   if (event.notification.data) {
     event.waitUntil(
-      clients.openWindow(event.notification.data)
+      self.clients.openWindow(event.notification.data)
     );
   }
 });
