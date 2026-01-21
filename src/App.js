@@ -16,7 +16,20 @@ function App() {
   const [activeMenu, setActiveMenu] = useState('calendar');
   const pushNotification = PushNotification();
 
-  useEffect(() => {
+   useEffect(() => {
+     // Service Worker 완전 제거
+     if ('serviceWorker' in navigator) {
+       navigator.serviceWorker.getRegistrations().then(registrations => {
+         registrations.forEach(registration => {
+           registration.unregister();
+         });
+       });
+       
+       caches.keys().then(keys => {
+         keys.forEach(key => caches.delete(key));
+       });
+     }
+   }, []);
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
