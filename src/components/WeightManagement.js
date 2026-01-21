@@ -366,7 +366,7 @@ function WeightManagement({ userId }) {
         {getChartData().length > 0 ? (
           <div className="chart-container">
             <ResponsiveContainer width="100%" height={320}>
-              <AreaChart data={getChartData()} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={getChartData()} margin={{ top: 10, right: 5, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#5f27cd" stopOpacity={0.3}/>
@@ -385,7 +385,7 @@ function WeightManagement({ userId }) {
                   tick={{ fill: '#999', fontSize: 12 }}
                   tickLine={false}
                   axisLine={{ stroke: '#f0f0f0' }}
-                  width={40}
+                  width={45}
                 />
                 <Tooltip
                   contentStyle={{
