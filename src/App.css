@@ -35,7 +35,7 @@ body {
   align-items: center;
   flex-wrap: wrap;
   gap: 15px;
-  padding: 0 20px;
+  padding: 0 24px;
 }
 
 .app-header h1 {
@@ -113,10 +113,11 @@ body {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 4px 0 max(4px, env(safe-area-inset-bottom));
+  padding: 4px 16px max(4px, env(safe-area-inset-bottom));
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   border-top: 1px solid #f0f0f0;
   z-index: 100;
+  box-sizing: border-box;
 }
 
 .bottom-nav-item {
@@ -173,7 +174,7 @@ body {
 
   .app-header-content {
     gap: 10px;
-    padding: 0 15px;
+    padding: 0 20px;
   }
 
   .app-header h1 {
@@ -221,6 +222,6 @@ body {
   }
 
   .app-bottom-nav {
-    padding: 3px 0 max(8px, env(safe-area-inset-bottom));
+    padding: 3px 12px max(8px, env(safe-area-inset-bottom));
   }
 }
