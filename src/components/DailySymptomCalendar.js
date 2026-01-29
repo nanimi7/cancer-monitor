@@ -75,12 +75,14 @@ function DailySymptomCalendar({ userId }) {
   ];
 
   const exerciseTimeOptions = [
-    { value: '0', label: '0보' },
-    { value: '500', label: '1천보 미만' },
+    { value: '250', label: '500보 미만' },
+    { value: '750', label: '500 ~ 1천보' },
     { value: '1500', label: '1천 ~ 2천보' },
     { value: '2500', label: '2천 ~ 3천보' },
     { value: '3500', label: '3천 ~ 4천보' },
-    { value: '5000', label: '4천보 이상' }
+    { value: '4500', label: '4천 ~ 5천보' },
+    { value: '5500', label: '5천 ~ 6천보' },
+    { value: '7000', label: '6천보 이상' }
   ];
 
   // 회차별 색상 클래스 생성 (회차 기준)
