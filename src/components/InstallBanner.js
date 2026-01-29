@@ -57,10 +57,16 @@ function InstallBanner() {
       }
       setDeferredPrompt(null);
     } else {
-      // iOS Safari 안내
+      // 수동 설치 안내
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isAndroid = /Android/.test(navigator.userAgent);
+
       if (isIOS) {
-        alert('하단의 공유 버튼(□↑)을 누른 후\n"홈 화면에 추가"를 선택하세요.');
+        alert('Safari 하단의 공유 버튼(□↑)을 누른 후\n"홈 화면에 추가"를 선택하세요.');
+      } else if (isAndroid) {
+        alert('Chrome 메뉴(⋮)를 누른 후\n"홈 화면에 추가" 또는 "앱 설치"를 선택하세요.');
+      } else {
+        alert('브라우저 메뉴에서\n"홈 화면에 추가" 또는 "앱 설치"를 선택하세요.');
       }
     }
   };
