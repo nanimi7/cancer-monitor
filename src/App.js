@@ -7,6 +7,7 @@ import MedicationList from './components/MedicationList';
 import DailySymptomCalendar from './components/DailySymptomCalendar';
 import AISummary from './components/AISummary';
 import WeightManagement from './components/WeightManagement';
+import InstallBanner from './components/InstallBanner';
 import './App.css';
 
 function App() {
@@ -15,19 +16,6 @@ function App() {
   const [activeMenu, setActiveMenu] = useState('calendar');
 
   useEffect(() => {
-    // Service Worker 완전 제거
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        registrations.forEach(registration => {
-          registration.unregister();
-        });
-      });
-      
-      caches.keys().then(keys => {
-        keys.forEach(key => caches.delete(key));
-      });
-    }
-
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
@@ -91,6 +79,7 @@ function App() {
       </header>
 
       <main className="app-content">
+        <InstallBanner />
         {renderContent()}
       </main>
 
