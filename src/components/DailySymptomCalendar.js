@@ -439,6 +439,12 @@ function DailySymptomCalendar({ userId }) {
           onChange={handleDateClick}
           value={date}
           tileContent={tileContent}
+          tileClassName={({ date, view }) => {
+            if (view === 'month' && date.getDay() === 0) {
+              return 'sunday';
+            }
+            return null;
+          }}
           locale="ko-KR"
         />
       </div>
