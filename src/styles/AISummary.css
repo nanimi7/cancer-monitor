@@ -386,6 +386,57 @@
   }
 }
 
+/* AI 로딩 스피너 */
+.ai-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.ai-loading-spinner {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #3b82f6 0deg,
+    #60a5fa 90deg,
+    #e5e7eb 90deg,
+    #e5e7eb 360deg
+  );
+  animation: ai-spin 1s linear infinite;
+  position: relative;
+}
+
+.ai-loading-spinner::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  background: white;
+  border-radius: 50%;
+}
+
+@keyframes ai-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.ai-loading-text {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .ai-summary {
     padding: 15px 10px;

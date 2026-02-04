@@ -528,9 +528,9 @@ function AISummary({ userId }) {
               </div>
 
               {aiLoading ? (
-                <div style={{padding: '40px', textAlign: 'center', color: '#6b7280'}}>
-                  <div className="loading-spinner" style={{margin: '0 auto 15px'}}></div>
-                  <div>AI가 의료진 전달사항을 생성하고 있습니다...</div>
+                <div className="ai-loading-container">
+                  <div className="ai-loading-spinner"></div>
+                  <div className="ai-loading-text">AI가 증상 데이터를 분석하고 있습니다...</div>
                 </div>
               ) : aiSummary ? (
                 <>
