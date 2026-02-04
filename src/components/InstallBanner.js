@@ -92,8 +92,8 @@ function InstallBanner() {
           </svg>
         </div>
         <div className="install-banner-text">
-          <strong>앱으로 설치하기</strong>
-          <span>홈 화면에 추가하면 더 빠르게 사용할 수 있어요</span>
+          <strong>앱으로 더 편리하게!</strong>
+          <span>홈 화면에 추가하고 빠르게 접속하세요</span>
         </div>
       </div>
       <div className="install-banner-actions">
