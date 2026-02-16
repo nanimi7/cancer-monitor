@@ -369,8 +369,8 @@
 .chemo-info-inline {
   margin-left: auto;
   font-size: 15px;
-  font-weight: 700;
-  color: #8b5cf6;
+  font-weight: 500;
+  color: #6b7280;
 }
 
 /* 식사량 뱃지 */
@@ -395,10 +395,10 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  background: #fffbeb;
+  background: #f3f4f6;
   padding: 10px 12px;
   border-radius: 8px;
-  border-left: 3px solid #f59e0b;
+  border-left: 3px solid #9ca3af;
 }
 
 .meal-item.empty {
@@ -409,14 +409,14 @@
 .meal-label {
   font-size: 12px;
   font-weight: 600;
-  color: #92400e;
+  color: #374151;
   min-width: 32px;
   flex-shrink: 0;
 }
 
 .meal-content {
   font-size: 13px;
-  color: #78350f;
+  color: #4b5563;
   line-height: 1.5;
   word-break: break-word;
 }
