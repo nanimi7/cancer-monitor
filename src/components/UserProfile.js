@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, addDoc, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { db, auth } from '../firebase';
+import { collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { deleteUser, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import '../styles/UserProfile.css';
 
 function UserProfile({ userId }) {
@@ -17,6 +18,10 @@ function UserProfile({ userId }) {
   const [profileDocId, setProfileDocId] = useState(null);
   const [errors, setErrors] = useState({});
   const [showEditForm, setShowEditForm] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -135,6 +140,66 @@ function UserProfile({ userId }) {
     setErrors({});
   };
 
+  // 회원탈퇴 처리
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) {
+      setDeleteError('비밀번호를 입력해주세요.');
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError('');
+
+    try {
+      const user = auth.currentUser;
+
+      // 재인증 (보안을 위해 필요)
+      const credential = EmailAuthProvider.credential(user.email, deletePassword);
+      await reauthenticateWithCredential(user, credential);
+
+      // Firestore 데이터 삭제
+      // 1. profile 삭제
+      const profileSnapshot = await getDocs(collection(db, `users/${userId}/profile`));
+      for (const docSnap of profileSnapshot.docs) {
+        await deleteDoc(doc(db, `users/${userId}/profile`, docSnap.id));
+      }
+
+      // 2. medications 삭제
+      const medicationsSnapshot = await getDocs(collection(db, `users/${userId}/medications`));
+      for (const docSnap of medicationsSnapshot.docs) {
+        await deleteDoc(doc(db, `users/${userId}/medications`, docSnap.id));
+      }
+
+      // 3. symptoms 삭제
+      const symptomsSnapshot = await getDocs(collection(db, `users/${userId}/symptoms`));
+      for (const docSnap of symptomsSnapshot.docs) {
+        await deleteDoc(doc(db, `users/${userId}/symptoms`, docSnap.id));
+      }
+
+      // 4. weights 삭제
+      const weightsSnapshot = await getDocs(collection(db, `users/${userId}/weights`));
+      for (const docSnap of weightsSnapshot.docs) {
+        await deleteDoc(doc(db, `users/${userId}/weights`, docSnap.id));
+      }
+
+      // Firebase Auth 사용자 삭제
+      await deleteUser(user);
+
+      alert('회원탈퇴가 완료되었습니다.');
+    } catch (error) {
+      console.error('회원탈퇴 오류:', error);
+      if (error.code === 'auth/wrong-password') {
+        setDeleteError('비밀번호가 올바르지 않습니다.');
+      } else if (error.code === 'auth/too-many-requests') {
+        setDeleteError('너무 많은 시도가 있었습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        setDeleteError('회원탈퇴 중 오류가 발생했습니다.');
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   // 성별에 따른 캐릭터 이미지 선택 (젊은 성인으로 통일)
   const getCharacterImage = (gender) => {
     // 남성 캐릭터 (젊은 남성)
@@ -175,6 +240,12 @@ function UserProfile({ userId }) {
           <button onClick={handleEditClick} className="edit-button">
             수정
           </button>
+
+          <div className="danger-zone">
+            <button onClick={() => setShowDeleteModal(true)} className="delete-account-button">
+              회원탈퇴
+            </button>
+          </div>
         </div>
       ) : (
         // 등록된 정보가 없거나 수정 모드일 때 - 등록/수정 화면
@@ -301,6 +372,48 @@ function UserProfile({ userId }) {
             )}
           </div>
         </form>
+      )}
+
+      {/* 회원탈퇴 확인 모달 */}
+      {showDeleteModal && (
+        <div className="modal-overlay">
+          <div className="delete-modal">
+            <h3>회원탈퇴</h3>
+            <p className="delete-warning">
+              탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.
+            </p>
+            <div className="form-group">
+              <label>비밀번호 확인</label>
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="비밀번호를 입력하세요"
+              />
+              {deleteError && <span className="error-message">{deleteError}</span>}
+            </div>
+            <div className="modal-buttons">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeletePassword('');
+                  setDeleteError('');
+                }}
+                className="cancel-button"
+                disabled={isDeleting}
+              >
+                취소
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                className="confirm-delete-button"
+                disabled={isDeleting}
+              >
+                {isDeleting ? '처리 중...' : '탈퇴하기'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
