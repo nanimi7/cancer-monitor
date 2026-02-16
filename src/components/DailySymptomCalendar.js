@@ -735,7 +735,7 @@ function DailySymptomCalendar({ userId }) {
                 onChange={handleChange}
                 rows="2"
                 maxLength="100"
-                placeholder="아침 식사 내용을 기록하세요."
+                placeholder="아침 식사 내용을 기록하세요. (AI분석에 활용됩니다)"
                 className={errors.foodIntakeBreakfast ? 'error' : ''}
               />
               <span className="char-count">{(formData.foodIntakeBreakfast || '').length}/100</span>
@@ -749,7 +749,7 @@ function DailySymptomCalendar({ userId }) {
                 onChange={handleChange}
                 rows="2"
                 maxLength="100"
-                placeholder="점심 식사 내용을 기록하세요."
+                placeholder="점심 식사 내용을 기록하세요. (AI분석에 활용됩니다)"
                 className={errors.foodIntakeLunch ? 'error' : ''}
               />
               <span className="char-count">{(formData.foodIntakeLunch || '').length}/100</span>
@@ -763,7 +763,7 @@ function DailySymptomCalendar({ userId }) {
                 onChange={handleChange}
                 rows="2"
                 maxLength="100"
-                placeholder="저녁 식사 내용을 기록하세요."
+                placeholder="저녁 식사 내용을 기록하세요. (AI분석에 활용됩니다)"
                 className={errors.foodIntakeDinner ? 'error' : ''}
               />
               <span className="char-count">{(formData.foodIntakeDinner || '').length}/100</span>
@@ -777,7 +777,7 @@ function DailySymptomCalendar({ userId }) {
                 onChange={handleChange}
                 rows="2"
                 maxLength="100"
-                placeholder="아침, 점심, 저녁 외의 섭취한 식사를 기록하세요."
+                placeholder="아침, 점심, 저녁 외의 섭취한 식사를 기록하세요. (AI분석에 활용됩니다)"
                 className={errors.foodIntakeOther ? 'error' : ''}
               />
               <span className="char-count">{(formData.foodIntakeOther || '').length}/100</span>
@@ -807,7 +807,7 @@ function DailySymptomCalendar({ userId }) {
                 onChange={handleChange}
                 rows="2"
                 maxLength="500"
-                placeholder="물 외에 다른 음료를 마셨거나 특이사항이 있다면 입력해주세요"
+                placeholder="물 외에 다른 음료를 마셨거나 특이사항을 입력해주세요. (AI분석에 활용됩니다)"
                 className={errors.waterIntakeNote ? 'error' : ''}
               />
               <span className="char-count">{formData.waterIntakeNote.length}/500</span>
@@ -837,7 +837,7 @@ function DailySymptomCalendar({ userId }) {
                 onChange={handleChange}
                 rows="2"
                 maxLength="500"
-                placeholder="어떤 운동을 했는지, 강도나 특이사항을 입력해주세요"
+                placeholder="어떤 운동을 했는지, 강도나 특이사항을 입력해주세요. (AI분석에 활용됩니다)"
                 className={errors.exerciseNote ? 'error' : ''}
               />
               <span className="char-count">{formData.exerciseNote.length}/500</span>
