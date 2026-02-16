@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { auth } from '../firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import '../styles/Auth.css';
 
 function Auth() {
@@ -10,6 +10,11 @@ function Auth() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetError, setResetError] = useState('');
+  const [resetSuccess, setResetSuccess] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,6 +81,42 @@ function Auth() {
     setEmail('');
     setPassword('');
     setConfirmPassword('');
+  };
+
+  const handlePasswordReset = async () => {
+    if (!resetEmail) {
+      setResetError('이메일을 입력해주세요.');
+      return;
+    }
+
+    setResetLoading(true);
+    setResetError('');
+
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      setResetSuccess(true);
+    } catch (error) {
+      console.error('비밀번호 재설정 오류:', error);
+      switch (error.code) {
+        case 'auth/invalid-email':
+          setResetError('유효하지 않은 이메일 형식입니다.');
+          break;
+        case 'auth/user-not-found':
+          setResetError('등록되지 않은 이메일입니다.');
+          break;
+        default:
+          setResetError('오류가 발생했습니다. 다시 시도해주세요.');
+      }
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const closeResetModal = () => {
+    setShowResetModal(false);
+    setResetEmail('');
+    setResetError('');
+    setResetSuccess(false);
   };
 
   return (
@@ -145,6 +186,16 @@ function Auth() {
           <button type="submit" className="auth-submit-button" disabled={loading}>
             {loading ? '처리 중...' : isLogin ? '로그인' : '회원가입'}
           </button>
+
+          {isLogin && (
+            <button
+              type="button"
+              className="forgot-password-button"
+              onClick={() => setShowResetModal(true)}
+            >
+              비밀번호를 잊으셨나요?
+            </button>
+          )}
         </form>
 
         <div className="auth-footer">
@@ -156,6 +207,59 @@ function Auth() {
           </p>
         </div>
       </div>
+
+      {/* 비밀번호 재설정 모달 */}
+      {showResetModal && (
+        <div className="modal-overlay">
+          <div className="reset-modal">
+            <h3>비밀번호 찾기</h3>
+            {resetSuccess ? (
+              <>
+                <div className="reset-success">
+                  <p>비밀번호 재설정 링크가 이메일로 전송되었습니다.</p>
+                  <p>이메일을 확인해주세요.</p>
+                </div>
+                <button onClick={closeResetModal} className="reset-confirm-button">
+                  확인
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="reset-description">
+                  가입한 이메일 주소를 입력하시면<br />
+                  비밀번호 재설정 링크를 보내드립니다.
+                </p>
+                <div className="form-group">
+                  <input
+                    type="email"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    placeholder="이메일 주소"
+                    disabled={resetLoading}
+                  />
+                  {resetError && <span className="error-message">{resetError}</span>}
+                </div>
+                <div className="modal-buttons">
+                  <button
+                    onClick={closeResetModal}
+                    className="reset-cancel-button"
+                    disabled={resetLoading}
+                  >
+                    취소
+                  </button>
+                  <button
+                    onClick={handlePasswordReset}
+                    className="reset-submit-button"
+                    disabled={resetLoading}
+                  >
+                    {resetLoading ? '전송 중...' : '전송'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
