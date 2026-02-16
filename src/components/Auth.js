@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import '../styles/Auth.css';
@@ -15,16 +15,6 @@ function Auth() {
   const [resetError, setResetError] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
-  const [rememberEmail, setRememberEmail] = useState(false);
-
-  // 저장된 이메일 불러오기
-  useEffect(() => {
-    const savedEmail = localStorage.getItem('rememberedEmail');
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setRememberEmail(true);
-    }
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,12 +45,6 @@ function Auth() {
       if (isLogin) {
         // 로그인
         await signInWithEmailAndPassword(auth, email, password);
-        // 이메일 기억하기
-        if (rememberEmail) {
-          localStorage.setItem('rememberedEmail', email);
-        } else {
-          localStorage.removeItem('rememberedEmail');
-        }
       } else {
         // 회원가입
         await createUserWithEmailAndPassword(auth, email, password);
@@ -204,23 +188,13 @@ function Auth() {
           </button>
 
           {isLogin && (
-            <>
-              <label className="remember-email-label">
-                <input
-                  type="checkbox"
-                  checked={rememberEmail}
-                  onChange={(e) => setRememberEmail(e.target.checked)}
-                />
-                <span>이메일 기억하기</span>
-              </label>
-              <button
-                type="button"
-                className="forgot-password-button"
-                onClick={() => setShowResetModal(true)}
-              >
-                비밀번호를 잊으셨나요?
-              </button>
-            </>
+            <button
+              type="button"
+              className="forgot-password-button"
+              onClick={() => setShowResetModal(true)}
+            >
+              비밀번호를 잊으셨나요?
+            </button>
           )}
         </form>
 
