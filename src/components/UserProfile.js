@@ -240,12 +240,6 @@ function UserProfile({ userId }) {
           <button onClick={handleEditClick} className="edit-button">
             수정
           </button>
-
-          <div className="danger-zone">
-            <button onClick={() => setShowDeleteModal(true)} className="delete-account-button">
-              회원탈퇴
-            </button>
-          </div>
         </div>
       ) : (
         // 등록된 정보가 없거나 수정 모드일 때 - 등록/수정 화면
@@ -373,6 +367,13 @@ function UserProfile({ userId }) {
           </div>
         </form>
       )}
+
+      {/* 회원탈퇴 버튼 - 카드 아래에 표시 */}
+      <div className="danger-zone">
+        <button onClick={() => setShowDeleteModal(true)} className="delete-account-button">
+          회원탈퇴
+        </button>
+      </div>
 
       {/* 회원탈퇴 확인 모달 */}
       {showDeleteModal && (

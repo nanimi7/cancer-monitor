@@ -187,19 +187,17 @@
 
 /* 회원탈퇴 영역 */
 .danger-zone {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  margin-top: 24px;
+  text-align: center;
 }
 
 .delete-account-button {
   background: none;
   border: none;
   color: #9ca3af;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
-  padding: 8px 0;
-  text-decoration: underline;
+  padding: 8px 12px;
 }
 
 .delete-account-button:hover {
