@@ -279,6 +279,7 @@
 
 .record-card-row {
   display: flex;
+  flex-direction: row !important;
   gap: 12px;
 }
 
