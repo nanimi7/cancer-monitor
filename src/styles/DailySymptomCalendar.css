@@ -355,6 +355,76 @@
   margin-top: 4px;
 }
 
+/* 컴팩트 카드 (항암 정보용) */
+.record-card.compact {
+  padding: 12px 16px;
+}
+
+.record-card.compact .record-card-header {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.chemo-info-inline {
+  margin-left: auto;
+  font-size: 15px;
+  font-weight: 700;
+  color: #8b5cf6;
+}
+
+/* 식사량 뱃지 */
+.food-level-badge {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f59e0b;
+  background: #fef3c7;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* 끼니별 아이템 */
+.meal-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fffbeb;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border-left: 3px solid #f59e0b;
+}
+
+.meal-item.empty {
+  background: #f9fafb;
+  border-left-color: #d1d5db;
+}
+
+.meal-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #92400e;
+  min-width: 32px;
+  flex-shrink: 0;
+}
+
+.meal-content {
+  font-size: 13px;
+  color: #78350f;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.meal-item.empty .meal-content {
+  color: #9ca3af;
+}
+
 /* 카드별 액센트 색상 */
 .chemo-card .record-icon { color: #8b5cf6; }
 .chemo-card .record-card-header { border-color: #ede9fe; }
@@ -713,6 +783,33 @@ textarea {
     padding: 10px 16px;
     font-size: 13px;
     border-radius: 8px;
+  }
+
+  /* 컴팩트 카드 모바일 */
+  .record-card.compact {
+    padding: 10px 14px;
+  }
+
+  .chemo-info-inline {
+    font-size: 14px;
+  }
+
+  .food-level-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .meal-item {
+    padding: 8px 10px;
+  }
+
+  .meal-label {
+    font-size: 11px;
+    min-width: 28px;
+  }
+
+  .meal-content {
+    font-size: 12px;
   }
 
   .react-calendar {

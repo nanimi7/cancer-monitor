@@ -456,8 +456,8 @@ function DailySymptomCalendar({ userId }) {
           <>
             {selectedDateRecord ? (
               <div className="record-view">
-                {/* 항암 정보 카드 */}
-                <div className="record-card chemo-card">
+                {/* 항암 정보 카드 - 한 줄로 표시 */}
+                <div className="record-card chemo-card compact">
                   <div className="record-card-header">
                     <svg className="record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -466,20 +466,7 @@ function DailySymptomCalendar({ userId }) {
                       <line x1="3" y1="10" x2="21" y2="10" />
                     </svg>
                     <span className="record-card-title">항암 치료 정보</span>
-                  </div>
-                  <div className="record-card-content">
-                    <div className="record-info-row">
-                      <span className="record-label">진행 횟수</span>
-                      <span className="record-value">{selectedDateRecord.chemoCycle}</span>
-                    </div>
-                    <div className="record-info-row">
-                      <span className="record-label">회차</span>
-                      <span className="record-value">{selectedDateRecord.chemoSession}</span>
-                    </div>
-                    <div className="record-info-row">
-                      <span className="record-label">일차</span>
-                      <span className="record-value">{selectedDateRecord.chemoDay}</span>
-                    </div>
+                    <span className="chemo-info-inline">{selectedDateRecord.chemoCycle} · {selectedDateRecord.chemoSession} · {selectedDateRecord.chemoDay}</span>
                   </div>
                 </div>
 
@@ -494,51 +481,55 @@ function DailySymptomCalendar({ userId }) {
                       <line x1="14" y1="1" x2="14" y2="4" />
                     </svg>
                     <span className="record-card-title">식사</span>
+                    <span className="food-level-badge">{(() => {
+                      const level = selectedDateRecord.foodIntakeLevel || selectedDateRecord.foodIntake;
+                      const foodIntakeMap = {
+                        '0': '전혀못먹음',
+                        '25': '평소의 1/4',
+                        '50': '평소의 절반',
+                        '75': '평소의 3/4',
+                        '100': '평소와 같음',
+                        '전혀못먹음': '전혀못먹음',
+                        '평소의1/4정도': '평소의 1/4',
+                        '평소의절반정도': '평소의 절반',
+                        '평소의3/4정도': '평소의 3/4',
+                        '평소와같음': '평소와 같음'
+                      };
+                      return foodIntakeMap[level] || level;
+                    })()}</span>
                   </div>
                   <div className="record-card-content">
-                    <div className="record-info-row">
-                      <span className="record-label">식사량</span>
-                      <span className="record-value">{(() => {
-                        const level = selectedDateRecord.foodIntakeLevel || selectedDateRecord.foodIntake;
-                        const foodIntakeMap = {
-                          '0': '전혀못먹음',
-                          '25': '평소의 1/4',
-                          '50': '평소의 절반',
-                          '75': '평소의 3/4',
-                          '100': '평소와 같음',
-                          '전혀못먹음': '전혀못먹음',
-                          '평소의1/4정도': '평소의 1/4',
-                          '평소의절반정도': '평소의 절반',
-                          '평소의3/4정도': '평소의 3/4',
-                          '평소와같음': '평소와 같음'
-                        };
-                        return foodIntakeMap[level] || level;
-                      })()}</span>
+                    <div className="meal-items">
+                      {selectedDateRecord.foodIntakeBreakfast && (
+                        <div className="meal-item">
+                          <span className="meal-label">아침</span>
+                          <span className="meal-content">{selectedDateRecord.foodIntakeBreakfast}</span>
+                        </div>
+                      )}
+                      {selectedDateRecord.foodIntakeLunch && (
+                        <div className="meal-item">
+                          <span className="meal-label">점심</span>
+                          <span className="meal-content">{selectedDateRecord.foodIntakeLunch}</span>
+                        </div>
+                      )}
+                      {selectedDateRecord.foodIntakeDinner && (
+                        <div className="meal-item">
+                          <span className="meal-label">저녁</span>
+                          <span className="meal-content">{selectedDateRecord.foodIntakeDinner}</span>
+                        </div>
+                      )}
+                      {selectedDateRecord.foodIntakeOther && (
+                        <div className="meal-item">
+                          <span className="meal-label">기타</span>
+                          <span className="meal-content">{selectedDateRecord.foodIntakeOther}</span>
+                        </div>
+                      )}
+                      {!selectedDateRecord.foodIntakeBreakfast && !selectedDateRecord.foodIntakeLunch && !selectedDateRecord.foodIntakeDinner && !selectedDateRecord.foodIntakeOther && (
+                        <div className="meal-item empty">
+                          <span className="meal-content">상세 기록 없음</span>
+                        </div>
+                      )}
                     </div>
-                    {selectedDateRecord.foodIntakeBreakfast && (
-                      <div className="record-info-row sub">
-                        <span className="record-label">아침</span>
-                        <span className="record-value">{selectedDateRecord.foodIntakeBreakfast}</span>
-                      </div>
-                    )}
-                    {selectedDateRecord.foodIntakeLunch && (
-                      <div className="record-info-row sub">
-                        <span className="record-label">점심</span>
-                        <span className="record-value">{selectedDateRecord.foodIntakeLunch}</span>
-                      </div>
-                    )}
-                    {selectedDateRecord.foodIntakeDinner && (
-                      <div className="record-info-row sub">
-                        <span className="record-label">저녁</span>
-                        <span className="record-value">{selectedDateRecord.foodIntakeDinner}</span>
-                      </div>
-                    )}
-                    {selectedDateRecord.foodIntakeOther && (
-                      <div className="record-info-row sub">
-                        <span className="record-label">기타</span>
-                        <span className="record-value">{selectedDateRecord.foodIntakeOther}</span>
-                      </div>
-                    )}
                   </div>
                 </div>
 
