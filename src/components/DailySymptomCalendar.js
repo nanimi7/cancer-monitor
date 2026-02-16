@@ -795,7 +795,7 @@ function DailySymptomCalendar({ userId }) {
               {errors.waterIntakeAmount && <span className="error-message">{errors.waterIntakeAmount}</span>}
             </div>
 
-            <div className="form-group">
+            <div className="form-group" style={{marginTop: '24px'}}>
               <label htmlFor="exerciseTime">운동량 (걸음수) <span className="required">*</span></label>
               <button
                 type="button"
