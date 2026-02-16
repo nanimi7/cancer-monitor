@@ -15,6 +15,7 @@ function Auth() {
   const [resetError, setResetError] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+  const [showEmailHelpModal, setShowEmailHelpModal] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -188,13 +189,23 @@ function Auth() {
           </button>
 
           {isLogin && (
-            <button
-              type="button"
-              className="forgot-password-button"
-              onClick={() => setShowResetModal(true)}
-            >
-              비밀번호를 잊으셨나요?
-            </button>
+            <div className="forgot-links">
+              <button
+                type="button"
+                className="forgot-button"
+                onClick={() => setShowEmailHelpModal(true)}
+              >
+                이메일을 잊으셨나요?
+              </button>
+              <span className="forgot-divider">|</span>
+              <button
+                type="button"
+                className="forgot-button"
+                onClick={() => setShowResetModal(true)}
+              >
+                비밀번호를 잊으셨나요?
+              </button>
+            </div>
           )}
         </form>
 
@@ -207,6 +218,29 @@ function Auth() {
           </p>
         </div>
       </div>
+
+      {/* 이메일 찾기 안내 모달 */}
+      {showEmailHelpModal && (
+        <div className="modal-overlay">
+          <div className="reset-modal">
+            <h3>이메일 찾기</h3>
+            <div className="email-help-content">
+              <p>가입하신 이메일 주소를 잊으셨나요?</p>
+              <ul>
+                <li>가입 시 사용한 이메일 서비스(Gmail, Naver, Kakao 등)의 받은편지함을 확인해주세요.</li>
+                <li>"항암치료 추적기" 또는 "noreply@firebase"로 검색하면 가입 확인 메일을 찾을 수 있습니다.</li>
+                <li>여러 이메일 계정을 사용하신다면 각 계정을 확인해주세요.</li>
+              </ul>
+            </div>
+            <button
+              onClick={() => setShowEmailHelpModal(false)}
+              className="reset-confirm-button"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 비밀번호 재설정 모달 */}
       {showResetModal && (
