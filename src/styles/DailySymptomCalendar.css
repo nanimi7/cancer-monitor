@@ -443,6 +443,17 @@
 .bowel-card .record-icon { color: #6366f1; }
 .bowel-card .record-card-header { border-color: #e0e7ff; }
 
+.bowel-info-inline {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.bowel-condition {
+  color: #6b7280;
+}
+
 .side-effect-card .record-icon { color: #ef4444; }
 .side-effect-card .record-card-header { border-color: #fee2e2; }
 
@@ -474,10 +485,14 @@
 
 .symptoms-text {
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.8;
   color: #374151;
   white-space: pre-wrap;
   word-break: break-word;
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 .record-note {

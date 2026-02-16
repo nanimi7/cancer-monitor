@@ -567,28 +567,20 @@ function DailySymptomCalendar({ userId }) {
                   </div>
                 </div>
 
-                {/* 배변 카드 */}
-                <div className="record-card bowel-card">
+                {/* 배변 카드 - 컴팩트 */}
+                <div className="record-card bowel-card compact">
                   <div className="record-card-header">
                     <svg className="record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M9 12l2 2 4-4" />
                       <circle cx="12" cy="12" r="10" />
                     </svg>
                     <span className="record-card-title">배변</span>
-                  </div>
-                  <div className="record-card-content">
-                    <div className="record-info-row">
-                      <span className="record-label">배변 여부</span>
-                      <span className={`record-value ${selectedDateRecord.bowelMovement === 'yes' ? 'positive' : ''}`}>
-                        {selectedDateRecord.bowelMovement === 'yes' ? '있음' : selectedDateRecord.bowelMovement === 'no' ? '없음' : '-'}
-                      </span>
-                    </div>
-                    {selectedDateRecord.bowelMovement === 'yes' && selectedDateRecord.bowelCondition && selectedDateRecord.bowelCondition.length > 0 && (
-                      <div className="record-info-row sub">
-                        <span className="record-label">상태</span>
-                        <span className="record-value">{selectedDateRecord.bowelCondition.join(', ')}</span>
-                      </div>
-                    )}
+                    <span className="bowel-info-inline">
+                      {selectedDateRecord.bowelMovement === 'yes' ? '있음' : selectedDateRecord.bowelMovement === 'no' ? '없음' : '-'}
+                      {selectedDateRecord.bowelMovement === 'yes' && selectedDateRecord.bowelCondition && selectedDateRecord.bowelCondition.length > 0 && (
+                        <span className="bowel-condition"> · {selectedDateRecord.bowelCondition.join(', ')}</span>
+                      )}
+                    </span>
                   </div>
                 </div>
 
