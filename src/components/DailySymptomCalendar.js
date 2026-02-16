@@ -291,10 +291,6 @@ function DailySymptomCalendar({ userId }) {
       newErrors.waterIntakeAmount = '음수량을 선택해주세요.';
     }
 
-    if (formData.waterIntakeNote.length > 500) {
-      newErrors.waterIntakeNote = '음수량 메모는 500자 이내로 입력해주세요.';
-    }
-
     if (!formData.exerciseTime) {
       newErrors.exerciseTime = '운동량을 선택해주세요.';
     }
@@ -544,7 +540,6 @@ function DailySymptomCalendar({ userId }) {
                     </div>
                     <div className="record-card-content">
                       <div className="record-value-large">{selectedDateRecord.waterIntakeAmount ? `${selectedDateRecord.waterIntakeAmount}ml` : '-'}</div>
-                      {selectedDateRecord.waterIntakeNote && <div className="record-note-text">{selectedDateRecord.waterIntakeNote}</div>}
                     </div>
                   </div>
                   <div className="record-card small exercise-card">
@@ -798,20 +793,6 @@ function DailySymptomCalendar({ userId }) {
                 <span className="arrow">▼</span>
               </button>
               {errors.waterIntakeAmount && <span className="error-message">{errors.waterIntakeAmount}</span>}
-
-              <label htmlFor="waterIntakeNote" style={{marginTop: '10px', display: 'block'}}>음수량 메모 (선택)</label>
-              <textarea
-                id="waterIntakeNote"
-                name="waterIntakeNote"
-                value={formData.waterIntakeNote}
-                onChange={handleChange}
-                rows="2"
-                maxLength="500"
-                placeholder="물 외에 다른 음료를 마셨거나 특이사항을 입력해주세요. (AI분석에 활용됩니다)"
-                className={errors.waterIntakeNote ? 'error' : ''}
-              />
-              <span className="char-count">{formData.waterIntakeNote.length}/500</span>
-              {errors.waterIntakeNote && <span className="error-message">{errors.waterIntakeNote}</span>}
             </div>
 
             <div className="form-group">
