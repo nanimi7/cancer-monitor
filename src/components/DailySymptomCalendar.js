@@ -456,68 +456,202 @@ function DailySymptomCalendar({ userId }) {
           <>
             {selectedDateRecord ? (
               <div className="record-view">
-                <div className="record-item">
-                  <strong>항암 진행 횟수:</strong> {selectedDateRecord.chemoCycle}
+                {/* 항암 정보 카드 */}
+                <div className="record-card chemo-card">
+                  <div className="record-card-header">
+                    <svg className="record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    <span className="record-card-title">항암 치료 정보</span>
+                  </div>
+                  <div className="record-card-content">
+                    <div className="record-info-row">
+                      <span className="record-label">진행 횟수</span>
+                      <span className="record-value">{selectedDateRecord.chemoCycle}</span>
+                    </div>
+                    <div className="record-info-row">
+                      <span className="record-label">회차</span>
+                      <span className="record-value">{selectedDateRecord.chemoSession}</span>
+                    </div>
+                    <div className="record-info-row">
+                      <span className="record-label">일차</span>
+                      <span className="record-value">{selectedDateRecord.chemoDay}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="record-item">
-                  <strong>항암 회차:</strong> {selectedDateRecord.chemoSession}
+
+                {/* 식사량 카드 */}
+                <div className="record-card food-card">
+                  <div className="record-card-header">
+                    <svg className="record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+                      <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+                      <line x1="6" y1="1" x2="6" y2="4" />
+                      <line x1="10" y1="1" x2="10" y2="4" />
+                      <line x1="14" y1="1" x2="14" y2="4" />
+                    </svg>
+                    <span className="record-card-title">식사</span>
+                  </div>
+                  <div className="record-card-content">
+                    <div className="record-info-row">
+                      <span className="record-label">식사량</span>
+                      <span className="record-value">{(() => {
+                        const level = selectedDateRecord.foodIntakeLevel || selectedDateRecord.foodIntake;
+                        const foodIntakeMap = {
+                          '0': '전혀못먹음',
+                          '25': '평소의 1/4',
+                          '50': '평소의 절반',
+                          '75': '평소의 3/4',
+                          '100': '평소와 같음',
+                          '전혀못먹음': '전혀못먹음',
+                          '평소의1/4정도': '평소의 1/4',
+                          '평소의절반정도': '평소의 절반',
+                          '평소의3/4정도': '평소의 3/4',
+                          '평소와같음': '평소와 같음'
+                        };
+                        return foodIntakeMap[level] || level;
+                      })()}</span>
+                    </div>
+                    {selectedDateRecord.foodIntakeBreakfast && (
+                      <div className="record-info-row sub">
+                        <span className="record-label">아침</span>
+                        <span className="record-value">{selectedDateRecord.foodIntakeBreakfast}</span>
+                      </div>
+                    )}
+                    {selectedDateRecord.foodIntakeLunch && (
+                      <div className="record-info-row sub">
+                        <span className="record-label">점심</span>
+                        <span className="record-value">{selectedDateRecord.foodIntakeLunch}</span>
+                      </div>
+                    )}
+                    {selectedDateRecord.foodIntakeDinner && (
+                      <div className="record-info-row sub">
+                        <span className="record-label">저녁</span>
+                        <span className="record-value">{selectedDateRecord.foodIntakeDinner}</span>
+                      </div>
+                    )}
+                    {selectedDateRecord.foodIntakeOther && (
+                      <div className="record-info-row sub">
+                        <span className="record-label">기타</span>
+                        <span className="record-value">{selectedDateRecord.foodIntakeOther}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="record-item">
-                  <strong>항암 진행 일차:</strong> {selectedDateRecord.chemoDay}
+
+                {/* 음수량 & 운동량 카드 */}
+                <div className="record-card-row">
+                  <div className="record-card small water-card">
+                    <div className="record-card-header">
+                      <svg className="record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                      </svg>
+                      <span className="record-card-title">음수량</span>
+                    </div>
+                    <div className="record-card-content">
+                      <div className="record-value-large">{selectedDateRecord.waterIntakeAmount ? `${selectedDateRecord.waterIntakeAmount}ml` : '-'}</div>
+                      {selectedDateRecord.waterIntakeNote && <div className="record-note-text">{selectedDateRecord.waterIntakeNote}</div>}
+                    </div>
+                  </div>
+                  <div className="record-card small exercise-card">
+                    <div className="record-card-header">
+                      <svg className="record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M13 4v16" />
+                        <path d="M17 4v16" />
+                        <path d="M19 4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2" />
+                        <path d="M11 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2" />
+                        <path d="M3 6h4" />
+                        <path d="M3 18h4" />
+                        <path d="M7 6v12" />
+                      </svg>
+                      <span className="record-card-title">운동량</span>
+                    </div>
+                    <div className="record-card-content">
+                      <div className="record-value-large">{selectedDateRecord.exerciseTime ? `${selectedDateRecord.exerciseTime}보` : '-'}</div>
+                      {selectedDateRecord.exerciseNote && <div className="record-note-text">{selectedDateRecord.exerciseNote}</div>}
+                    </div>
+                  </div>
                 </div>
-                <div className="record-item">
-                  <strong>식사량:</strong> {(() => {
-                    const level = selectedDateRecord.foodIntakeLevel || selectedDateRecord.foodIntake;
-                    // 숫자 값을 텍스트로 변환
-                    const foodIntakeMap = {
-                      '0': '전혀못먹음',
-                      '25': '평소의1/4정도',
-                      '50': '평소의절반정도',
-                      '75': '평소의3/4정도',
-                      '100': '평소와같음'
-                    };
-                    return foodIntakeMap[level] || level;
-                  })()}
-                  {/* 새로운 필드만 표시 */}
-                  {selectedDateRecord.foodIntakeBreakfast && (
-                    <div className="record-note"><strong>아침:</strong> {selectedDateRecord.foodIntakeBreakfast}</div>
-                  )}
-                  {selectedDateRecord.foodIntakeLunch && (
-                    <div className="record-note"><strong>점심:</strong> {selectedDateRecord.foodIntakeLunch}</div>
-                  )}
-                  {selectedDateRecord.foodIntakeDinner && (
-                    <div className="record-note"><strong>저녁:</strong> {selectedDateRecord.foodIntakeDinner}</div>
-                  )}
-                  {selectedDateRecord.foodIntakeOther && (
-                    <div className="record-note"><strong>기타:</strong> {selectedDateRecord.foodIntakeOther}</div>
-                  )}
+
+                {/* 배변 카드 */}
+                <div className="record-card bowel-card">
+                  <div className="record-card-header">
+                    <svg className="record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M9 12l2 2 4-4" />
+                      <circle cx="12" cy="12" r="10" />
+                    </svg>
+                    <span className="record-card-title">배변</span>
+                  </div>
+                  <div className="record-card-content">
+                    <div className="record-info-row">
+                      <span className="record-label">배변 여부</span>
+                      <span className={`record-value ${selectedDateRecord.bowelMovement === 'yes' ? 'positive' : ''}`}>
+                        {selectedDateRecord.bowelMovement === 'yes' ? '있음' : selectedDateRecord.bowelMovement === 'no' ? '없음' : '-'}
+                      </span>
+                    </div>
+                    {selectedDateRecord.bowelMovement === 'yes' && selectedDateRecord.bowelCondition && selectedDateRecord.bowelCondition.length > 0 && (
+                      <div className="record-info-row sub">
+                        <span className="record-label">상태</span>
+                        <span className="record-value">{selectedDateRecord.bowelCondition.join(', ')}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="record-item">
-                  <strong>음수량:</strong> {selectedDateRecord.waterIntakeAmount ? `약 ${selectedDateRecord.waterIntakeAmount}ml` : selectedDateRecord.waterIntake}
-                  {selectedDateRecord.waterIntakeNote && <div className="record-note">{selectedDateRecord.waterIntakeNote}</div>}
+
+                {/* 부작용 카드 */}
+                <div className="record-card side-effect-card">
+                  <div className="record-card-header">
+                    <svg className="record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    <span className="record-card-title">주요 부작용</span>
+                  </div>
+                  <div className="record-card-content">
+                    <div className="side-effect-tags">
+                      {selectedDateRecord.sideEffects.map((effect, index) => (
+                        <span key={index} className={`side-effect-tag ${effect === '없음' ? 'none' : ''}`}>{effect}</span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="record-item">
-                  <strong>운동량:</strong> {selectedDateRecord.exerciseTime ? `약 ${selectedDateRecord.exerciseTime}보` : selectedDateRecord.exercise}
-                  {selectedDateRecord.exerciseNote && <div className="record-note">{selectedDateRecord.exerciseNote}</div>}
-                </div>
-                <div className="record-item">
-                  <strong>배변:</strong> {selectedDateRecord.bowelMovement === 'yes' ? '있음' : selectedDateRecord.bowelMovement === 'no' ? '없음' : '-'}
-                  {selectedDateRecord.bowelMovement === 'yes' && selectedDateRecord.bowelCondition && selectedDateRecord.bowelCondition.length > 0 && (
-                    <div className="record-note">상태: {selectedDateRecord.bowelCondition.join(', ')}</div>
-                  )}
-                </div>
-                <div className="record-item">
-                  <strong>주요 부작용:</strong> {selectedDateRecord.sideEffects.join(', ')}
-                </div>
-                <div className="record-item">
-                  <div><strong>주요 증상:</strong></div>
-                  <div className="symptoms-text">{selectedDateRecord.symptoms}</div>
-                </div>
+
+                {/* 주요 증상 카드 */}
+                {selectedDateRecord.symptoms && (
+                  <div className="record-card symptom-card">
+                    <div className="record-card-header">
+                      <svg className="record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                      </svg>
+                      <span className="record-card-title">주요 증상</span>
+                    </div>
+                    <div className="record-card-content">
+                      <div className="symptoms-text">{selectedDateRecord.symptoms}</div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="button-group">
                   <button className="edit-button" onClick={handleCreateOrEdit}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
                     수정하기
                   </button>
                   <button className="delete-button" onClick={handleDelete}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
                     삭제하기
                   </button>
                 </div>

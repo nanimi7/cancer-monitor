@@ -248,40 +248,164 @@
 .selected-date-info {
   background-color: #f8f9fa;
   padding: 15px;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 .selected-date-info h3 {
   color: #2c3e50;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   font-size: 18px;
+  font-weight: 700;
 }
 
 .record-view {
-  background-color: white;
-  padding: 15px;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.record-item {
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #ecf0f1;
+/* 카드 스타일 */
+.record-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8eaed;
 }
 
-.record-item:last-child {
-  border-bottom: none;
+.record-card.small {
+  flex: 1;
 }
 
-.record-item strong {
-  color: #2c3e50;
-  display: inline;
-  margin-right: 4px;
+.record-card-row {
+  display: flex;
+  gap: 12px;
+}
+
+.record-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.record-icon {
+  width: 20px;
+  height: 20px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.record-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.record-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.record-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.record-info-row.sub {
+  padding-left: 8px;
+  border-left: 2px solid #e5e7eb;
+  margin-left: 4px;
+}
+
+.record-label {
+  font-size: 13px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.record-value {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+  text-align: right;
+  word-break: break-word;
+  max-width: 60%;
+}
+
+.record-value.positive {
+  color: #059669;
+}
+
+.record-value-large {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: center;
+}
+
+.record-note-text {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* 카드별 액센트 색상 */
+.chemo-card .record-icon { color: #8b5cf6; }
+.chemo-card .record-card-header { border-color: #ede9fe; }
+
+.food-card .record-icon { color: #f59e0b; }
+.food-card .record-card-header { border-color: #fef3c7; }
+
+.water-card .record-icon { color: #3b82f6; }
+.water-card .record-card-header { border-color: #dbeafe; }
+.water-card .record-value-large { color: #3b82f6; }
+
+.exercise-card .record-icon { color: #10b981; }
+.exercise-card .record-card-header { border-color: #d1fae5; }
+.exercise-card .record-value-large { color: #10b981; }
+
+.bowel-card .record-icon { color: #6366f1; }
+.bowel-card .record-card-header { border-color: #e0e7ff; }
+
+.side-effect-card .record-icon { color: #ef4444; }
+.side-effect-card .record-card-header { border-color: #fee2e2; }
+
+.symptom-card .record-icon { color: #8b5cf6; }
+.symptom-card .record-card-header { border-color: #ede9fe; }
+
+/* 부작용 태그 */
+.side-effect-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.side-effect-tag {
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 16px;
+  border: 1px solid #fecaca;
+}
+
+.side-effect-tag.none {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
 }
 
 .symptoms-text {
-  margin-top: 5px;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #374151;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -297,39 +421,51 @@
 .button-group {
   display: flex;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 16px;
 }
 
 .edit-button,
 .create-button {
-  background-color: #3498db;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3b82f6;
   color: white;
   border: none;
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 4px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.2s ease;
 }
 
 .edit-button:hover,
 .create-button:hover {
-  background-color: #2980b9;
+  background-color: #2563eb;
+  transform: translateY(-1px);
 }
 
 .delete-button {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 4px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.2s ease;
 }
 
 .delete-button:hover {
-  background-color: #c0392b;
+  background-color: #fecaca;
+  transform: translateY(-1px);
 }
 
 .create-button {
@@ -519,6 +655,64 @@ textarea {
   .daily-symptom-calendar h2 {
     font-size: 18px;
     margin-bottom: 15px;
+  }
+
+  /* 카드 반응형 */
+  .record-view {
+    gap: 10px;
+  }
+
+  .record-card {
+    padding: 14px;
+    border-radius: 10px;
+  }
+
+  .record-card-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .record-card-header {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+  }
+
+  .record-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .record-card-title {
+    font-size: 13px;
+  }
+
+  .record-label {
+    font-size: 12px;
+  }
+
+  .record-value {
+    font-size: 13px;
+  }
+
+  .record-value-large {
+    font-size: 18px;
+  }
+
+  .side-effect-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .button-group {
+    margin-top: 12px;
+  }
+
+  .edit-button,
+  .create-button,
+  .delete-button {
+    padding: 10px 16px;
+    font-size: 13px;
+    border-radius: 8px;
   }
 
   .react-calendar {
