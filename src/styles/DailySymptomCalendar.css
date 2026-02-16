@@ -561,12 +561,20 @@
 .no-record {
   text-align: center;
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .no-record p {
   color: #7f8c8d;
   margin-bottom: 20px;
   font-size: 16px;
+}
+
+.no-record .create-button {
+  flex: none;
+  width: auto;
 }
 
 .symptom-form {
