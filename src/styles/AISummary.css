@@ -292,6 +292,33 @@
   border: 1px solid #e8eaed;
 }
 
+/* 현재 분석과 이전 비교 영역 분리 스타일 */
+.ai-current-analysis {
+  margin-bottom: 0;
+}
+
+.ai-comparison-section {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.4);
+}
+
+.ai-comparison-header {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.15);
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.ai-comparison-content {
+  opacity: 0.9;
+  font-size: 14px;
+}
+
 .ai-comment-content {
   background: #fff4e6;
   padding: 16px;
@@ -522,6 +549,20 @@
     word-break: keep-all;
     overflow-wrap: break-word;
     padding: 14px;
+  }
+
+  .ai-comparison-section {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+
+  .ai-comparison-header {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+
+  .ai-comparison-content {
+    font-size: 13px;
   }
 
   .ai-comment-content {

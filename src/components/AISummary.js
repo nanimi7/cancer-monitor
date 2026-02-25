@@ -16,6 +16,32 @@ function AISummary({ userId }) {
   const [aiLoading, setAiLoading] = useState(false);
   const [showDailyRecords, setShowDailyRecords] = useState(false);
 
+  // AI 분석 내용에서 이전 비교 부분을 분리해서 렌더링
+  const renderAIContent = (text) => {
+    if (!text) return null;
+
+    const comparisonMarker = '📊 이전 비교:';
+    const markerIndex = text.indexOf(comparisonMarker);
+
+    if (markerIndex === -1) {
+      // 비교 부분이 없는 경우
+      return <div>{text}</div>;
+    }
+
+    const currentPart = text.substring(0, markerIndex).trim();
+    const comparisonPart = text.substring(markerIndex + comparisonMarker.length).trim();
+
+    return (
+      <>
+        <div className="ai-current-analysis">{currentPart}</div>
+        <div className="ai-comparison-section">
+          <div className="ai-comparison-header">📊 이전 비교</div>
+          <div className="ai-comparison-content">{comparisonPart}</div>
+        </div>
+      </>
+    );
+  };
+
   const getRecordUpdatedAtMs = (record) => {
     const toMs = (value) => {
       if (!value) return 0;
@@ -590,7 +616,7 @@ function AISummary({ userId }) {
                         <span>식사량</span>
                       </div>
                       <div className="ai-summary-content" style={{background: 'linear-gradient(135deg, #8895d4 0%, #7885c2 100%)', color: 'white', padding: '16px', borderRadius: '8px'}}>
-                        {aiSummary.food}
+                        {renderAIContent(aiSummary.food)}
                       </div>
                     </div>
 
@@ -601,7 +627,7 @@ function AISummary({ userId }) {
                         <span>음수량</span>
                       </div>
                       <div className="ai-summary-content" style={{background: 'linear-gradient(135deg, #d888b2 0%, #c678a1 100%)', color: 'white', padding: '16px', borderRadius: '8px'}}>
-                        {aiSummary.water}
+                        {renderAIContent(aiSummary.water)}
                       </div>
                     </div>
 
@@ -612,7 +638,7 @@ function AISummary({ userId }) {
                         <span>운동량</span>
                       </div>
                       <div className="ai-summary-content" style={{background: 'linear-gradient(135deg, #78a8cc 0%, #6898bc 100%)', color: 'white', padding: '16px', borderRadius: '8px'}}>
-                        {aiSummary.exercise}
+                        {renderAIContent(aiSummary.exercise)}
                       </div>
                     </div>
 
@@ -623,7 +649,7 @@ function AISummary({ userId }) {
                         <span>배변</span>
                       </div>
                       <div className="ai-summary-content" style={{background: 'linear-gradient(135deg, #88c6b7 0%, #78b6a7 100%)', color: 'white', padding: '16px', borderRadius: '8px'}}>
-                        {aiSummary.bowel}
+                        {renderAIContent(aiSummary.bowel)}
                       </div>
                     </div>
 
@@ -634,7 +660,7 @@ function AISummary({ userId }) {
                         <span>특이사항 및 부작용</span>
                       </div>
                       <div className="ai-summary-content" style={{background: 'linear-gradient(135deg, #f4a5ae 0%, #e4959e 100%)', color: 'white', padding: '16px', borderRadius: '8px'}}>
-                        {aiSummary.special}
+                        {renderAIContent(aiSummary.special)}
                       </div>
                     </div>
 

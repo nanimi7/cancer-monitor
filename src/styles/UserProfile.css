@@ -1,14 +1,17 @@
+/* ========== Notion-like User Profile Form ========== */
 .user-profile {
-  background-color: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fafafa;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
 }
 
 .user-profile h2 {
-  color: #2c3e50;
-  margin-bottom: 25px;
-  font-size: 24px;
+  color: #37352f;
+  margin-bottom: 24px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .user-profile form {
@@ -22,67 +25,111 @@
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 500;
+  color: #37352f;
+  font-size: 14px;
+  letter-spacing: -0.01em;
 }
 
 .required {
-  color: #e74c3c;
+  color: #eb5757;
+  margin-left: 2px;
 }
 
+/* Notion-style inputs */
 .form-group input[type="text"],
 .form-group input[type="date"],
 .form-group textarea {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: border-color 0.3s;
+  padding: 12px 14px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.15s ease;
+  background: white;
+  color: #37352f;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.form-group input[type="text"]:hover,
+.form-group input[type="date"]:hover,
+.form-group textarea:hover {
+  border-color: #d4d4d4;
 }
 
 .form-group input[type="text"]:focus,
 .form-group input[type="date"]:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: #90caf9;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.form-group input[type="text"]::placeholder,
+.form-group textarea::placeholder {
+  color: #9ca3af;
 }
 
 .form-group input.error,
 .form-group textarea.error {
-  border-color: #e74c3c;
+  border-color: #eb5757;
+  background: #fff5f5;
 }
 
+/* Notion-style radio group */
 .radio-group {
   display: flex;
-  gap: 20px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .radio-label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
-  font-weight: normal;
+  font-weight: 400;
+  font-size: 14px;
+  padding: 10px 16px;
+  background: white;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  color: #37352f;
+}
+
+.radio-label:hover {
+  background: #f7f6f3;
+  border-color: #d4d4d4;
+}
+
+.radio-label:has(input:checked) {
+  background: #ede9fe;
+  border-color: #a78bfa;
 }
 
 .radio-label input[type="radio"] {
   cursor: pointer;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #8b5cf6;
 }
 
 .char-count {
   display: block;
   text-align: right;
   font-size: 12px;
-  color: #7f8c8d;
-  margin-top: 4px;
+  color: #91918e;
+  margin-top: 6px;
 }
 
 .error-message {
   display: block;
-  color: #e74c3c;
+  color: #eb5757;
   font-size: 12px;
-  margin-top: 4px;
+  margin-top: 6px;
+  padding-left: 2px;
 }
 
 /* 등록된 정보 표시 영역 */
@@ -134,55 +181,67 @@
 }
 
 .edit-button {
-  background-color: #3498db;
+  background: #2196f3;
   color: white;
   border: none;
   padding: 10px 24px;
   font-size: 14px;
-  border-radius: 4px;
+  font-weight: 500;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(33, 150, 243, 0.3);
 }
 
 .edit-button:hover {
-  background-color: #2980b9;
+  background: #1976d2;
+  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.4);
+  transform: translateY(-1px);
 }
 
-/* 버튼 그룹 */
+/* Notion-style button group */
 .button-group {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e5e5;
 }
 
 .submit-button {
-  background-color: #3498db;
+  background: #2196f3;
   color: white;
   border: none;
-  padding: 12px 30px;
-  font-size: 16px;
-  border-radius: 4px;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(33, 150, 243, 0.3);
 }
 
 .submit-button:hover {
-  background-color: #2980b9;
+  background: #1976d2;
+  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.4);
+  transform: translateY(-1px);
 }
 
 .cancel-button {
-  background-color: #95a5a6;
-  color: white;
-  border: none;
-  padding: 12px 30px;
-  font-size: 16px;
-  border-radius: 4px;
+  background: #f5f5f5;
+  color: #37352f;
+  border: 1px solid #e5e5e5;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.15s ease;
 }
 
 .cancel-button:hover {
-  background-color: #7f8c8d;
+  background: #ebebeb;
+  border-color: #d4d4d4;
 }
 
 /* 회원탈퇴 영역 */
@@ -302,12 +361,13 @@
 
 @media (max-width: 768px) {
   .user-profile {
-    padding: 15px;
+    padding: 16px;
+    border-radius: 10px;
   }
 
   .user-profile h2 {
     font-size: 18px;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
   }
 
   .profile-header {
@@ -334,30 +394,54 @@
 
   .edit-button {
     width: 100%;
-    padding: 10px 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
   }
 
   .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 16px;
   }
 
   .form-group label {
     font-size: 13px;
+    margin-bottom: 6px;
   }
 
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
+  .form-group input[type="text"],
+  .form-group input[type="date"],
+  .form-group textarea {
     font-size: 14px;
-    padding: 10px;
+    padding: 11px 12px;
+    border-radius: 8px;
+  }
+
+  .radio-group {
+    gap: 6px;
+  }
+
+  .radio-label {
+    font-size: 13px;
+    padding: 9px 14px;
+    gap: 6px;
+    border-radius: 6px;
+  }
+
+  .radio-label input[type="radio"] {
+    width: 14px;
+    height: 14px;
   }
 
   .button-group {
     flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
   }
 
   .submit-button,
   .cancel-button {
     width: 100%;
+    padding: 12px 24px;
+    font-size: 14px;
   }
 }
