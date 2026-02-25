@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
-import { collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
-import { deleteUser, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { collection, addDoc, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import '../styles/UserProfile.css';
 
 function UserProfile({ userId }) {
@@ -152,38 +152,29 @@ function UserProfile({ userId }) {
 
     try {
       const user = auth.currentUser;
+      if (!user || !user.email) {
+        throw new Error('로그인 정보를 확인할 수 없습니다.');
+      }
 
       // 재인증 (보안을 위해 필요)
       const credential = EmailAuthProvider.credential(user.email, deletePassword);
       await reauthenticateWithCredential(user, credential);
 
-      // Firestore 데이터 삭제
-      // 1. profile 삭제
-      const profileSnapshot = await getDocs(collection(db, `users/${userId}/profile`));
-      for (const docSnap of profileSnapshot.docs) {
-        await deleteDoc(doc(db, `users/${userId}/profile`, docSnap.id));
+      const idToken = await user.getIdToken(true);
+      const response = await fetch('/api/delete-account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        throw new Error(errorBody.details || `API 호출 실패: ${response.status}`);
       }
 
-      // 2. medications 삭제
-      const medicationsSnapshot = await getDocs(collection(db, `users/${userId}/medications`));
-      for (const docSnap of medicationsSnapshot.docs) {
-        await deleteDoc(doc(db, `users/${userId}/medications`, docSnap.id));
-      }
-
-      // 3. symptoms 삭제
-      const symptomsSnapshot = await getDocs(collection(db, `users/${userId}/symptoms`));
-      for (const docSnap of symptomsSnapshot.docs) {
-        await deleteDoc(doc(db, `users/${userId}/symptoms`, docSnap.id));
-      }
-
-      // 4. weights 삭제
-      const weightsSnapshot = await getDocs(collection(db, `users/${userId}/weights`));
-      for (const docSnap of weightsSnapshot.docs) {
-        await deleteDoc(doc(db, `users/${userId}/weights`, docSnap.id));
-      }
-
-      // Firebase Auth 사용자 삭제
-      await deleteUser(user);
+      await auth.signOut();
 
       alert('회원탈퇴가 완료되었습니다.');
     } catch (error) {

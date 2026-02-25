@@ -77,20 +77,20 @@ Firebase Console에서 Firestore Database > 규칙으로 이동하여 다음 규
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
 ```
 
-**주의**: 프로덕션 환경에서는 보안 규칙을 강화해야 합니다.
+위 규칙은 사용자별 데이터 격리를 강제합니다.
 
 ### 4. Anthropic API 키 발급
 
 1. [Anthropic Console](https://console.anthropic.com/)에서 계정 생성
 2. API Keys 메뉴에서 새 API 키 생성
-3. `.env` 파일의 `REACT_APP_ANTHROPIC_API_KEY`에 입력
+3. 서버 환경 변수에 `ANTHROPIC_API_KEY`로 입력
 
 ### 5. 개발 서버 실행
 

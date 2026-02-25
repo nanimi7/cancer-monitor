@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import { db } from '../firebase';
-import { collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, updateDoc, doc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/DailySymptomCalendar.css';
@@ -34,7 +34,7 @@ function DailySymptomCalendar({ userId }) {
   const [errors, setErrors] = useState({});
   const [activeBottomSheet, setActiveBottomSheet] = useState(null);
 
-  const sideEffectOptions = ['없음', '구토', '오심', '발열', '손발저림', '두통', '어지러움', '설사', '변비', '탈모', '발진', '가려움', '근육통', '피로', '졸림'];
+  const sideEffectOptions = ['없음', '구토', '오심', '발열', '오한', '손발저림', '두통', '어지러움', '설사', '변비', '탈모', '발진', '가려움', '근육통', '피로', '식욕저하', '졸림'];
   const bowelConditionOptions = ['정상', '설사', '묽은변', '딱딱한변', '혈변'];
 
   // Bottom sheet options
@@ -92,43 +92,9 @@ function DailySymptomCalendar({ userId }) {
   };
 
   useEffect(() => {
-    const initializeData = async () => {
-      // 먼저 마이그레이션 실행
-      await migrateOldSideEffects();
-      // 마이그레이션 완료 후 데이터 로드
-      await loadSymptomRecords();
-    };
-
-    initializeData();
+    loadSymptomRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const migrateOldSideEffects = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, `users/${userId}/symptomRecords`));
-
-      for (const docSnapshot of querySnapshot.docs) {
-        const data = docSnapshot.data();
-
-        // sideEffects에서 "심한졸림", "심한피로" 제거
-        if (data.sideEffects && Array.isArray(data.sideEffects)) {
-          const filteredSideEffects = data.sideEffects.filter(
-            effect => effect !== '심한졸림' && effect !== '심한피로'
-          );
-
-          // 변경사항이 있는 경우에만 업데이트
-          if (filteredSideEffects.length !== data.sideEffects.length) {
-            const recordRef = doc(db, `users/${userId}/symptomRecords`, docSnapshot.id);
-            await updateDoc(recordRef, { sideEffects: filteredSideEffects });
-            console.log(`✅ 부작용 마이그레이션 완료: ${data.date}`);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('부작용 마이그레이션 오류:', error);
-      // 마이그레이션 실패해도 앱은 계속 동작
-    }
-  };
 
   const loadSymptomRecords = async () => {
     try {
@@ -329,24 +295,31 @@ function DailySymptomCalendar({ userId }) {
     try {
       const symptomRecordsPath = `users/${userId}/symptomRecords`;
       if (selectedDateRecord && selectedDateRecord.id) {
-        await updateDoc(doc(db, symptomRecordsPath, selectedDateRecord.id), formData);
+        const updatedData = {
+          ...formData,
+          updatedAt: serverTimestamp(),
+        };
+        await updateDoc(doc(db, symptomRecordsPath, selectedDateRecord.id), updatedData);
+        setSelectedDateRecord({
+          ...selectedDateRecord,
+          ...formData,
+        });
         alert('기록이 수정되었습니다.');
       } else {
-        await addDoc(collection(db, symptomRecordsPath), formData);
+        const newData = {
+          ...formData,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
+        const docRef = await addDoc(collection(db, symptomRecordsPath), newData);
+        setSelectedDateRecord({
+          ...formData,
+          id: docRef.id,
+        });
         alert('기록이 등록되었습니다.');
       }
       setShowForm(false);
       await loadSymptomRecords();
-      // 수정/등록 후 해당 날짜의 최신 데이터로 자동 업데이트
-      const dateStr = formData.date;
-      const querySnapshot = await getDocs(collection(db, `users/${userId}/symptomRecords`));
-      const updatedRecord = querySnapshot.docs.find(doc => doc.data().date === dateStr);
-      if (updatedRecord) {
-        setSelectedDateRecord({
-          id: updatedRecord.id,
-          ...updatedRecord.data()
-        });
-      }
     } catch (error) {
       console.error('기록 저장 오류:', error);
       alert('저장 중 오류가 발생했습니다.');

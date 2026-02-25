@@ -1,10 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { applyCors, enforceBodySize, verifyUser } from './_lib/security.js';
 
 export default async function handler(req, res) {
-  // CORS 헤더 설정
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  applyCors(req, res);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -15,13 +13,16 @@ export default async function handler(req, res) {
   }
 
   try {
+    await verifyUser(req);
+    enforceBodySize(req);
+
     const { records, foodLabelMap, waterLabelMap, exerciseLabelMap } = req.body;
 
     if (!records || records.length === 0) {
       return res.status(400).json({ error: '필수 데이터가 누락되었습니다.' });
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY || process.env.REACT_APP_ANTHROPIC_API_KEY;
+    const apiKey = process.env.ANTHROPIC_API_KEY;
 
     if (!apiKey) {
       console.error('ANTHROPIC_API_KEY not found in environment variables');
@@ -127,9 +128,9 @@ ${dataText}
     });
   } catch (error) {
     console.error('추이 분석 생성 오류:', error);
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       error: '추이 분석 생성 중 오류가 발생했습니다.',
-      details: error.message
+      details: error.statusCode ? `${error.statusCode}: ${error.message}` : error.message
     });
   }
 }

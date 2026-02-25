@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import '../styles/AISummary.css';
 
 function AISummary({ userId }) {
@@ -15,6 +15,18 @@ function AISummary({ userId }) {
   const [aiSummary, setAiSummary] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [showDailyRecords, setShowDailyRecords] = useState(false);
+
+  const getRecordUpdatedAtMs = (record) => {
+    const toMs = (value) => {
+      if (!value) return 0;
+      if (typeof value?.toMillis === 'function') return value.toMillis();
+      if (typeof value === 'number') return value;
+      const parsed = new Date(value).getTime();
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+
+    return Math.max(toMs(record.updatedAt), toMs(record.createdAt));
+  };
 
   useEffect(() => {
     loadSymptomRecords();
@@ -47,7 +59,8 @@ function AISummary({ userId }) {
       // 날짜별로 최신 레코드만 필터링 (중복 제거)
       const recordsByDate = {};
       allRecords.forEach(record => {
-        if (!recordsByDate[record.date] || recordsByDate[record.date].id < record.id) {
+        const previous = recordsByDate[record.date];
+        if (!previous || getRecordUpdatedAtMs(record) >= getRecordUpdatedAtMs(previous)) {
           recordsByDate[record.date] = record;
         }
       });
@@ -55,52 +68,9 @@ function AISummary({ userId }) {
       // 객체를 배열로 변환
       const uniqueRecords = Object.values(recordsByDate);
 
-      // 마이그레이션: foodIntakeNote가 있고 foodIntakeBreakfast가 없는 경우 자동 마이그레이션
-      await migrateOldFoodIntakeData(querySnapshot.docs);
-
       setSymptomRecords(uniqueRecords);
     } catch (error) {
       console.error('증상 기록 로드 오류:', error);
-    }
-  };
-
-  const migrateOldFoodIntakeData = async (docs) => {
-    try {
-      for (const docSnapshot of docs) {
-        const data = docSnapshot.data();
-        let needsUpdate = false;
-        const updateData = {};
-
-        // 1. foodIntakeNote가 있고, foodIntakeBreakfast가 없는 경우 마이그레이션
-        if (data.foodIntakeNote &&
-            data.foodIntakeNote.trim() !== '' &&
-            !data.foodIntakeBreakfast) {
-          updateData.foodIntakeBreakfast = data.foodIntakeNote;
-          needsUpdate = true;
-        }
-
-        // 2. sideEffects에서 "심한졸림", "심한피로" 제거
-        if (data.sideEffects && Array.isArray(data.sideEffects)) {
-          const filteredSideEffects = data.sideEffects.filter(
-            effect => effect !== '심한졸림' && effect !== '심한피로'
-          );
-
-          if (filteredSideEffects.length !== data.sideEffects.length) {
-            updateData.sideEffects = filteredSideEffects;
-            needsUpdate = true;
-          }
-        }
-
-        // 업데이트가 필요한 경우에만 실행
-        if (needsUpdate) {
-          const recordRef = doc(db, `users/${userId}/symptomRecords`, docSnapshot.id);
-          await updateDoc(recordRef, updateData);
-          console.log(`✅ 마이그레이션 완료: ${data.date}`);
-        }
-      }
-    } catch (error) {
-      console.error('마이그레이션 오류:', error);
-      // 마이그레이션 실패해도 앱은 계속 동작
     }
   };
 
@@ -289,10 +259,16 @@ function AISummary({ userId }) {
         const age = userProfile?.birthdate ? calculateAge(userProfile.birthdate) : null;
 
         // Serverless Function 호출
+        const idToken = await auth.currentUser?.getIdToken();
+        if (!idToken) {
+          throw new Error('인증 토큰을 가져올 수 없습니다. 다시 로그인해주세요.');
+        }
+
         const response = await fetch('/api/generate-medical-summary', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${idToken}`,
           },
           body: JSON.stringify({
             userProfile: {
@@ -374,7 +350,7 @@ function AISummary({ userId }) {
 
     // 배변 횟수 계산
     const bowelMovementCount = sortedRecords.filter(record =>
-      record.bowelMovement === '예'
+      record.bowelMovement === 'yes' || record.bowelMovement === '예'
     ).length;
 
     // 식사량 추이 분석
