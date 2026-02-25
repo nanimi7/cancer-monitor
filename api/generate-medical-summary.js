@@ -15,11 +15,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { userProfile, symptomTexts, recordCount } = req.body;
+    const { userProfile, symptomTexts, recordCount, currentSessionInfo, previousSessionInfo, previousSymptomTexts } = req.body;
 
     if (!userProfile || !symptomTexts) {
       return res.status(400).json({ error: '필수 데이터가 누락되었습니다.' });
     }
+
+    const hasPreviousData = previousSessionInfo && previousSymptomTexts;
 
     const apiKey = process.env.ANTHROPIC_API_KEY || process.env.REACT_APP_ANTHROPIC_API_KEY;
 
@@ -32,6 +34,20 @@ export default async function handler(req, res) {
       apiKey: apiKey,
     });
 
+    // 이전 차수 비교 데이터가 있는 경우와 없는 경우 프롬프트 분기
+    const comparisonSection = hasPreviousData ? `
+**이전 차수 기록 (${previousSessionInfo.cycle} ${previousSessionInfo.session}):**
+${previousSymptomTexts}
+
+**분석 방식:**
+- 각 항목은 반드시 **줄바꿈 포함 총 10줄 이내**로 작성
+- **현재 차수(${currentSessionInfo.cycle} ${currentSessionInfo.session}) 분석: 5줄**
+- **이전 차수(${previousSessionInfo.cycle} ${previousSessionInfo.session})와 비교 분석: 5줄**
+- 비교 분석은 "vs 이전:" 또는 "[비교]" 등으로 명확히 구분` : `
+**분석 방식:**
+- 비교할 이전 차수 데이터가 없습니다
+- 각 항목은 반드시 **줄바꿈 포함 총 10줄 이내**로 현재 차수만 분석`;
+
     const prompt = `당신은 의료진에게 환자의 항암치료 경과를 전달하는 의료 보조 AI입니다.
 
 **환자 정보:**
@@ -40,75 +56,59 @@ export default async function handler(req, res) {
 - 진단명: ${userProfile.disease || '정보 없음'}
 - 최초 진단일: ${userProfile.diagnosisDate || '정보 없음'}
 
-**증상 기록 (최근 ${recordCount}건):**
+**현재 차수 기록 (${currentSessionInfo?.cycle || ''} ${currentSessionInfo?.session || ''}, ${recordCount}건):**
 ${symptomTexts}
+${comparisonSection}
 
-**중요: 분석 시 주의사항**
-- 각 기록의 괄호 안에 있는 사용자의 텍스트 입력(식사 메뉴, 음료 종류, 운동 내용 등)을 반드시 분석에 참고하세요
-- 식사량 정보는 "아침:", "점심:", "저녁:", "기타:" 형식으로 구분되어 제공됩니다. 각 시간대별 식사 내용을 종합적으로 분석하세요
-- 예: 식사량이 1/4로 줄었더라도 "아침: 죽 반공기, 점심: 미역국, 저녁: 토스트 1개"와 같은 시간대별 메뉴가 있다면 영양소 균형, 섭취 패턴, 식사 빈도를 분석하세요
-- 음수량 기록의 괄호 내용(물, 이온음료, 보리차 등)을 확인하여 수분 섭취의 질적 측면도 평가하세요
-- 운동량 기록의 괄호 내용(산책, 스트레칭, 실내 걷기 등)을 확인하여 운동 강도와 다양성을 평가하세요
+**핵심 규칙: 모든 항목은 줄바꿈 포함 반드시 10줄 이내로 작성하세요. 이 규칙은 절대적입니다.**
 
 다음 항목별로 분석을 생성해주세요:
 
-**중요: 각 항목은 반드시 최대 15줄 이내로 작성하세요.**
+1. **식사량 분석** (10줄 이내)
+   - 구체적 메뉴 기반 영양 상태 평가
+   - 단백질, 탄수화물 등 영양소 균형
+   ${hasPreviousData ? '- 이전 차수 대비 변화 분석' : ''}
 
-1. **식사량 분석** (최대 15줄)
-   - 사용자가 입력한 구체적 메뉴를 바탕으로 영양 상태 평가
-   - 전체 기간 동안의 식사량 패턴과 변화 추이
-   - **단백질 섭취 충분도 평가 (고기, 생선, 계란, 콩류 등)**
-   - **탄수화물, 지방, 비타민, 미네랄 등 주요 영양소 균형 분석**
-   - **부족한 영양소가 있다면 구체적으로 지적하고, 어떤 식품을 추가하면 좋을지 제안**
-   - 3-4줄로 간결하게 요약 (최대 15줄 초과 금지)
-
-2. **음수량 분석** (최대 15줄)
-   - 사용자가 입력한 음료 종류를 바탕으로 수분 섭취의 질 평가
-   - 전체 기간 동안의 음수량 패턴
+2. **음수량 분석** (10줄 이내)
+   - 수분 섭취량 및 음료 종류 평가
    - 권장 수준 대비 평가
-   - 2-3줄로 간결하게 요약 (최대 15줄 초과 금지)
+   ${hasPreviousData ? '- 이전 차수 대비 변화 분석' : ''}
 
-3. **운동량 분석** (최대 15줄)
-   - 사용자가 입력한 운동 내용을 바탕으로 활동 패턴 평가
-   - 전체 기간 동안의 운동량 추이
+3. **운동량 분석** (10줄 이내)
+   - 활동 패턴 및 운동 강도 평가
    - 치료 중 적절성 평가
-   - 2-3줄로 간결하게 요약 (최대 15줄 초과 금지)
+   ${hasPreviousData ? '- 이전 차수 대비 변화 분석' : ''}
 
-4. **배변 상태 분석** (최대 15줄)
+4. **배변 상태 분석** (10줄 이내)
    - 배변 빈도와 상태 패턴
-   - 변비나 설사 경향 파악
-   - 1-2줄로 간결하게 요약 (최대 15줄 초과 금지)
+   ${hasPreviousData ? '- 이전 차수 대비 변화 분석' : ''}
 
-5. **특이사항 및 부작용** (최대 15줄)
+5. **특이사항 및 부작용** (10줄 이내)
    - 주요 부작용 패턴과 빈도
-   - 시간에 따른 증상 변화 추이
-   - 의료진 상담이 필요한 부분
-   - 3-4줄로 간결하게 요약 (최대 15줄 초과 금지)
+   - 의료진 상담 필요 여부
+   ${hasPreviousData ? '- 이전 차수 대비 변화 분석' : ''}
 
-6. **AI 코멘트 (참고용)** (최대 15줄)
-   - 환자의 나이, 진단명을 고려한 전반적 평가
-   - 항암치료 과정에서 일반적인 반응인지 안내
-   - **반드시 마지막에 따뜻한 이모지(💪, 🌟, 💙 등)와 함께 "잘하고 계십니다. 힘내서 회복에 집중하세요!" 같은 짧고 따뜻한 응원 메시지를 포함할 것**
-   - (최대 15줄 초과 금지)
+6. **AI 코멘트** (10줄 이내)
+   - 전반적 평가와 짧은 응원 메시지 (이모지 포함)
 
 **응답 형식 (반드시 이 형식을 따라주세요):**
 ===식사량===
-[분석 내용]
+[분석 내용 - 10줄 이내]
 
 ===음수량===
-[분석 내용]
+[분석 내용 - 10줄 이내]
 
 ===운동량===
-[분석 내용]
+[분석 내용 - 10줄 이내]
 
 ===배변===
-[분석 내용]
+[분석 내용 - 10줄 이내]
 
 ===특이사항===
-[분석 내용]
+[분석 내용 - 10줄 이내]
 
 ===AI코멘트===
-[AI 코멘트 내용]`;
+[AI 코멘트 - 10줄 이내]`;
 
     const message = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307',

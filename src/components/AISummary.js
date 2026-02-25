@@ -183,6 +183,36 @@ function AISummary({ userId }) {
           return;
         }
 
+        // 이전 차수 데이터 가져오기 (비교 분석용)
+        const getPreviousSessionData = () => {
+          // 모든 차수와 회차 조합 정렬 (내림차순)
+          const allSessionKeys = [];
+          symptomRecords.forEach(record => {
+            const key = `${record.chemoCycle}|${record.chemoSession}`;
+            if (!allSessionKeys.includes(key)) {
+              allSessionKeys.push(key);
+            }
+          });
+
+          // 현재 선택된 차수|회차의 인덱스 찾기
+          const currentKey = `${selectedCycle}|${selectedSession}`;
+          const sortedKeys = allSessionKeys.sort();
+          const currentIndex = sortedKeys.indexOf(currentKey);
+
+          // 이전 차수가 있으면 해당 데이터 반환
+          if (currentIndex > 0) {
+            const prevKey = sortedKeys[currentIndex - 1];
+            const [prevCycle, prevSession] = prevKey.split('|');
+            const prevRecords = symptomRecords.filter(
+              record => record.chemoCycle === prevCycle && record.chemoSession === prevSession
+            );
+            return { prevCycle, prevSession, prevRecords };
+          }
+          return null;
+        };
+
+        const previousSessionData = getPreviousSessionData();
+
         // Serverless Function을 통한 Claude API 호출
         const symptomTexts = filteredRecords
           .map((record) => {
@@ -209,6 +239,40 @@ function AISummary({ userId }) {
 - 상세 증상: ${record.symptoms}`;
           })
           .join('\n\n');
+
+        // 이전 차수 데이터 형식화
+        let previousSymptomTexts = null;
+        let previousSessionInfo = null;
+        if (previousSessionData && previousSessionData.prevRecords.length > 0) {
+          previousSessionInfo = {
+            cycle: previousSessionData.prevCycle,
+            session: previousSessionData.prevSession
+          };
+          previousSymptomTexts = previousSessionData.prevRecords
+            .map((record) => {
+              let foodDetails = '';
+              if (record.foodIntakeBreakfast || record.foodIntakeLunch || record.foodIntakeDinner || record.foodIntakeOther) {
+                const meals = [];
+                if (record.foodIntakeBreakfast) meals.push(`아침: ${record.foodIntakeBreakfast}`);
+                if (record.foodIntakeLunch) meals.push(`점심: ${record.foodIntakeLunch}`);
+                if (record.foodIntakeDinner) meals.push(`저녁: ${record.foodIntakeDinner}`);
+                if (record.foodIntakeOther) meals.push(`기타: ${record.foodIntakeOther}`);
+                foodDetails = ` (${meals.join(', ')})`;
+              } else if (record.foodIntakeNote) {
+                foodDetails = ` (${record.foodIntakeNote})`;
+              }
+
+              return `[${record.date}]
+- 항암 진행: ${record.chemoCycle} ${record.chemoSession} ${record.chemoDay}
+- 식사량: ${record.foodIntakeLevel}%${foodDetails}
+- 음수량: 약 ${record.waterIntakeAmount}ml${record.waterIntakeNote ? ` (${record.waterIntakeNote})` : ''}
+- 운동량: 약 ${record.exerciseTime}보${record.exerciseNote ? ` (${record.exerciseNote})` : ''}
+- 배변: ${record.bowelMovement === 'yes' ? '있음' : '없음'}${record.bowelCondition && record.bowelCondition.length > 0 ? ` (${record.bowelCondition.join(', ')})` : ''}
+- 주요 부작용: ${record.sideEffects.join(', ')}
+- 상세 증상: ${record.symptoms}`;
+            })
+            .join('\n\n');
+        }
 
         const calculateAge = (birthdate) => {
           if (!birthdate) return null;
@@ -238,7 +302,13 @@ function AISummary({ userId }) {
               diagnosisDate: userProfile?.diagnosisDate
             },
             symptomTexts,
-            recordCount: filteredRecords.length
+            recordCount: filteredRecords.length,
+            currentSessionInfo: {
+              cycle: selectedCycle,
+              session: selectedSession
+            },
+            previousSessionInfo,
+            previousSymptomTexts
           }),
         });
 
