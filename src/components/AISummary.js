@@ -179,30 +179,46 @@ function AISummary({ userId }) {
           return;
         }
 
-        // 이전 차수 데이터 가져오기 (비교 분석용)
+        // 직전 회차 데이터만 가져오기 (비교 분석용)
         const getPreviousSessionData = () => {
-          // 모든 차수와 회차 조합 정렬 (내림차순)
-          const allSessionKeys = [];
+          // 숫자 추출 헬퍼 함수
+          const extractNumber = (str) => {
+            const match = str.match(/(\d+)/);
+            return match ? parseInt(match[1], 10) : 0;
+          };
+
+          // 모든 차수와 회차 조합 수집
+          const sessionMap = new Map();
           symptomRecords.forEach(record => {
             const key = `${record.chemoCycle}|${record.chemoSession}`;
-            if (!allSessionKeys.includes(key)) {
-              allSessionKeys.push(key);
+            if (!sessionMap.has(key)) {
+              sessionMap.set(key, {
+                cycle: record.chemoCycle,
+                session: record.chemoSession,
+                cycleNum: extractNumber(record.chemoCycle),
+                sessionNum: extractNumber(record.chemoSession),
+              });
             }
           });
 
-          // 현재 선택된 차수|회차의 인덱스 찾기
-          const currentKey = `${selectedCycle}|${selectedSession}`;
-          const sortedKeys = allSessionKeys.sort();
-          const currentIndex = sortedKeys.indexOf(currentKey);
+          // 숫자 기반 정렬 (차수 → 회차 순)
+          const sortedSessions = Array.from(sessionMap.values()).sort((a, b) => {
+            if (a.cycleNum !== b.cycleNum) return a.cycleNum - b.cycleNum;
+            return a.sessionNum - b.sessionNum;
+          });
 
-          // 이전 차수가 있으면 해당 데이터 반환
+          // 현재 선택된 회차의 인덱스 찾기
+          const currentIndex = sortedSessions.findIndex(
+            s => s.cycle === selectedCycle && s.session === selectedSession
+          );
+
+          // 직전 회차가 있으면 해당 데이터만 반환
           if (currentIndex > 0) {
-            const prevKey = sortedKeys[currentIndex - 1];
-            const [prevCycle, prevSession] = prevKey.split('|');
+            const prev = sortedSessions[currentIndex - 1];
             const prevRecords = symptomRecords.filter(
-              record => record.chemoCycle === prevCycle && record.chemoSession === prevSession
+              record => record.chemoCycle === prev.cycle && record.chemoSession === prev.session
             );
-            return { prevCycle, prevSession, prevRecords };
+            return { prevCycle: prev.cycle, prevSession: prev.session, prevRecords };
           }
           return null;
         };
