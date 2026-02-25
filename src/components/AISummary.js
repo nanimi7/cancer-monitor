@@ -614,7 +614,7 @@ function AISummary({ userId }) {
             <div className="summary-section">
               <div className="summary-section-header">
                 <span className="summary-section-icon">🤖</span>
-                <h4 className="summary-section-title">의료진 전달 사항 (AI 생성)</h4>
+                <h4 className="summary-section-title">AI 분석 결과</h4>
               </div>
 
               {aiLoading ? (
