@@ -83,57 +83,81 @@ function buildPrompt({ userProfile, symptomTexts, recordCount, currentSessionInf
   // 환자 정보 섹션
   const patientInfo = `**환자:** ${formatAge(userProfile.age)}, ${formatGender(userProfile.gender)}, ${userProfile.disease || '진단명 미입력'}`;
 
-  // 이전 데이터 섹션 (있을 경우만)
-  const previousDataSection = hasPreviousData
-    ? `\n**이전 기록 (${previousLabel}):**\n${previousSymptomTexts}\n`
-    : '';
+  // 이전 비교가 없을 때 프롬프트
+  if (!hasPreviousData) {
+    return `의료진에게 환자의 항암치료 경과를 간결하게 전달하세요.
 
-  // 분석 지시사항 - 비교 유무에 따라 다르게
-  const analysisGuide = hasPreviousData
-    ? `**작성 규칙:**
-- 각 항목 최대 ${MAX_LINES}줄 (현재 ${MAX_LINES_CURRENT}줄 + 비교 ${MAX_LINES_COMPARE}줄)
-- 현재 분석 후 "📊 이전 비교:" 헤더로 비교 내용 분리
-- 한 문장에 핵심만 담아 간결하게`
-    : `**작성 규칙:**
-- 각 항목 최대 ${MAX_LINES}줄
-- 한 문장에 핵심만 담아 간결하게`;
+${patientInfo}
 
-  // 분석 항목 목록
-  const analysisItems = ANALYSIS_ITEMS.map((item, i) => {
-    const compareNote = (hasPreviousData && item.includeComparison) ? ' + 이전 비교' : '';
-    return `${i + 1}. ${item.title}: ${item.focus}${compareNote}`;
-  }).join('\n');
+**현재 기록 (${currentLabel}, ${recordCount}건):**
+${symptomTexts}
 
+**작성 규칙:**
+- 각 항목 최대 ${MAX_LINES}줄, 핵심만 간결하게
+
+**응답 형식:**
+===식사량===
+[현재 상태 분석]
+
+===음수량===
+[현재 상태 분석]
+
+===운동량===
+[현재 상태 분석]
+
+===배변===
+[현재 상태 분석]
+
+===특이사항===
+[현재 상태 분석]
+
+===AI코멘트===
+[응원 메시지, 이모지 포함]`;
+  }
+
+  // 이전 비교가 있을 때 프롬프트 (더 구체적인 지시)
   return `의료진에게 환자의 항암치료 경과를 간결하게 전달하세요.
 
 ${patientInfo}
 
 **현재 기록 (${currentLabel}, ${recordCount}건):**
 ${symptomTexts}
-${previousDataSection}
-${analysisGuide}
 
-**분석 항목:**
-${analysisItems}
+**직전 회차 기록 (${previousLabel}):**
+${previousSymptomTexts}
+
+**중요 규칙:**
+1. 식사량, 음수량, 운동량, 배변, 특이사항 - 이 5개 항목 모두 반드시 이전 비교 포함
+2. AI코멘트만 비교 없이 응원 메시지
+3. 각 항목 최대 ${MAX_LINES}줄
+
+**비교 작성 형식 (5개 항목 모두 동일하게):**
+- 1~2줄: 현재 상태 분석
+- 마지막 줄: "📊 이전 비교:" 로 시작하여 "이전엔 ~였는데 지금은 ~. [주목할 점]" 형태로 작성
 
 **응답 형식:**
 ===식사량===
-[${MAX_LINES}줄 이내]
+[현재 분석 1~2줄]
+📊 이전 비교: 이전엔 ~였는데 지금은 ~. [주목할 점]
 
 ===음수량===
-[${MAX_LINES}줄 이내]
+[현재 분석 1~2줄]
+📊 이전 비교: 이전엔 ~였는데 지금은 ~. [주목할 점]
 
 ===운동량===
-[${MAX_LINES}줄 이내]
+[현재 분석 1~2줄]
+📊 이전 비교: 이전엔 ~였는데 지금은 ~. [주목할 점]
 
 ===배변===
-[${MAX_LINES}줄 이내]
+[현재 분석 1~2줄]
+📊 이전 비교: 이전엔 ~였는데 지금은 ~. [주목할 점]
 
 ===특이사항===
-[${MAX_LINES}줄 이내]
+[현재 분석 1~2줄]
+📊 이전 비교: 이전엔 ~였는데 지금은 ~. [주목할 점]
 
 ===AI코멘트===
-[${MAX_LINES}줄 이내, 이모지 포함 응원]`;
+[응원 메시지, 이모지 포함, 비교 없음]`;
 }
 
 // ============================================================
