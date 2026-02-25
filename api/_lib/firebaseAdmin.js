@@ -3,7 +3,8 @@ import admin from 'firebase-admin';
 function getPrivateKey() {
   const rawKey = process.env.FIREBASE_PRIVATE_KEY;
   if (!rawKey) return undefined;
-  return rawKey.replace(/\\n/g, '\n');
+  const unquoted = rawKey.replace(/^"|"$/g, '');
+  return unquoted.replace(/\\n/g, '\n');
 }
 
 export function getAdminAuth() {

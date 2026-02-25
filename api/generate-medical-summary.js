@@ -24,7 +24,7 @@ export default async function handler(req, res) {
 
     const hasPreviousData = previousSessionInfo && previousSymptomTexts;
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.ANTHROPIC_API_KEY || process.env.REACT_APP_ANTHROPIC_API_KEY;
 
     if (!apiKey) {
       console.error('ANTHROPIC_API_KEY not found in environment variables');

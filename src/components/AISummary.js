@@ -289,7 +289,9 @@ function AISummary({ userId }) {
         });
 
         if (!response.ok) {
-          throw new Error(`API 호출 실패: ${response.status}`);
+          const errorBody = await response.json().catch(() => ({}));
+          const detail = errorBody.details || errorBody.error || `API 호출 실패: ${response.status}`;
+          throw new Error(detail);
         }
 
         const data = await response.json();
