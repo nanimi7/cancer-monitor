@@ -580,7 +580,7 @@ function DailySymptomCalendar({ userId }) {
                   </div>
                   <div className="record-card-content">
                     <div className="side-effect-tags">
-                      {selectedDateRecord.sideEffects.map((effect, index) => (
+                      {(selectedDateRecord.sideEffects || []).map((effect, index) => (
                         <span key={index} className={`side-effect-tag ${effect === '없음' ? 'none' : ''}`}>{effect}</span>
                       ))}
                     </div>

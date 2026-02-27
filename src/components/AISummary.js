@@ -299,16 +299,16 @@ function AISummary({ userId }) {
 
   useEffect(() => {
     if (symptomRecords.length > 0) {
-      const uniqueCycles = [...new Set(symptomRecords.map(r => r.chemoCycle))];
-      setCycles(uniqueCycles.sort());
+      const uniqueCycles = [...new Set(symptomRecords.map(r => r.chemoCycle).filter(Boolean))];
+      setCycles(uniqueCycles.sort((a, b) => extractNumber(a) - extractNumber(b)));
     }
   }, [symptomRecords]);
 
   useEffect(() => {
     if (selectedCycle) {
       const filteredRecords = symptomRecords.filter(r => r.chemoCycle === selectedCycle);
-      const uniqueSessions = [...new Set(filteredRecords.map(r => r.chemoSession))];
-      setSessions(uniqueSessions.sort());
+      const uniqueSessions = [...new Set(filteredRecords.map(r => r.chemoSession).filter(Boolean))];
+      setSessions(uniqueSessions.sort((a, b) => extractNumber(a) - extractNumber(b)));
     }
   }, [selectedCycle, symptomRecords]);
 
