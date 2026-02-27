@@ -65,6 +65,18 @@ const calculateAge = (birthdate) => {
   return age;
 };
 
+const getTimestampMs = (data) => {
+  const toMs = (value) => {
+    if (!value) return 0;
+    if (typeof value?.toMillis === 'function') return value.toMillis();
+    if (typeof value === 'number') return value;
+    const parsed = new Date(value).getTime();
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  return Math.max(toMs(data?.updatedAt), toMs(data?.createdAt));
+};
+
 const getRecordTimestamp = (record) => {
   const toMs = (value) => {
     if (!value) return 0;
@@ -268,7 +280,12 @@ function AISummary({ userId }) {
     try {
       const querySnapshot = await getDocs(collection(db, `users/${userId}/profile`));
       if (!querySnapshot.empty) {
-        setUserProfile(querySnapshot.docs[0].data());
+        const latestDoc = querySnapshot.docs.reduce((latest, current) => {
+          if (!latest) return current;
+          return getTimestampMs(current.data()) >= getTimestampMs(latest.data()) ? current : latest;
+        }, null);
+
+        setUserProfile(latestDoc.data());
       }
     } catch (error) {
       console.error('사용자 프로필 로드 오류:', error);

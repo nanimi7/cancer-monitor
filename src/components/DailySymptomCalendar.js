@@ -8,6 +8,18 @@ import '../styles/DailySymptomCalendar.css';
 import BottomSheet from './BottomSheet';
 
 function DailySymptomCalendar({ userId }) {
+  const getTimestampMs = (data) => {
+    const toMs = (value) => {
+      if (!value) return 0;
+      if (typeof value?.toMillis === 'function') return value.toMillis();
+      if (typeof value === 'number') return value;
+      const parsed = new Date(value).getTime();
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+
+    return Math.max(toMs(data?.updatedAt), toMs(data?.createdAt));
+  };
+
   const [date, setDate] = useState(new Date());
   const [symptomRecords, setSymptomRecords] = useState({});
   const [selectedDateRecord, setSelectedDateRecord] = useState(null);
@@ -100,12 +112,17 @@ function DailySymptomCalendar({ userId }) {
     try {
       const querySnapshot = await getDocs(collection(db, `users/${userId}/symptomRecords`));
       const records = {};
-      querySnapshot.docs.forEach(doc => {
-        const data = doc.data();
-        records[data.date] = {
-          id: doc.id,
+      querySnapshot.docs.forEach((snapshot) => {
+        const data = snapshot.data();
+        const existing = records[data.date];
+        const currentRecord = {
+          id: snapshot.id,
           ...data
         };
+
+        if (!existing || getTimestampMs(currentRecord) >= getTimestampMs(existing)) {
+          records[data.date] = currentRecord;
+        }
       });
       setSymptomRecords(records);
     } catch (error) {
@@ -336,7 +353,7 @@ function DailySymptomCalendar({ userId }) {
         alert('기록이 삭제되었습니다.');
         setSelectedDateRecord(null);
         setShowForm(false);
-        loadSymptomRecords();
+        await loadSymptomRecords();
       } catch (error) {
         console.error('기록 삭제 오류:', error);
         alert('삭제 중 오류가 발생했습니다.');

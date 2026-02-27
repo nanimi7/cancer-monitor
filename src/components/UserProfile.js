@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
-import { collection, addDoc, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import '../styles/UserProfile.css';
 
 function UserProfile({ userId }) {
+  const toMillis = (value) => {
+    if (!value) return 0;
+    if (typeof value?.toMillis === 'function') return value.toMillis();
+    const parsed = new Date(value).getTime();
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
   const [formData, setFormData] = useState({
     nickname: '',
     birthdate: '',
@@ -32,8 +39,15 @@ function UserProfile({ userId }) {
     try {
       const querySnapshot = await getDocs(collection(db, `users/${userId}/profile`));
       if (!querySnapshot.empty) {
-        const userData = querySnapshot.docs[0].data();
-        setProfileDocId(querySnapshot.docs[0].id);
+        const latestDoc = querySnapshot.docs.reduce((latest, current) => {
+          if (!latest) return current;
+          const latestTs = Math.max(toMillis(latest.data().updatedAt), toMillis(latest.data().createdAt));
+          const currentTs = Math.max(toMillis(current.data().updatedAt), toMillis(current.data().createdAt));
+          return currentTs >= latestTs ? current : latest;
+        }, null);
+
+        const userData = latestDoc.data();
+        setProfileDocId(latestDoc.id);
         // 기존 데이터에 otherInfo가 없을 수 있으므로 기본값 설정
         setFormData({
           nickname: userData.nickname || '',
@@ -112,12 +126,19 @@ function UserProfile({ userId }) {
     try {
       const userProfilePath = `users/${userId}/profile`;
       if (isEditing && profileDocId) {
-        await updateDoc(doc(db, userProfilePath, profileDocId), formData);
+        await updateDoc(doc(db, userProfilePath, profileDocId), {
+          ...formData,
+          updatedAt: serverTimestamp(),
+        });
         alert('사용자 정보가 수정되었습니다.');
         setShowEditForm(false);
         await loadUserData(); // 변경사항 즉시 반영
       } else {
-        const docRef = await addDoc(collection(db, userProfilePath), formData);
+        const docRef = await addDoc(collection(db, userProfilePath), {
+          ...formData,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
         setProfileDocId(docRef.id);
         setIsEditing(true);
         alert('사용자 정보가 등록되었습니다.');

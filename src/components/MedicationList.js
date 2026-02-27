@@ -136,7 +136,7 @@ function MedicationList({ userId }) {
     e.stopPropagation();
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', e.currentTarget);
+    e.dataTransfer.setData('text/plain', String(index));
 
     // 드래그 중인 카드의 부모 요소 찾기
     const card = e.currentTarget.closest('.medication-card');

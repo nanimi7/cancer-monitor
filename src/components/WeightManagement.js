@@ -177,9 +177,13 @@ function WeightManagement({ userId }) {
         break;
       case 'custom':
         if (customStartDate && customEndDate) {
+          const start = new Date(customStartDate);
+          const end = new Date(customEndDate);
+          end.setHours(23, 59, 59, 999);
+
           return weights.filter(w => {
             const weightDate = new Date(w.date);
-            return weightDate >= new Date(customStartDate) && weightDate <= new Date(customEndDate);
+            return weightDate >= start && weightDate <= end;
           }).reverse();
         }
         return weights.slice().reverse();
@@ -250,6 +254,8 @@ function WeightManagement({ userId }) {
       </div>
     );
   }
+
+  const weightWarnings = checkWeightWarning();
 
   return (
     <div className="weight-management">
@@ -415,13 +421,13 @@ function WeightManagement({ userId }) {
       </div>
 
       {/* 의료진 상담 안내 */}
-      {checkWeightWarning() && (
+      {weightWarnings && (
         <div className="weight-warning-section">
           <div className="warning-icon">⚠️</div>
           <div className="warning-content">
             <h3>의료진 상담이 필요합니다</h3>
             <ul className="warning-list">
-              {checkWeightWarning().map((warning, index) => (
+              {weightWarnings.map((warning, index) => (
                 <li key={index}>{warning}</li>
               ))}
             </ul>
