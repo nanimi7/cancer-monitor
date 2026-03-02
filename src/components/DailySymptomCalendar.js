@@ -191,6 +191,7 @@ function DailySymptomCalendar({ userId }) {
     const { name, value, checked } = e.target;
 
     if (name === 'sideEffects') {
+      const currentSideEffects = Array.isArray(formData.sideEffects) ? formData.sideEffects : [];
       let newSideEffects;
 
       if (value === '없음') {
@@ -199,8 +200,8 @@ function DailySymptomCalendar({ userId }) {
       } else {
         // If checking any other option, remove "없음" if it exists
         newSideEffects = checked
-          ? [...formData.sideEffects.filter(item => item !== '없음'), value]
-          : formData.sideEffects.filter(item => item !== value);
+          ? [...currentSideEffects.filter(item => item !== '없음'), value]
+          : currentSideEffects.filter(item => item !== value);
       }
 
       setFormData(prev => ({
@@ -215,12 +216,15 @@ function DailySymptomCalendar({ userId }) {
         }));
       }
     } else if (name === 'bowelCondition') {
-      setFormData(prev => ({
-        ...prev,
-        bowelCondition: checked
-          ? [...prev.bowelCondition, value]
-          : prev.bowelCondition.filter(item => item !== value)
-      }));
+      setFormData(prev => {
+        const currentBowelCondition = Array.isArray(prev.bowelCondition) ? prev.bowelCondition : [];
+        return {
+          ...prev,
+          bowelCondition: checked
+            ? [...currentBowelCondition, value]
+            : currentBowelCondition.filter(item => item !== value)
+        };
+      });
 
       if (errors.bowelCondition) {
         setErrors(prev => ({
@@ -278,7 +282,7 @@ function DailySymptomCalendar({ userId }) {
       newErrors.exerciseTime = '운동량을 선택해주세요.';
     }
 
-    if (formData.exerciseNote.length > 500) {
+    if ((formData.exerciseNote || '').length > 500) {
       newErrors.exerciseNote = '운동량 메모는 500자 이내로 입력해주세요.';
     }
 
@@ -286,15 +290,15 @@ function DailySymptomCalendar({ userId }) {
       newErrors.bowelMovement = '배변 유무를 선택해주세요.';
     }
 
-    if (formData.bowelMovement === 'yes' && formData.bowelCondition.length === 0) {
+    if (formData.bowelMovement === 'yes' && (Array.isArray(formData.bowelCondition) ? formData.bowelCondition : []).length === 0) {
       newErrors.bowelCondition = '배변 상태를 1개 이상 선택해주세요.';
     }
 
-    if (formData.sideEffects.length === 0) {
+    if ((Array.isArray(formData.sideEffects) ? formData.sideEffects : []).length === 0) {
       newErrors.sideEffects = '주요 부작용을 1개 이상 선택해주세요.';
     }
 
-    if (formData.symptoms.length > 5000) {
+    if ((formData.symptoms || '').length > 5000) {
       newErrors.symptoms = '주요 증상은 5000자 이내로 입력해주세요.';
     }
 
@@ -804,14 +808,14 @@ function DailySymptomCalendar({ userId }) {
               <textarea
                 id="exerciseNote"
                 name="exerciseNote"
-                value={formData.exerciseNote}
+                value={formData.exerciseNote || ''}
                 onChange={handleChange}
                 rows="2"
                 maxLength="500"
                 placeholder="어떤 운동을 했는지, 강도나 특이사항을 입력해주세요. (AI분석에 활용됩니다)"
                 className={errors.exerciseNote ? 'error' : ''}
               />
-              <span className="char-count">{formData.exerciseNote.length}/500</span>
+              <span className="char-count">{(formData.exerciseNote || '').length}/500</span>
               {errors.exerciseNote && <span className="error-message">{errors.exerciseNote}</span>}
             </div>
 
@@ -852,7 +856,7 @@ function DailySymptomCalendar({ userId }) {
                         type="checkbox"
                         name="bowelCondition"
                         value={option}
-                        checked={formData.bowelCondition.includes(option)}
+                        checked={(Array.isArray(formData.bowelCondition) ? formData.bowelCondition : []).includes(option)}
                         onChange={handleCheckboxChange}
                       />
                       {option}
@@ -866,19 +870,22 @@ function DailySymptomCalendar({ userId }) {
             <div className="form-group">
               <label>주요 부작용 <span className="required">*</span></label>
               <div className="checkbox-group">
-                {sideEffectOptions.map(option => (
-                  <label key={option} className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="sideEffects"
-                      value={option}
-                      checked={formData.sideEffects.includes(option)}
-                      onChange={handleCheckboxChange}
-                      disabled={option !== '없음' && formData.sideEffects.includes('없음')}
-                    />
-                    {option}
-                  </label>
-                ))}
+                {sideEffectOptions.map(option => {
+                  const sideEffectsArray = Array.isArray(formData.sideEffects) ? formData.sideEffects : [];
+                  return (
+                    <label key={option} className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        name="sideEffects"
+                        value={option}
+                        checked={sideEffectsArray.includes(option)}
+                        onChange={handleCheckboxChange}
+                        disabled={option !== '없음' && sideEffectsArray.includes('없음')}
+                      />
+                      {option}
+                    </label>
+                  );
+                })}
               </div>
               {errors.sideEffects && <span className="error-message">{errors.sideEffects}</span>}
             </div>
@@ -888,14 +895,14 @@ function DailySymptomCalendar({ userId }) {
               <textarea
                 id="symptoms"
                 name="symptoms"
-                value={formData.symptoms}
+                value={formData.symptoms || ''}
                 onChange={handleChange}
                 rows="5"
                 maxLength="5000"
                 placeholder="작성된 내용을 참고하여 AI분석을 진행합니다. 기록하고싶은 내용을 자세히 작성해주세요"
                 className={errors.symptoms ? 'error' : ''}
               />
-              <span className="char-count">{formData.symptoms.length}/5000</span>
+              <span className="char-count">{(formData.symptoms || '').length}/5000</span>
               {errors.symptoms && <span className="error-message">{errors.symptoms}</span>}
             </div>
 
