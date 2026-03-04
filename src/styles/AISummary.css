@@ -1,34 +1,34 @@
 .ai-summary {
   background: #f5f6f8;
-  padding: 18px;
+  padding: 16px;
   border-radius: 14px;
-  border: 1px solid #e7eaef;
+  border: 1px solid #e5e7eb;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
 .ai-summary h2 {
   color: #334155;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   font-size: 24px;
   line-height: 1.2;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.2px;
 }
 
 .selection-container {
   background: #eef0f3;
   border-radius: 12px;
-  padding: 18px;
+  padding: 16px;
   margin-bottom: 18px;
   border: 1px solid #e5e7eb;
 }
 
 .selection-container .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .selection-container label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-weight: 700;
   font-size: 16px;
   color: #334155;
@@ -36,7 +36,7 @@
 
 .selection-container select {
   width: 100%;
-  min-height: 52px;
+  min-height: 50px;
   padding: 10px 14px;
   border: 2px solid #d2d6dc;
   border-radius: 10px;
@@ -88,45 +88,52 @@
 }
 
 .summary-result h3 {
-  color: #2c3e50;
-  margin-bottom: 20px;
+  color: #2f3d52;
+  margin: 8px 0 18px;
   font-size: 22px;
   font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
 .summary-content {
-  background: linear-gradient(to bottom, #fafbfc 0%, #ffffff 100%);
+  background: #f5f6f8;
   padding: 0;
-  border-radius: 12px;
+  border-radius: 14px;
   line-height: 1.6;
   white-space: normal;
-  border: 1px solid #e8eaed;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e4ea;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
 
 /* 노션 스타일 섹션 카드 */
 .summary-section {
-  background: white;
-  border-radius: 8px;
-  padding: 24px;
-  margin-bottom: 16px;
-  border: 1px solid #e8eaed;
+  background: #f5f6f8;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 14px;
+  border: 1px solid #dfe4ea;
   transition: all 0.2s ease;
 }
 
+.summary-content .summary-section:nth-child(2) {
+  border-left: 6px solid #9b59b6;
+  padding-left: 16px;
+  background: #f1f3f6;
+}
+
 .summary-section:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border-color: #d0d7de;
+  box-shadow: none;
+  border-color: #dfe4ea;
 }
 
 .summary-section-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   padding-bottom: 12px;
-  border-bottom: 2px solid #f3f4f6;
+  border-bottom: 1px solid #e3e8ef;
 }
 
 .summary-section-icon {
@@ -135,40 +142,40 @@
 }
 
 .summary-section-title {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
-  color: #1f2937;
+  color: #2f3d52;
   margin: 0;
 }
 
 .summary-info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  margin-top: 16px;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .summary-info-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
-  padding: 12px;
-  background: #f9fafb;
-  border-radius: 6px;
-  border-left: 3px solid #e5e7eb;
+  padding: 14px 16px;
+  background: #eef0f4;
+  border-radius: 10px;
+  border-left: 0;
 }
 
 .summary-info-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #6b7280;
-  min-width: 80px;
+  min-width: 118px;
 }
 
 .summary-info-value {
-  font-size: 14px;
+  font-size: 16px;
   color: #1f2937;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* 통계 카드 */
@@ -293,21 +300,22 @@
 
 /* AI 요약 박스 */
 .ai-summary-box {
-  background: #f8f9fa;
+  background: #f1f3f6;
   padding: 20px;
-  border-radius: 8px;
-  border-left: 4px solid #9b59b6;
+  border-radius: 12px;
+  border-left: 6px solid #9b59b6;
 }
 
 .ai-summary-content {
   background: white;
   padding: 16px;
-  border-radius: 6px;
+  border-radius: 12px;
   line-height: 1.8;
-  color: #2c3e50;
+  color: #ffffff;
+  font-size: 16px;
   white-space: pre-wrap;
   word-break: break-word;
-  border: 1px solid #e8eaed;
+  border: none;
 }
 
 /* 현재 분석과 이전 비교 영역 분리 스타일 */
@@ -322,7 +330,7 @@
 }
 
 .ai-comparison-header {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   margin-bottom: 8px;
   opacity: 0.95;
@@ -334,15 +342,16 @@
 
 .ai-comparison-content {
   opacity: 0.9;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .ai-comment-content {
   background: #fff4e6;
   padding: 16px;
-  border-radius: 6px;
+  border-radius: 12px;
   line-height: 1.8;
   color: #2c3e50;
+  font-size: 16px;
   white-space: pre-wrap;
   word-break: break-word;
   border: 1px solid #ffe4b3;
@@ -488,7 +497,7 @@
   }
 
   .ai-summary h2 {
-    font-size: 22px;
+    font-size: 24px;
     margin-bottom: 14px;
   }
 
@@ -497,23 +506,23 @@
   }
 
   .selection-container label {
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .selection-container select {
     min-height: 48px;
-    font-size: 18px;
+    font-size: 20px;
     padding: 9px 12px;
   }
 
   .generate-button {
-    font-size: 17px;
+    font-size: 18px;
     padding: 13px 20px;
   }
 
   .placeholder {
     padding: 70px 18px;
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .summary-content {
@@ -526,7 +535,7 @@
   }
 
   .summary-section-title {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .summary-section-icon {
@@ -543,12 +552,12 @@
   }
 
   .summary-info-label {
-    font-size: 12px;
-    min-width: 70px;
+    font-size: 14px;
+    min-width: 98px;
   }
 
   .summary-info-value {
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .stats-card {
@@ -568,7 +577,7 @@
   }
 
   .ai-summary-content {
-    font-size: 13px;
+    font-size: 16px;
     line-height: 2;
     word-break: keep-all;
     overflow-wrap: break-word;
@@ -581,16 +590,16 @@
   }
 
   .ai-comparison-header {
-    font-size: 12px;
+    font-size: 14px;
     padding: 3px 8px;
   }
 
   .ai-comparison-content {
-    font-size: 13px;
+    font-size: 16px;
   }
 
   .ai-comment-content {
-    font-size: 13px;
+    font-size: 16px;
     line-height: 2;
     word-break: keep-all;
     overflow-wrap: break-word;
@@ -598,12 +607,12 @@
   }
 
   .ai-comment-header {
-    font-size: 14px;
+    font-size: 20px;
     margin-bottom: 10px;
   }
 
   .ai-disclaimer {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.8;
     padding: 12px;
     margin-top: 16px;
