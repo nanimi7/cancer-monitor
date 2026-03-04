@@ -153,25 +153,43 @@ function MedicationList({ userId }) {
     setIsLoadingInfo(true);
     setApiError(null);
 
-    try {
-      // 효능/부작용 정보 조회
-      const infoResponse = await fetch(`/api/drug-info?drugName=${encodeURIComponent(drugName)}`);
-      const infoData = await infoResponse.json();
+    const infoUrl = `/api/drug-info?drugName=${encodeURIComponent(drugName)}`;
+    const durUrl = `/api/drug-dur?drugName=${encodeURIComponent(drugName)}`;
 
-      if (infoData.success && infoData.data) {
-        setDrugInfo(infoData.data);
+    try {
+      // 하나가 실패해도 다른 정보는 보여주기 위해 병렬 조회
+      const [infoResult, durResult] = await Promise.allSettled([
+        fetch(infoUrl),
+        fetch(durUrl),
+      ]);
+
+      let nextDrugInfo = null;
+      let nextDurWarnings = [];
+      let hasAnyFailure = false;
+
+      if (infoResult.status === 'fulfilled' && infoResult.value.ok) {
+        const infoData = await infoResult.value.json().catch(() => ({}));
+        if (infoData?.success && infoData?.data) {
+          nextDrugInfo = infoData.data;
+        }
       } else {
-        setDrugInfo(null);
+        hasAnyFailure = true;
       }
 
-      // DUR 경고 정보 조회
-      const durResponse = await fetch(`/api/drug-dur?drugName=${encodeURIComponent(drugName)}`);
-      const durData = await durResponse.json();
-
-      if (durData.success && durData.data) {
-        setDurWarnings(durData.data.warnings || []);
+      if (durResult.status === 'fulfilled' && durResult.value.ok) {
+        const durData = await durResult.value.json().catch(() => ({}));
+        if (durData?.success && durData?.data) {
+          nextDurWarnings = durData.data.warnings || [];
+        }
       } else {
-        setDurWarnings([]);
+        hasAnyFailure = true;
+      }
+
+      setDrugInfo(nextDrugInfo);
+      setDurWarnings(nextDurWarnings);
+
+      if (hasAnyFailure && !nextDrugInfo && nextDurWarnings.length === 0) {
+        setApiError('정보 조회 서비스 연결 실패');
       }
     } catch (error) {
       console.error('약물 정보 조회 오류:', error);
@@ -584,7 +602,7 @@ function MedicationList({ userId }) {
             </div>
           )}
 
-          {drugInfo && !isLoadingInfo && (
+          {(selectedDrug || drugInfo || durWarnings.length > 0) && !isLoadingInfo && (
             <div className="drug-info-preview">
               <h4>(약물정보)</h4>
               <p className="drug-info-subtitle">의약품안전사용서비스(DUR)의 정보를 참고한다</p>
