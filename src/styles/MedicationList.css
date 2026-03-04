@@ -233,7 +233,7 @@
   font-size: 15px;
   font-weight: 700;
   color: #2c5282;
-  margin-bottom: 16px;
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -241,6 +241,12 @@
 
 .drug-info-preview h4::before {
   content: '💊';
+}
+
+.drug-info-subtitle {
+  margin: 0 0 14px 0;
+  font-size: 11px;
+  color: #718096;
 }
 
 .info-section {
@@ -354,6 +360,10 @@
   line-height: 1.4;
 }
 
+.dur-warnings-inline {
+  margin-top: 12px;
+}
+
 /* 카드 내 DUR 경고 배지 */
 .dur-row {
   margin-top: 8px;
@@ -390,17 +400,59 @@
 
 /* 효능/부작용 텍스트 */
 .efficacy-text,
-.side-effects-text {
+.side-effects-text,
+.warnings-text {
   font-size: 13px !important;
   line-height: 1.5 !important;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .side-effects-text {
   color: #c53030 !important;
+}
+
+.warnings-text {
+  color: #975a16 !important;
+}
+
+.card-drug-info {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.card-drug-info-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.card-drug-info-subtitle {
+  font-size: 11px;
+  color: #718096;
+  margin-top: 2px;
+  margin-bottom: 8px;
+}
+
+.card-drug-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.card-drug-info-row:last-child {
+  margin-bottom: 0;
+}
+
+.card-drug-info-row label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #4a5568;
 }
 
 .form-buttons {
