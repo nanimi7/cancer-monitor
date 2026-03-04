@@ -4,6 +4,10 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import Auth from './components/Auth';
 import InstallBanner from './components/InstallBanner';
 import UserProfile from './components/UserProfile';
+import MedicationList from './components/MedicationList';
+import DailySymptomCalendar from './components/DailySymptomCalendar';
+import AISummary from './components/AISummary';
+import WeightManagement from './components/WeightManagement';
 import './App.css';
 
 function App() {
@@ -43,6 +47,23 @@ function App() {
     return <Auth />;
   }
 
+  const renderContent = () => {
+    switch (activeMenu) {
+      case 'profile':
+        return <UserProfile userId={user.uid} />;
+      case 'medication':
+        return <MedicationList userId={user.uid} />;
+      case 'weight-management':
+        return <WeightManagement userId={user.uid} />;
+      case 'calendar':
+        return <DailySymptomCalendar userId={user.uid} />;
+      case 'ai-summary':
+        return <AISummary userId={user.uid} />;
+      default:
+        return <UserProfile userId={user.uid} />;
+    }
+  };
+
   return (
     <div className="App">
       <header className="app-header">
@@ -59,7 +80,7 @@ function App() {
 
       <main className="app-content">
         <InstallBanner />
-        <UserProfile userId={user.uid} />
+        {renderContent()}
       </main>
 
       <nav className="app-bottom-nav">
