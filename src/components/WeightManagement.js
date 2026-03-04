@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -177,13 +177,9 @@ function WeightManagement({ userId }) {
         break;
       case 'custom':
         if (customStartDate && customEndDate) {
-          const start = new Date(customStartDate);
-          const end = new Date(customEndDate);
-          end.setHours(23, 59, 59, 999);
-
           return weights.filter(w => {
             const weightDate = new Date(w.date);
-            return weightDate >= start && weightDate <= end;
+            return weightDate >= new Date(customStartDate) && weightDate <= new Date(customEndDate);
           }).reverse();
         }
         return weights.slice().reverse();
@@ -195,13 +191,13 @@ function WeightManagement({ userId }) {
   }, [weights, filterType, customStartDate, customEndDate]);
 
   // 그래프용 데이터 포맷
-  const chartData = useMemo(() => {
+  const getChartData = () => {
     const filteredData = getFilteredData();
     return filteredData.map(w => ({
       date: w.date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
       체중: w.weight
     }));
-  }, [getFilteredData]);
+  };
 
   // 체중 변화 경고 체크
   const checkWeightWarning = () => {
@@ -245,8 +241,6 @@ function WeightManagement({ userId }) {
 
     return warnings.length > 0 ? warnings : null;
   };
-
-  const weightWarnings = checkWeightWarning();
 
   if (loading) {
     return (
@@ -369,10 +363,10 @@ function WeightManagement({ userId }) {
         )}
 
         {/* 그래프 */}
-        {chartData.length > 0 ? (
+        {getChartData().length > 0 ? (
           <div className="chart-container">
             <ResponsiveContainer width="100%" height={320}>
-              <AreaChart data={chartData} margin={{ top: 10, right: 5, left: 0, bottom: 0 }}>
+              <AreaChart data={getChartData()} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#5f27cd" stopOpacity={0.3}/>
@@ -391,7 +385,7 @@ function WeightManagement({ userId }) {
                   tick={{ fill: '#999', fontSize: 12 }}
                   tickLine={false}
                   axisLine={{ stroke: '#f0f0f0' }}
-                  width={45}
+                  width={40}
                 />
                 <Tooltip
                   contentStyle={{
@@ -421,13 +415,13 @@ function WeightManagement({ userId }) {
       </div>
 
       {/* 의료진 상담 안내 */}
-      {weightWarnings && (
+      {checkWeightWarning() && (
         <div className="weight-warning-section">
           <div className="warning-icon">⚠️</div>
           <div className="warning-content">
             <h3>의료진 상담이 필요합니다</h3>
             <ul className="warning-list">
-              {weightWarnings.map((warning, index) => (
+              {checkWeightWarning().map((warning, index) => (
                 <li key={index}>{warning}</li>
               ))}
             </ul>
