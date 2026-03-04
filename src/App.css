@@ -1,5 +1,5 @@
 body {
-  background-color: #f1f2f4;
+  background-color: #f2f3f5;
 }
 
 .App {
@@ -10,6 +10,48 @@ body {
   max-width: 480px;
   margin: 0 auto;
   box-shadow: 0 0 16px rgba(0, 0, 0, 0.08);
+}
+
+.app-header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 14px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  z-index: 120;
+}
+
+.app-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 14px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.user-email {
+  font-size: 15px;
+  color: #ecf0f1;
+  white-space: nowrap;
 }
 
 .loading-container {
@@ -47,7 +89,7 @@ body {
   max-width: 480px;
   width: 100%;
   margin: 0 auto;
-  padding: 16px 14px 84px 14px;
+  padding: 78px 10px 84px;
 }
 
 .app-bottom-nav {
@@ -61,7 +103,7 @@ body {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 6px 12px max(12px, env(safe-area-inset-bottom));
+  padding: 6px 10px max(14px, env(safe-area-inset-bottom));
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
   border-top: 1px solid #eceff3;
   z-index: 100;
@@ -79,7 +121,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   color: #9aa0a6;
-  min-width: 50px;
+  min-width: 48px;
 }
 
 .bottom-nav-item .nav-icon {
@@ -103,40 +145,13 @@ body {
   stroke: #5f27cd;
 }
 
-.floating-logout-button {
-  position: fixed;
-  top: 12px;
-  right: max(12px, calc((100vw - 480px) / 2 + 12px));
-  z-index: 200;
-  background: #ff6b6b;
-  color: white;
+.logout-button {
+  background: #e74c3c;
+  color: #fff;
   border: none;
-  border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 12px;
+  border-radius: 16px;
+  padding: 8px 16px;
+  font-size: 13px;
   font-weight: 700;
-}
-
-@media (max-width: 768px) {
-  .app-content {
-    padding: 14px 10px 84px 10px;
-  }
-
-  .bottom-nav-item {
-    padding: 4px 7px;
-    min-width: 46px;
-  }
-
-  .bottom-nav-item .nav-icon {
-    width: 19px;
-    height: 19px;
-  }
-
-  .bottom-nav-item .nav-label {
-    font-size: 9.5px;
-  }
-
-  .app-bottom-nav {
-    padding: 6px 10px max(14px, env(safe-area-inset-bottom));
-  }
+  white-space: nowrap;
 }
