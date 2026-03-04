@@ -1,59 +1,75 @@
 .ai-summary {
-  background-color: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #f5f6f8;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #e7eaef;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
 .ai-summary h2 {
-  color: #2c3e50;
-  margin-bottom: 25px;
+  color: #334155;
+  margin-bottom: 18px;
   font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: -0.4px;
 }
 
 .selection-container {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
+  background: #eef0f3;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 18px;
+  border: 1px solid #e5e7eb;
 }
 
 .selection-container .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 
 .selection-container label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 700;
+  font-size: 16px;
+  color: #334155;
 }
 
 .selection-container select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  min-height: 52px;
+  padding: 10px 14px;
+  border: 2px solid #d2d6dc;
+  border-radius: 10px;
+  font-size: 20px;
+  font-weight: 500;
   background-color: white;
   cursor: pointer;
+  color: #111827;
+  outline: none;
 }
 
 .selection-container select:disabled {
   background-color: #ecf0f1;
   cursor: not-allowed;
+  color: #9ca3af;
+}
+
+.selection-container select:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
 }
 
 .generate-button {
   background-color: #9b59b6;
   color: white;
   border: none;
-  padding: 12px 30px;
-  font-size: 16px;
-  border-radius: 4px;
+  padding: 14px 24px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-top: 10px;
+  margin-top: 12px;
   width: 100%;
 }
 
@@ -266,11 +282,13 @@
 
 .placeholder {
   text-align: center;
-  color: #7f8c8d;
-  padding: 60px 20px;
-  font-size: 16px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  color: #7b8794;
+  padding: 86px 26px;
+  font-size: 18px;
+  line-height: 1.45;
+  background-color: #eef0f3;
+  border-radius: 12px;
+  border: 1px solid #e4e7eb;
 }
 
 /* AI 요약 박스 */
@@ -466,30 +484,36 @@
 
 @media (max-width: 768px) {
   .ai-summary {
-    padding: 15px 10px;
+    padding: 14px;
   }
 
   .ai-summary h2 {
-    font-size: 18px;
-    margin-bottom: 15px;
+    font-size: 22px;
+    margin-bottom: 14px;
   }
 
   .selection-container {
-    padding: 15px 12px;
+    padding: 14px;
   }
 
   .selection-container label {
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .selection-container select {
-    font-size: 14px;
-    padding: 8px;
+    min-height: 48px;
+    font-size: 18px;
+    padding: 9px 12px;
   }
 
   .generate-button {
-    font-size: 14px;
-    padding: 10px 20px;
+    font-size: 17px;
+    padding: 13px 20px;
+  }
+
+  .placeholder {
+    padding: 70px 18px;
+    font-size: 16px;
   }
 
   .summary-content {
