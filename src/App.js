@@ -50,6 +50,9 @@ function App() {
           <h1>항암기록관리</h1>
           <div className="user-info">
             <span className="user-email">{user.email}</span>
+            <button className="logout-button" onClick={handleLogout}>
+              로그아웃
+            </button>
           </div>
         </div>
       </header>
@@ -115,10 +118,6 @@ function App() {
           <span className="nav-label">AI분석</span>
         </button>
       </nav>
-
-      <button className="floating-logout-button" onClick={handleLogout}>
-        로그아웃
-      </button>
     </div>
   );
 }
