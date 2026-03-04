@@ -56,10 +56,29 @@ export default async function handler(req, res) {
         specification: item.gnlNmCd || '' // 일반명코드
       }));
 
+    // 표시 중복 방지: 약물명+제조사 기준으로 중복 제거
+    const normalize = (value) =>
+      String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, ' ');
+
+    const deduped = [];
+    const seen = new Set();
+
+    results.forEach((item) => {
+      const key = `${normalize(item.name)}|${normalize(item.manufacturer)}`;
+      if (seen.has(key)) {
+        return;
+      }
+      seen.add(key);
+      deduped.push(item);
+    });
+
     return res.status(200).json({
       success: true,
-      data: results,
-      total: results.length
+      data: deduped,
+      total: deduped.length
     });
 
   } catch (error) {
