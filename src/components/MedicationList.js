@@ -32,6 +32,58 @@ function MedicationList({ userId }) {
   const searchTimeoutRef = useRef(null);
   const dropdownRef = useRef(null);
 
+  const summarizeToOneSentence = useCallback((text) => {
+    if (!text) return '';
+
+    const cleaned = String(text)
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!cleaned) return '';
+
+    const sentenceMatch = cleaned.match(/.+?[.!?。]/);
+    if (sentenceMatch?.[0]) {
+      return sentenceMatch[0].trim();
+    }
+
+    const newlineFirst = cleaned.split('\n')[0].trim();
+    if (newlineFirst.length <= 90) {
+      return newlineFirst;
+    }
+
+    return `${newlineFirst.slice(0, 90).trim()}...`;
+  }, []);
+
+  const buildMedicationInfoSummary = useCallback((info, durList = []) => {
+    const durWarningText = durList?.[0]?.warning || durList?.[0]?.detail || '';
+    const warningSource = info?.warnings || info?.caution || durWarningText;
+
+    return {
+      efficacy: summarizeToOneSentence(info?.efficacy),
+      sideEffects: summarizeToOneSentence(info?.sideEffects),
+      warnings: summarizeToOneSentence(warningSource),
+    };
+  }, [summarizeToOneSentence]);
+
+  const dedupeDrugResults = useCallback((items) => {
+    const normalize = (value) =>
+      String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, ' ');
+
+    const seen = new Set();
+    return (items || []).filter((item) => {
+      const key = `${normalize(item?.name)}|${normalize(item?.manufacturer)}`;
+      if (!item?.name || seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  }, []);
+
   useEffect(() => {
     loadMedications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,8 +129,10 @@ function MedicationList({ userId }) {
       const response = await fetch(`/api/drug-search?keyword=${encodeURIComponent(keyword)}`);
       const data = await response.json();
 
-      if (data.success && data.data.length > 0) {
-        setSearchResults(data.data);
+      const normalizedResults = dedupeDrugResults(data?.data);
+
+      if (data.success && normalizedResults.length > 0) {
+        setSearchResults(normalizedResults);
         setShowDropdown(true);
       } else {
         setSearchResults([]);
@@ -92,7 +146,7 @@ function MedicationList({ userId }) {
     } finally {
       setIsSearching(false);
     }
-  }, []);
+  }, [dedupeDrugResults]);
 
   // 약물 상세 정보 조회
   const fetchDrugInfo = async (drugName) => {
@@ -215,6 +269,8 @@ function MedicationList({ userId }) {
     }
 
     try {
+      const infoSummary = buildMedicationInfoSummary(drugInfo, durWarnings);
+
       // 저장할 데이터 구성
       const medicationData = {
         name: formData.name,
@@ -224,7 +280,10 @@ function MedicationList({ userId }) {
         drugCode: selectedDrug?.drugCode || '',
         efficacy: drugInfo?.efficacy || '',
         sideEffects: drugInfo?.sideEffects || '',
-        warnings: drugInfo?.warnings || '',
+        warnings: drugInfo?.warnings || drugInfo?.caution || '',
+        efficacySummary: infoSummary.efficacy,
+        sideEffectsSummary: infoSummary.sideEffects,
+        warningsSummary: infoSummary.warnings,
         durWarnings: durWarnings.map(w => ({
           type: w.type,
           warning: w.warning,
@@ -517,7 +576,7 @@ function MedicationList({ userId }) {
             {errors.frequency && <span className="error-message">{errors.frequency}</span>}
           </div>
 
-          {/* API에서 조회된 약물 정보 미리보기 */}
+          {/* 약물 정보 미리보기 */}
           {isLoadingInfo && (
             <div className="drug-info-loading">
               <span className="spinner"></span>
@@ -527,39 +586,39 @@ function MedicationList({ userId }) {
 
           {drugInfo && !isLoadingInfo && (
             <div className="drug-info-preview">
-              <h4>약물 정보 (자동 조회)</h4>
-              {drugInfo.efficacy && (
-                <div className="info-section">
-                  <label>효능</label>
-                  <p>{drugInfo.efficacy}</p>
-                </div>
-              )}
-              {drugInfo.sideEffects && (
-                <div className="info-section">
-                  <label>부작용</label>
-                  <p>{drugInfo.sideEffects}</p>
-                </div>
-              )}
-              {drugInfo.warnings && (
-                <div className="info-section warning">
-                  <label>주의사항</label>
-                  <p>{drugInfo.warnings}</p>
-                </div>
-              )}
-            </div>
-          )}
+              <h4>(약물정보)</h4>
+              <p className="drug-info-subtitle">의약품안전사용서비스(DUR)의 정보를 참고한다</p>
 
-          {/* DUR 경고 표시 */}
-          {durWarnings.length > 0 && !isLoadingInfo && (
-            <div className="dur-warnings">
-              <h4>DUR 경고</h4>
-              {durWarnings.map((warning, index) => (
-                <div key={index} className={`dur-warning-item ${warning.type.includes('금기') ? 'severe' : ''}`}>
-                  <span className="warning-type">{warning.type}</span>
-                  <p className="warning-content">{warning.warning}</p>
-                  {warning.detail && <p className="warning-detail">{warning.detail}</p>}
+              {(() => {
+                const summary = buildMedicationInfoSummary(drugInfo, durWarnings);
+                return (
+                  <>
+                    <div className="info-section">
+                      <label>효능</label>
+                      <p>{summary.efficacy || '정보 없음'}</p>
+                    </div>
+                    <div className="info-section">
+                      <label>부작용</label>
+                      <p>{summary.sideEffects || '정보 없음'}</p>
+                    </div>
+                    <div className="info-section warning">
+                      <label>주의사항</label>
+                      <p>{summary.warnings || '정보 없음'}</p>
+                    </div>
+                  </>
+                );
+              })()}
+
+              {durWarnings.length > 0 && (
+                <div className="dur-warnings-inline">
+                  {durWarnings.map((warning, index) => (
+                    <div key={index} className={`dur-warning-item ${warning.type.includes('금기') ? 'severe' : ''}`}>
+                      <span className="warning-type">{warning.type}</span>
+                      <p className="warning-content">{summarizeToOneSentence(warning.warning) || '주의 정보가 있습니다.'}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           )}
 
@@ -628,28 +687,44 @@ function MedicationList({ userId }) {
                   <label>복용 횟수</label>
                   <span>{med.frequency}</span>
                 </div>
-                {med.efficacy && (
-                  <div className="card-row">
-                    <label>효능</label>
-                    <span className="efficacy-text">{med.efficacy}</span>
-                  </div>
-                )}
-                {med.sideEffects && (
-                  <div className="card-row">
-                    <label>부작용</label>
-                    <span className="side-effects-text">{med.sideEffects}</span>
-                  </div>
-                )}
-                {med.durWarnings && med.durWarnings.length > 0 && (
-                  <div className="card-row dur-row">
-                    <label>DUR 경고</label>
-                    <div className="dur-badges">
-                      {med.durWarnings.map((w, i) => (
-                        <span key={i} className="dur-badge">{w.type}</span>
-                      ))}
+                {(() => {
+                  const summary = {
+                    efficacy: med.efficacySummary || summarizeToOneSentence(med.efficacy),
+                    sideEffects: med.sideEffectsSummary || summarizeToOneSentence(med.sideEffects),
+                    warnings:
+                      med.warningsSummary ||
+                      summarizeToOneSentence(med.warnings || med.durWarnings?.[0]?.warning),
+                  };
+
+                  const hasSummary = summary.efficacy || summary.sideEffects || summary.warnings;
+                  if (!hasSummary) return null;
+
+                  return (
+                    <div className="card-drug-info">
+                      <div className="card-drug-info-title">(약물정보)</div>
+                      <div className="card-drug-info-subtitle">의약품안전사용서비스(DUR)의 정보를 참고한다</div>
+                      <div className="card-drug-info-row">
+                        <label>효능</label>
+                        <span className="efficacy-text">{summary.efficacy || '정보 없음'}</span>
+                      </div>
+                      <div className="card-drug-info-row">
+                        <label>부작용</label>
+                        <span className="side-effects-text">{summary.sideEffects || '정보 없음'}</span>
+                      </div>
+                      <div className="card-drug-info-row">
+                        <label>주의사항</label>
+                        <span className="warnings-text">{summary.warnings || '정보 없음'}</span>
+                      </div>
+                      {med.durWarnings && med.durWarnings.length > 0 && (
+                        <div className="dur-badges">
+                          {med.durWarnings.map((w, i) => (
+                            <span key={i} className="dur-badge">{w.type}</span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
                 {med.notes && (
                   <div className="card-row">
                     <label>메모</label>
