@@ -12,7 +12,7 @@ import './App.css';
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeMenu, setActiveMenu] = useState('weight-management');
+  const [activeMenu, setActiveMenu] = useState('calendar');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
