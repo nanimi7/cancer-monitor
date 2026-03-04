@@ -1,3 +1,4 @@
+/* MedicationList with API Integration - v2 */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
