@@ -1,5 +1,5 @@
 // DUR 품목정보 API - 병용금기, 임부금기, 연령금기 조회
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS 헤더 설정
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -25,10 +25,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    // DUR 품목정보 조회 API (여러 종류의 DUR 정보 조회)
+    // DUR 품목정보 조회 API
     const baseUrl = 'https://apis.data.go.kr/1471000/DURPrdlstInfoService03';
 
-    // 병렬로 여러 DUR 정보 조회
     const durTypes = [
       { endpoint: 'getUsjntTabooInfoList03', type: '병용금기', nameParam: 'itemName' },
       { endpoint: 'getPwnmTabooInfoList03', type: '임부금기', nameParam: 'itemName' },
@@ -38,9 +37,8 @@ export default async function handler(req, res) {
     ];
 
     const warnings = [];
-
-    // 모든 DUR 타입에 대해 병렬 조회
     const searchParam = drugName || itemSeq;
+
     const results = await Promise.allSettled(
       durTypes.map(async (durType) => {
         const url = new URL(`${baseUrl}/${durType.endpoint}`);
@@ -64,7 +62,6 @@ export default async function handler(req, res) {
       })
     );
 
-    // 결과 취합
     results.forEach((result) => {
       if (result.status === 'fulfilled' && result.value && result.value.items.length > 0) {
         const { type, items } = result.value;
@@ -75,14 +72,13 @@ export default async function handler(req, res) {
               drugName: item.ITEM_NAME || item.itemName || drugName,
               warning: item.PROHBT_CONTENT || item.prohbtContent || item.ATN_CONTENT || item.atnContent || '',
               detail: item.REMARK || item.remark || '',
-              mixedDrug: item.MIXTURE_ITEM_NAME || item.mixtureItemName || '' // 병용금기 약물명
+              mixedDrug: item.MIXTURE_ITEM_NAME || item.mixtureItemName || ''
             });
           }
         });
       }
     });
 
-    // 중복 제거 및 정리
     const uniqueWarnings = warnings.reduce((acc, warning) => {
       const key = `${warning.type}-${warning.warning}`;
       if (!acc.find(w => `${w.type}-${w.warning}` === key)) {
@@ -107,4 +103,4 @@ export default async function handler(req, res) {
       details: error.message
     });
   }
-}
+};

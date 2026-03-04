@@ -1,5 +1,5 @@
 // e약은요 API - 효능/부작용/주의사항 조회
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS 헤더 설정
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -60,13 +60,13 @@ export default async function handler(req, res) {
     const cleanText = (text) => {
       if (!text) return '';
       return text
-        .replace(/<[^>]*>/g, '') // HTML 태그 제거
-        .replace(/&nbsp;/g, ' ') // &nbsp; -> 공백
-        .replace(/\s+/g, ' ') // 연속 공백 정리
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s+/g, ' ')
         .trim();
     };
 
-    // 텍스트 요약 함수 (긴 텍스트를 적절히 자름)
+    // 텍스트 요약 함수
     const summarize = (text, maxLength = 500) => {
       const cleaned = cleanText(text);
       if (cleaned.length <= maxLength) return cleaned;
@@ -74,16 +74,16 @@ export default async function handler(req, res) {
     };
 
     const result = {
-      itemName: item.itemName || drugName, // 품목명
-      entpName: item.entpName || '', // 업체명
-      efficacy: summarize(item.efcyQesitm, 300), // 효능
-      useMethod: summarize(item.useMethodQesitm, 200), // 용법용량
-      sideEffects: summarize(item.seQesitm, 300), // 부작용
-      warnings: summarize(item.atpnWarnQesitm, 300), // 경고
-      caution: summarize(item.atpnQesitm, 300), // 주의사항
-      interaction: summarize(item.intrcQesitm, 200), // 상호작용
-      storageMethod: summarize(item.depositMethodQesitm, 100), // 보관방법
-      itemSeq: item.itemSeq || '' // 품목기준코드
+      itemName: item.itemName || drugName,
+      entpName: item.entpName || '',
+      efficacy: summarize(item.efcyQesitm, 300),
+      useMethod: summarize(item.useMethodQesitm, 200),
+      sideEffects: summarize(item.seQesitm, 300),
+      warnings: summarize(item.atpnWarnQesitm, 300),
+      caution: summarize(item.atpnQesitm, 300),
+      interaction: summarize(item.intrcQesitm, 200),
+      storageMethod: summarize(item.depositMethodQesitm, 100),
+      itemSeq: item.itemSeq || ''
     };
 
     return res.status(200).json({
@@ -98,4 +98,4 @@ export default async function handler(req, res) {
       details: error.message
     });
   }
-}
+};

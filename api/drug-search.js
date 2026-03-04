@@ -1,5 +1,5 @@
 // 심평원 약가기준정보 API - 약물명 자동완성용
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS 헤더 설정
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     url.searchParams.append('serviceKey', apiKey);
     url.searchParams.append('numOfRows', '20');
     url.searchParams.append('pageNo', '1');
-    url.searchParams.append('itmNm', keyword); // 품목명
+    url.searchParams.append('itmNm', keyword);
     url.searchParams.append('_type', 'json');
 
     const response = await fetch(url.toString());
@@ -49,11 +49,11 @@ export default async function handler(req, res) {
     const results = itemList
       .filter(item => item && item.itmNm)
       .map(item => ({
-        name: item.itmNm, // 품목명
-        drugCode: item.mdsCd || item.itemSeq, // 약품코드
-        manufacturer: item.mnfNm || '', // 제조사명
-        unit: item.unit || '', // 단위
-        specification: item.gnlNmCd || '' // 일반명코드
+        name: item.itmNm,
+        drugCode: item.mdsCd || item.itemSeq,
+        manufacturer: item.mnfNm || '',
+        unit: item.unit || '',
+        specification: item.gnlNmCd || ''
       }));
 
     return res.status(200).json({
@@ -69,4 +69,4 @@ export default async function handler(req, res) {
       details: error.message
     });
   }
-}
+};
