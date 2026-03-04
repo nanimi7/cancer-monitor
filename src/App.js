@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from './firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import Auth from './components/Auth';
 import InstallBanner from './components/InstallBanner';
 import UserProfile from './components/UserProfile';
@@ -20,6 +20,16 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setActiveMenu('profile');
+    } catch (error) {
+      console.error('로그아웃 오류:', error);
+      alert('로그아웃에 실패했습니다.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -35,6 +45,15 @@ function App() {
 
   return (
     <div className="App">
+      <header className="app-header">
+        <div className="app-header-content">
+          <h1>항암기록관리</h1>
+          <div className="user-info">
+            <span className="user-email">{user.email}</span>
+          </div>
+        </div>
+      </header>
+
       <main className="app-content">
         <InstallBanner />
         <UserProfile userId={user.uid} />
@@ -96,6 +115,10 @@ function App() {
           <span className="nav-label">AI분석</span>
         </button>
       </nav>
+
+      <button className="floating-logout-button" onClick={handleLogout}>
+        로그아웃
+      </button>
     </div>
   );
 }
