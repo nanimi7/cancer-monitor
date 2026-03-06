@@ -24,6 +24,13 @@ body {
   width: 100%;
   max-width: 480px;
   z-index: 120;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.app-header.header-hidden {
+  transform: translateX(-50%) translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .app-header-content {

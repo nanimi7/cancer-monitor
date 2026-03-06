@@ -14,6 +14,17 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState('profile');
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      setIsHeaderVisible(scrollTop <= 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -79,7 +90,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="app-header">
+      <header className={`app-header ${!isHeaderVisible ? 'header-hidden' : ''}`}>
         <div className="app-header-content">
           <h1>항암기록관리</h1>
           <div className="user-info">
