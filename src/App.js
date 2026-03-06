@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from './firebase';
+import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { collection, getDocs } from 'firebase/firestore';
 import Auth from './components/Auth';
 import AISummary from './components/AISummary';
 import UserProfile from './components/UserProfile';
@@ -12,11 +13,29 @@ import './App.css';
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeMenu, setActiveMenu] = useState('ai-summary');
+  const [activeMenu, setActiveMenu] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+
+      if (currentUser) {
+        // 사용자 프로필 존재 여부 확인
+        try {
+          const profileSnapshot = await getDocs(collection(db, `users/${currentUser.uid}/profile`));
+          if (profileSnapshot.empty) {
+            // 프로필이 없으면 사용자 탭으로
+            setActiveMenu('profile');
+          } else {
+            // 프로필이 있으면 증상관리 탭으로
+            setActiveMenu('calendar');
+          }
+        } catch (error) {
+          console.error('프로필 확인 실패:', error);
+          setActiveMenu('profile');
+        }
+      }
+
       setLoading(false);
     });
 
@@ -49,7 +68,7 @@ function App() {
       case 'ai-summary':
         return <AISummary userId={user.uid} />;
       default:
-        return <AISummary userId={user.uid} />;
+        return <DailySymptomCalendar userId={user.uid} />;
     }
   };
 
