@@ -130,7 +130,7 @@
 }
 
 .weight-dot {
-  font-size: clamp(7px, 1.9vw, 10px);
+  font-size: clamp(8px, 2.2vw, 11px);
   color: #5f27cd;
   font-weight: 600;
   margin-top: 1px;
@@ -512,7 +512,7 @@
   }
 
   .weight-dot {
-    font-size: clamp(6px, 1.7vw, 8px);
+    font-size: clamp(7px, 2vw, 9px);
   }
 
   .add-button-tile {
@@ -554,7 +554,7 @@
   }
 
   .weight-dot {
-    font-size: 7px;
+    font-size: 8px;
     letter-spacing: -0.5px;
   }
 
@@ -598,7 +598,7 @@
   }
 
   .weight-dot {
-    font-size: 6px;
+    font-size: 7px;
     letter-spacing: -0.5px;
   }
 
