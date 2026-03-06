@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from './firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from './firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { collection, getDocs } from 'firebase/firestore';
 import Auth from './components/Auth';
 import UserProfile from './components/UserProfile';
 import MedicationList from './components/MedicationList';
@@ -12,16 +13,39 @@ import './App.css';
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeMenu, setActiveMenu] = useState('weight-management');
+  const [activeMenu, setActiveMenu] = useState('profile');
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      setLoading(false);
+
+      if (!currentUser) {
+        setActiveMenu('profile');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const profileSnapshot = await getDocs(collection(db, `users/${currentUser.uid}/profile`));
+        setActiveMenu(profileSnapshot.empty ? 'profile' : 'calendar');
+      } catch (error) {
+        console.error('프로필 확인 오류:', error);
+        setActiveMenu('profile');
+      } finally {
+        setLoading(false);
+      }
     });
 
     return () => unsubscribe();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('로그아웃 오류:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -55,6 +79,18 @@ function App() {
 
   return (
     <div className="App">
+      <header className="app-header">
+        <div className="app-header-content">
+          <h1>항암기록관리</h1>
+          <div className="user-info">
+            <span className="user-email">{user.email}</span>
+            <button className="logout-button" onClick={handleLogout}>
+              로그아웃
+            </button>
+          </div>
+        </div>
+      </header>
+
       <main className="app-content">
         {renderContent()}
       </main>

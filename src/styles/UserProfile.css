@@ -1,1 +1,263 @@
-.user-profile { width: 100%; }
+.user-profile {
+  width: 100%;
+  background: #f5f6f8;
+  border: 1px solid #e7e9ee;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+}
+
+.user-profile h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #25364a;
+}
+
+.user-info-display {
+  background: linear-gradient(180deg, #ced5e2 0%, #c6d0e0 100%);
+  border-radius: 16px;
+  padding: 24px 16px 16px;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.character-avatar {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  line-height: 1;
+  box-shadow: 0 5px 12px rgba(30, 41, 59, 0.18);
+  margin-bottom: 10px;
+}
+
+.profile-info {
+  width: 100%;
+}
+
+.profile-nickname {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #25364a;
+}
+
+.profile-details {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #5f6f85;
+  letter-spacing: -0.1px;
+}
+
+.profile-details + .profile-details {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(95, 111, 133, 0.2);
+}
+
+.edit-button {
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  background: #3997d3;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 12px 16px;
+}
+
+.user-profile form {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 14px;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.required {
+  color: #ef4444;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="date"],
+.form-group textarea {
+  width: 100%;
+  border: 1px solid #d5dbe5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.form-group input.error,
+.form-group textarea.error {
+  border-color: #ef4444;
+}
+
+.radio-group {
+  display: flex;
+  gap: 10px;
+}
+
+.radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.char-count {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: right;
+}
+
+.error-message {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #ef4444;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.submit-button,
+.cancel-button,
+.confirm-delete-button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.submit-button {
+  flex: 1;
+  background: #3b82f6;
+  color: #fff;
+}
+
+.cancel-button {
+  flex: 1;
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.danger-zone {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.delete-account-button {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 12px;
+  padding: 4px 2px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.delete-modal {
+  width: 100%;
+  max-width: 360px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.delete-modal h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.delete-warning {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: #dc2626;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.confirm-delete-button {
+  flex: 1;
+  background: #ef4444;
+  color: #fff;
+}
+
+.confirm-delete-button:disabled {
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .user-profile {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .user-profile h2 {
+    margin-bottom: 10px;
+    font-size: 17px;
+  }
+
+  .user-info-display {
+    padding: 20px 14px 14px;
+    border-radius: 14px;
+  }
+
+  .profile-nickname {
+    font-size: 38px;
+  }
+
+  .edit-button {
+    font-size: 20px;
+  }
+}
