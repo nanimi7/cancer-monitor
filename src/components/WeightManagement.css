@@ -129,7 +129,7 @@
 }
 
 .weight-dot {
-  font-size: 10px;
+  font-size: 8px;
   color: #5f27cd;
   font-weight: 600;
   margin-top: 2px;
@@ -509,7 +509,7 @@
   }
 
   .weight-dot {
-    font-size: 9px;
+    font-size: 7px;
   }
 
   .add-button-tile {
