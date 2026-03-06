@@ -61,7 +61,7 @@ function WeightManagement({ userId }) {
     if (view === 'month') {
       const weightData = getWeightForDate(date);
       if (weightData) {
-        return <div className="weight-dot">{weightData.weight}kg</div>;
+        return <div className="weight-dot">{Number(weightData.weight).toFixed(1)}kg</div>;
       } else {
         return <div className="add-button-tile">+</div>;
       }

@@ -30,9 +30,9 @@
 /* 캘린더 섹션 */
 .calendar-section {
   background: #fbfbfc;
-  padding: 16px 14px;
-  border-radius: 20px;
-  margin-bottom: 18px;
+  padding: 10px 8px;
+  border-radius: 14px;
+  margin-bottom: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid #e8ebf0;
 }
@@ -45,33 +45,33 @@
 }
 
 .calendar-section .react-calendar__navigation {
-  margin-bottom: 10px;
-  gap: 8px;
+  margin-bottom: 6px;
+  gap: 4px;
 }
 
 .calendar-section .react-calendar__navigation button {
-  min-width: 36px;
-  border-radius: 12px;
-  font-size: 22px;
-  font-weight: 700;
+  min-width: 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   color: #29313d;
 }
 
 .calendar-section .react-calendar__navigation__label {
   background: #f0f1f4;
-  border-radius: 14px !important;
-  font-size: 18px !important;
-  font-weight: 700 !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
   color: #20242d !important;
 }
 
 .calendar-section .react-calendar__month-view__weekdays {
   text-transform: uppercase;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: #9aa0a6;
   letter-spacing: 0.1px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .calendar-section .react-calendar__month-view__days {
@@ -81,19 +81,19 @@
 }
 
 .calendar-section .react-calendar__tile {
-  padding: 8px 4px;
+  padding: 4px 2px;
   position: relative;
-  border-radius: 16px;
+  border-radius: 10px;
   transition: all 0.2s ease;
   background: #f9fafb;
-  border: 1.5px solid #d9dee6;
-  min-height: 84px;
-  height: 84px;
+  border: 1px solid #d9dee6;
+  min-height: 52px;
+  height: 52px;
 }
 
 .calendar-section .react-calendar__tile abbr {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   color: #334155;
 }
 
@@ -104,7 +104,7 @@
 /* 선택된 날짜 - 보라색 제거, 미묘한 테두리만 */
 .calendar-section .react-calendar__tile--active {
   background-color: #f5f1ff !important;
-  border: 1.5px solid #7b4af0 !important;
+  border: 1px solid #7b4af0 !important;
   color: #20232a !important;
 }
 
@@ -119,32 +119,32 @@
 .calendar-section .react-calendar__tile--now::before {
   content: '';
   position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 6px;
-  height: 6px;
+  top: 2px;
+  right: 2px;
+  width: 4px;
+  height: 4px;
   background-color: #ff4757;
   border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.2);
+  box-shadow: 0 0 0 1px rgba(255, 71, 87, 0.2);
 }
 
 .weight-dot {
-  font-size: 15px;
+  font-size: 10px;
   color: #5f27cd;
-  font-weight: 700;
-  margin-top: 6px;
-  line-height: 1.15;
-  letter-spacing: -0.2px;
+  font-weight: 600;
+  margin-top: 2px;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
   white-space: nowrap;
 }
 
 /* + 버튼 - 최신 디자인 */
 .add-button-tile {
   display: inline-block;
-  font-size: 22px;
+  font-size: 14px;
   color: #c8ccd3;
   font-weight: 300;
-  margin-top: 8px;
+  margin-top: 2px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -499,21 +499,21 @@
   }
 
   .calendar-section .react-calendar__tile {
-    padding: 7px 3px;
-    min-height: 82px;
-    height: 82px;
+    padding: 3px 2px;
+    min-height: 48px;
+    height: 48px;
   }
 
   .calendar-section .react-calendar__tile abbr {
-    font-size: 14px;
+    font-size: 11px;
   }
 
   .weight-dot {
-    font-size: 14px;
+    font-size: 9px;
   }
 
   .add-button-tile {
-    font-size: 20px;
+    font-size: 12px;
   }
 
   .modal-content {
@@ -537,7 +537,7 @@
 
 @media (max-width: 480px) {
   .calendar-section .react-calendar__navigation button {
-    font-size: 20px;
+    font-size: 14px;
   }
 
   .modal-content {
@@ -549,10 +549,10 @@
   }
 
   .calendar-section .react-calendar__tile--now::before {
-    top: 3px;
-    right: 3px;
-    width: 5px;
-    height: 5px;
+    top: 2px;
+    right: 2px;
+    width: 3px;
+    height: 3px;
   }
 
   .filter-buttons {
