@@ -61,7 +61,7 @@ function WeightManagement({ userId }) {
     if (view === 'month') {
       const weightData = getWeightForDate(date);
       if (weightData) {
-        return <div className="weight-dot">{Number(weightData.weight).toFixed(1)}kg</div>;
+        return <div className="weight-dot">{weightData.weight}kg</div>;
       } else {
         return <div className="add-button-tile">+</div>;
       }
@@ -366,7 +366,7 @@ function WeightManagement({ userId }) {
         {getChartData().length > 0 ? (
           <div className="chart-container">
             <ResponsiveContainer width="100%" height={320}>
-              <AreaChart data={getChartData()} margin={{ top: 10, right: 10, left: 5, bottom: 0 }}>
+              <AreaChart data={getChartData()} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#5f27cd" stopOpacity={0.3}/>
@@ -382,10 +382,10 @@ function WeightManagement({ userId }) {
                 />
                 <YAxis
                   domain={['dataMin - 2', 'dataMax + 2']}
-                  tick={{ fill: '#999', fontSize: 11 }}
+                  tick={{ fill: '#999', fontSize: 12 }}
                   tickLine={false}
                   axisLine={{ stroke: '#f0f0f0' }}
-                  width={45}
+                  width={40}
                 />
                 <Tooltip
                   contentStyle={{

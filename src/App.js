@@ -1,62 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db } from './firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { collection, getDocs } from 'firebase/firestore';
+import { auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import Auth from './components/Auth';
+import AISummary from './components/AISummary';
 import UserProfile from './components/UserProfile';
 import MedicationList from './components/MedicationList';
 import DailySymptomCalendar from './components/DailySymptomCalendar';
-import AISummary from './components/AISummary';
 import WeightManagement from './components/WeightManagement';
 import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeMenu, setActiveMenu] = useState('profile');
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [activeMenu, setActiveMenu] = useState('ai-summary');
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      setIsHeaderVisible(scrollTop <= 10);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-
-      if (!currentUser) {
-        setActiveMenu('profile');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const profileSnapshot = await getDocs(collection(db, `users/${currentUser.uid}/profile`));
-        setActiveMenu(profileSnapshot.empty ? 'profile' : 'calendar');
-      } catch (error) {
-        console.error('프로필 확인 오류:', error);
-        setActiveMenu('profile');
-      } finally {
-        setLoading(false);
-      }
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error('로그아웃 오류:', error);
-    }
-  };
 
   if (loading) {
     return (
@@ -77,31 +42,19 @@ function App() {
         return <UserProfile userId={user.uid} />;
       case 'medication':
         return <MedicationList userId={user.uid} />;
-      case 'calendar':
-        return <DailySymptomCalendar userId={user.uid} />;
       case 'weight-management':
         return <WeightManagement userId={user.uid} />;
+      case 'calendar':
+        return <DailySymptomCalendar userId={user.uid} />;
       case 'ai-summary':
         return <AISummary userId={user.uid} />;
       default:
-        return <WeightManagement userId={user.uid} />;
+        return <AISummary userId={user.uid} />;
     }
   };
 
   return (
     <div className="App">
-      <header className={`app-header ${!isHeaderVisible ? 'header-hidden' : ''}`}>
-        <div className="app-header-content">
-          <h1>항암기록관리</h1>
-          <div className="user-info">
-            <span className="user-email">{user.email}</span>
-            <button className="logout-button" onClick={handleLogout}>
-              로그아웃
-            </button>
-          </div>
-        </div>
-      </header>
-
       <main className="app-content">
         {renderContent()}
       </main>
