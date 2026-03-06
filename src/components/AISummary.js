@@ -230,6 +230,20 @@ function AISummary({ userId }) {
   const [aiLoading, setAiLoading] = useState(false);
   const [showDailyRecords, setShowDailyRecords] = useState(false);
 
+  // 마크다운 볼드(**텍스트**)를 HTML로 변환하는 함수
+  const renderFormattedText = (text) => {
+    if (!text) return null;
+
+    // **텍스트**를 <strong>텍스트</strong>로 변환
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index}>{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  };
+
   // AI 분석 내용에서 이전 비교 부분을 분리해서 렌더링
   const renderAIContent = (text) => {
     if (!text) return null;
@@ -238,7 +252,7 @@ function AISummary({ userId }) {
     const markerIndex = text.indexOf(comparisonMarker);
 
     if (markerIndex === -1) {
-      return <div>{text}</div>;
+      return <div>{renderFormattedText(text)}</div>;
     }
 
     const currentPart = text.substring(0, markerIndex).trim();
@@ -246,10 +260,10 @@ function AISummary({ userId }) {
 
     return (
       <>
-        <div className="ai-current-analysis">{currentPart}</div>
+        <div className="ai-current-analysis">{renderFormattedText(currentPart)}</div>
         <div className="ai-comparison-section">
           <div className="ai-comparison-header">📊 이전 비교</div>
-          <div className="ai-comparison-content">{comparisonPart}</div>
+          <div className="ai-comparison-content">{renderFormattedText(comparisonPart)}</div>
         </div>
       </>
     );
@@ -570,7 +584,14 @@ function AISummary({ userId }) {
                     {/* AI 코멘트 */}
                     <div style={{ marginBottom: '20px' }}>
                       <div className="ai-comment-header">💬 AI 코멘트 (참고용)</div>
-                      <div className="ai-comment-content">{aiSummary.comment}</div>
+                      <div className="ai-comment-content">
+                        {aiSummary.comment?.split('\n').map((line, index, arr) => (
+                          <span key={index}>
+                            {renderFormattedText(line)}
+                            {index < arr.length - 1 && <br />}
+                          </span>
+                        ))}
+                      </div>
                     </div>
 
                     {/* 주의 문구 */}
