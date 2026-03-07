@@ -12,6 +12,67 @@ body {
   box-shadow: 0 0 16px rgba(0, 0, 0, 0.08);
 }
 
+.app-header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 14px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  z-index: 120;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.app-header.header-hidden {
+  transform: translateX(-50%) translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 14px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.user-email {
+  font-size: 15px;
+  color: #ecf0f1;
+  white-space: nowrap;
+}
+
+.logout-button {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -47,7 +108,7 @@ body {
   max-width: 480px;
   width: 100%;
   margin: 0 auto;
-  padding: 14px 10px 84px;
+  padding: 78px 10px 84px;
 }
 
 .app-bottom-nav {

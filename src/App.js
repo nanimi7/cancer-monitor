@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db } from './firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
 import Auth from './components/Auth';
 import AISummary from './components/AISummary';
@@ -14,6 +14,17 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState(null);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      setIsHeaderVisible(scrollTop <= 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -41,6 +52,14 @@ function App() {
 
     return () => unsubscribe();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('로그아웃 오류:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -74,6 +93,18 @@ function App() {
 
   return (
     <div className="App">
+      <header className={`app-header ${!isHeaderVisible ? 'header-hidden' : ''}`}>
+        <div className="app-header-content">
+          <h1>항암기록관리</h1>
+          <div className="user-info">
+            <span className="user-email">{user.email}</span>
+            <button className="logout-button" onClick={handleLogout}>
+              로그아웃
+            </button>
+          </div>
+        </div>
+      </header>
+
       <main className="app-content">
         {renderContent()}
       </main>
