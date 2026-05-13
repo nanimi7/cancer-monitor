@@ -6,7 +6,7 @@ import { applyCors, enforceBodySize, verifyUser } from './_lib/security.js';
 // ============================================================
 
 const MODEL = 'claude-haiku-4-5';
-const MAX_TOKENS = 1500;
+const MAX_TOKENS = 2500;
 const MAX_LINES = 3;
 const MAX_LINES_CURRENT = 2;  // 비교 데이터 있을 때 현재 분석
 const MAX_LINES_COMPARE = 1;  // 비교 데이터 있을 때 비교 분석
