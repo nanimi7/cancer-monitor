@@ -107,7 +107,7 @@ ${dataText}
 - 이스케이프 문자 사용 금지`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-haiku-20241022',
+      model: 'claude-haiku-4-5',
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }]
     });

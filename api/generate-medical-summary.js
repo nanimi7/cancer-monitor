@@ -5,7 +5,7 @@ import { applyCors, enforceBodySize, verifyUser } from './_lib/security.js';
 // 상수 정의
 // ============================================================
 
-const MODEL = 'claude-3-5-haiku-20241022';
+const MODEL = 'claude-haiku-4-5';
 const MAX_TOKENS = 1500;
 const MAX_LINES = 3;
 const MAX_LINES_CURRENT = 2;  // 비교 데이터 있을 때 현재 분석
